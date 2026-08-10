@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { FooterCard } from '../components/Footers'
 import { getProduct, products } from '../data/products'
 import { useStore } from '../context/StoreContext'
@@ -13,8 +13,9 @@ const MIN_ORDER_QTY = 12
 export default function ProductDetail() {
   const { slug } = useParams()
   const { product, related } = useProduct(slug, getProduct(slug))
-  const { addToCart, openCheckout } = useStore()
+  const { addToCart } = useStore()
   const { formatPrice } = useCurrency()
+  const navigate = useNavigate()
 
   const [selectedSize, setSelectedSize] = useState('L')
   const [qty, setQty] = useState(MIN_ORDER_QTY)
@@ -80,7 +81,7 @@ export default function ProductDetail() {
   const handleBuyNow = () => {
     if (!validateQty()) return
     addToCart(payload, { openCart: false })
-    openCheckout()
+    navigate('/checkout')
   }
 
   return (

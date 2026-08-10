@@ -65,13 +65,11 @@ export function StoreProvider({ children }) {
   const openSearch = () => setActiveOverlay('search')
   const openLogin = () => setActiveOverlay('login')
   const openCart = () => setActiveOverlay('cart')
-  const openCheckout = () => setActiveOverlay('checkout')
 
   const closeAll = () => setActiveOverlay(null)
   const closeSearch = closeAll
   const closeLogin = closeAll
   const closeCart = closeAll
-  const closeCheckout = closeAll
 
   const resolveProductId = useCallback(async (product) => {
     if (typeof product.id === 'number') return product.id
@@ -229,11 +227,9 @@ export function StoreProvider({ children }) {
     openSearch,
     openLogin,
     openCart,
-    openCheckout,
     closeSearch,
     closeLogin,
     closeCart,
-    closeCheckout,
     closeAll,
     addToCart,
     changeQty,

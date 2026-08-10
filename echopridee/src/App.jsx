@@ -27,6 +27,8 @@ import BusinessCard from './pages/BusinessCard'
 import ShopWithPoints from './pages/ShopWithPoints'
 import ReloadBalance from './pages/ReloadBalance'
 import CurrencyConverter from './pages/CurrencyConverter'
+import CheckoutPage from './pages/CheckoutPage'
+import OrderConfirmation from './pages/OrderConfirmation'
 import Account from './pages/Account'
 import Orders from './pages/Orders'
 import ShippingPolicies from './pages/ShippingPolicies'
@@ -126,6 +128,8 @@ export default function App() {
             <Route path="/shop-with-points" element={<ShopWithPoints />} />
             <Route path="/reload-balance" element={<ReloadBalance />} />
             <Route path="/currency-converter" element={<CurrencyConverter />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/order-confirmation" element={<OrderConfirmation />} />
             <Route path="/account" element={<Account />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/shipping-policies" element={<ShippingPolicies />} />

@@ -3,7 +3,7 @@ import { useStore } from '../context/StoreContext'
 
 export default function Backdrop() {
   const { activeOverlay, closeAll } = useStore()
-  const show = activeOverlay === 'login' || activeOverlay === 'cart' || activeOverlay === 'checkout'
+  const show = activeOverlay === 'login' || activeOverlay === 'cart'
 
   return (
     <div

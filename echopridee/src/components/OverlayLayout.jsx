@@ -2,7 +2,6 @@ import React from 'react'
 import SearchOverlay from './SearchOverlay'
 import LoginDrawer from './LoginDrawer'
 import CartDrawer from './CartDrawer'
-import CheckoutModal from './CheckoutModal'
 import Backdrop from './Backdrop'
 
 export default function OverlayLayout() {
@@ -12,7 +11,6 @@ export default function OverlayLayout() {
       <Backdrop />
       <LoginDrawer />
       <CartDrawer />
-      <CheckoutModal />
     </>
   )
 }

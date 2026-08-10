@@ -1,13 +1,14 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useStore } from '../context/StoreContext'
 import { useCurrency } from '../context/CurrencyContext'
 
 const MIN_ORDER_QTY = 12
 
 export default function CartDrawer() {
-  const { cart, totalCount, subtotal, activeOverlay, closeCart, openCheckout, changeQty, removeFromCart } =
-    useStore()
+  const { cart, totalCount, subtotal, activeOverlay, closeCart, changeQty, removeFromCart } = useStore()
   const { formatPrice } = useCurrency()
+  const navigate = useNavigate()
   const open = activeOverlay === 'cart'
 
   return (
@@ -102,7 +103,10 @@ export default function CartDrawer() {
           />
         </div>
         <button
-          onClick={openCheckout}
+          onClick={() => {
+            closeCart()
+            navigate('/checkout')
+          }}
           className="w-full bg-[#baf120] hover:bg-[#a6e216] text-black font-extrabold text-xs uppercase tracking-widest py-4 rounded shadow-md transition-colors duration-300"
         >
           Proceed to Checkout
