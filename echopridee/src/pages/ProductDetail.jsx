@@ -5,10 +5,14 @@ import { getProduct, products } from '../data/products'
 import { useStore } from '../context/StoreContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { useProduct } from '../api'
+import { productPricing } from '../utils/wholesale'
 
 const sizes = ['S', 'M', 'L', 'XL', 'XXL']
 
-const MIN_ORDER_QTY = 12
+const ORDER_TYPES = [
+  { id: 'retail', label: 'Retail Order' },
+  { id: 'wholesale', label: 'Wholesale Order' },
+]
 
 export default function ProductDetail() {
   const { slug } = useParams()
@@ -17,8 +21,9 @@ export default function ProductDetail() {
   const { formatPrice } = useCurrency()
   const navigate = useNavigate()
 
+  const [orderType, setOrderType] = useState('retail')
   const [selectedSize, setSelectedSize] = useState('L')
-  const [qty, setQty] = useState(MIN_ORDER_QTY)
+  const [qty, setQty] = useState(1)
   const [qtyError, setQtyError] = useState('')
 
   if (!product) {
@@ -38,19 +43,37 @@ export default function ProductDetail() {
 
   const others = related.length > 0 ? related : products.filter((p) => p.slug !== product.slug).slice(0, 4)
 
-  const totalPrice = product.price * qty
+  const pricing = productPricing(product)
+  const isWholesale = orderType === 'wholesale'
+  const minQty = isWholesale ? Math.max(1, pricing.threshold || 1) : 1
+  const unitPrice = isWholesale
+    ? pricing.wholesale !== null && pricing.wholesale !== undefined
+      ? pricing.wholesale
+      : pricing.retail
+    : pricing.retail
+  const totalPrice = Math.round(unitPrice * qty * 100) / 100
+  const compareAt = product.oldPrice && product.oldPrice > pricing.retail ? product.oldPrice : null
+  const retailSavePct = compareAt ? Math.round((1 - pricing.retail / compareAt) * 100) : 0
 
   const payload = {
     id: product.id,
     title: product.title,
-    price: product.price,
+    price: unitPrice,
     size: selectedSize,
     qty,
     image: product.image,
+    orderType,
+    minQuantity: minQty,
+  }
+
+  const switchMode = (mode) => {
+    setOrderType(mode)
+    setQty(mode === 'wholesale' ? Math.max(1, pricing.threshold || 1) : 1)
+    setQtyError('')
   }
 
   const handleQtyStep = (next) => {
-    setQty(Math.max(MIN_ORDER_QTY, next))
+    setQty(Math.max(minQty, next))
     setQtyError('')
   }
 
@@ -58,16 +81,24 @@ export default function ProductDetail() {
     const raw = e.target.value.replace(/[^\d]/g, '')
     const next = raw === '' ? 0 : Number(raw)
     setQty(next)
-    if (next < MIN_ORDER_QTY) {
-      setQtyError(`Minimum wholesale order quantity is ${MIN_ORDER_QTY} pieces`)
+    if (next < minQty) {
+      setQtyError(
+        isWholesale
+          ? `Minimum wholesale order quantity is ${minQty} pieces`
+          : 'Minimum quantity is 1 piece',
+      )
     } else {
       setQtyError('')
     }
   }
 
   const validateQty = () => {
-    if (qty < MIN_ORDER_QTY) {
-      alert(`Minimum wholesale order quantity is ${MIN_ORDER_QTY} pieces`)
+    if (qty < minQty) {
+      alert(
+        isWholesale
+          ? `Minimum wholesale order quantity is ${minQty} pieces`
+          : 'Minimum quantity is 1 piece',
+      )
       return false
     }
     return true
@@ -78,7 +109,7 @@ export default function ProductDetail() {
     addToCart(payload)
   }
 
-  const handleBuyNow = () => {
+  const handleExpressCheckout = () => {
     if (!validateQty()) return
     addToCart(payload, { openCart: false })
     navigate('/checkout')
@@ -131,24 +162,52 @@ export default function ProductDetail() {
               <span className="text-gray-400 text-xs font-medium">({product.reviews} Customer Reviews)</span>
             </div>
 
+            <div
+              className="inline-flex w-full sm:w-auto grid grid-cols-2 rounded-xl bg-neutral-900 border border-neutral-800 p-1.5"
+              role="tablist"
+              aria-label="Order type"
+            >
+              {ORDER_TYPES.map((mode) => (
+                <button
+                  key={mode.id}
+                  role="tab"
+                  aria-selected={orderType === mode.id}
+                  onClick={() => switchMode(mode.id)}
+                  className={`px-5 py-3 rounded-lg text-[10px] font-extrabold uppercase tracking-widest transition-colors duration-300 ${
+                    orderType === mode.id
+                      ? 'bg-[#baf120] text-black shadow'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  {mode.label}
+                </button>
+              ))}
+            </div>
+
             <div className="border-y border-white/10 py-4 space-y-2.5">
-              <div className="flex items-baseline gap-3 flex-wrap">
-                <span className="text-4xl font-extrabold text-white">{formatPrice(product.price)}</span>
-                <span className="text-xs font-extrabold uppercase tracking-widest text-[#baf120]">
-                  Wholesale Price
-                </span>
-                {product.oldPrice && (
-                  <>
-                    <span className="text-sm text-gray-500 line-through">{formatPrice(product.oldPrice)}</span>
-                    <span className="bg-[#baf120]/10 text-[#baf120] text-xs font-bold px-2.5 py-1 rounded">
-                      SAVE {product.save}
-                    </span>
-                  </>
-                )}
-              </div>
-              <span className="inline-flex items-center gap-2 bg-[#baf120] text-black text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-full shadow">
-                <i className="fa-solid fa-boxes-stacked"></i> Wholesale Bundle (Min. {MIN_ORDER_QTY} Pieces)
-              </span>
+              {isWholesale ? (
+                <div className="flex items-baseline gap-2.5 flex-wrap">
+                  <span className="text-4xl font-extrabold text-white">{formatPrice(unitPrice)}</span>
+                  <span className="text-xs font-extrabold uppercase tracking-widest text-[#baf120]">Per Piece</span>
+                  <p className="w-full flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                    <i className="fa-solid fa-boxes-stacked text-[#baf120]"></i>
+                    Minimum Order: {minQty} Pieces
+                  </p>
+                </div>
+              ) : (
+                <div className="flex items-baseline gap-3 flex-wrap">
+                  <span className="text-4xl font-extrabold text-white">{formatPrice(unitPrice)}</span>
+                  <span className="text-xs font-extrabold uppercase tracking-widest text-[#baf120]">Retail Price</span>
+                  {compareAt && (
+                    <>
+                      <span className="text-sm text-gray-500 line-through">{formatPrice(compareAt)}</span>
+                      <span className="bg-[#baf120]/10 text-[#baf120] text-xs font-bold px-2.5 py-1 rounded">
+                        SAVE {retailSavePct}%
+                      </span>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
             <p className="text-sm text-gray-300 leading-relaxed">{product.description}</p>
@@ -172,12 +231,12 @@ export default function ProductDetail() {
 
             <div className="space-y-2">
               <label className="block text-xs font-bold uppercase tracking-wider text-gray-300">
-                Quantity (Min. {MIN_ORDER_QTY} Pieces):
+                Quantity{isWholesale ? ` (Min. ${minQty} Pieces)` : ''}:
               </label>
               <div className="inline-flex items-center border border-gray-700 rounded bg-neutral-900">
                 <button
                   onClick={() => handleQtyStep(qty - 1)}
-                  disabled={qty <= MIN_ORDER_QTY}
+                  disabled={qty <= minQty}
                   className="px-3 py-2 text-gray-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed font-bold text-sm"
                 >
                   -
@@ -205,7 +264,7 @@ export default function ProductDetail() {
               {!qtyError && qty > 0 && (
                 <div className="flex items-center justify-between gap-4 rounded bg-neutral-900 border border-neutral-800 px-4 py-2.5 max-w-sm">
                   <span className="text-xs text-gray-400 font-medium">
-                    Total ({qty} pieces × {formatPrice(product.price, { showCode: false })})
+                    Total ({qty} pieces × {formatPrice(unitPrice, { showCode: false })})
                   </span>
                   <span className="text-sm font-extrabold text-[#baf120]">{formatPrice(totalPrice)}</span>
                 </div>
@@ -229,10 +288,10 @@ export default function ProductDetail() {
                 <i className="fa-solid fa-cart-shopping"></i> Add to Cart
               </button>
               <button
-                onClick={handleBuyNow}
+                onClick={handleExpressCheckout}
                 className="flex-1 bg-white hover:bg-gray-200 text-black font-extrabold text-xs uppercase tracking-widest py-4 px-6 rounded shadow-xl flex items-center justify-center gap-2 transition-transform hover:scale-[1.02]"
               >
-                <i className="fa-solid fa-bolt"></i> Buy Now
+                <i className="fa-solid fa-bolt"></i> Express Checkout
               </button>
             </div>
           </div>
@@ -244,24 +303,27 @@ export default function ProductDetail() {
               You May Also Like
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {others.map((other) => (
-                <Link
-                  key={other.slug}
-                  to={`/product/${other.slug}`}
-                  className="block bg-neutral-900 border border-neutral-800 rounded-lg p-4 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1"
-                >
-                  <div className="h-56 bg-neutral-800 rounded mb-4 overflow-hidden flex items-center justify-center">
-                    <img src={`/${other.image}`} alt={other.title} className="object-contain h-full w-full" />
-                  </div>
-                  <h3 className="text-xs font-extrabold text-white uppercase tracking-wider mb-2">
-                    {other.title.toUpperCase()}
-                  </h3>
-                  <div className="flex items-baseline gap-2">
-                    <p className="text-sm font-bold text-[#baf120]">{formatPrice(other.price)}</p>
-                    <p className="text-xs text-gray-500 line-through">{formatPrice(other.oldPrice)}</p>
-                  </div>
-                </Link>
-              ))}
+              {others.map((other) => {
+                const op = productPricing(other)
+                return (
+                  <Link
+                    key={other.slug}
+                    to={`/product/${other.slug}`}
+                    className="block bg-neutral-900 border border-neutral-800 rounded-lg p-4 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1"
+                  >
+                    <div className="h-56 bg-neutral-800 rounded mb-4 overflow-hidden flex items-center justify-center">
+                      <img src={`/${other.image}`} alt={other.title} className="object-contain h-full w-full" />
+                    </div>
+                    <h3 className="text-xs font-extrabold text-white uppercase tracking-wider mb-2">
+                      {other.title.toUpperCase()}
+                    </h3>
+                    <div className="flex items-baseline gap-2">
+                      <p className="text-sm font-bold text-[#baf120]">{formatPrice(op.wholesale || op.retail)}</p>
+                      {op.hasWholesale && <p className="text-xs text-gray-500 line-through">{formatPrice(op.retail)}</p>}
+                    </div>
+                  </Link>
+                )
+              })}
             </div>
           </div>
         )}

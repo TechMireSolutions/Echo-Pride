@@ -4,6 +4,7 @@ import { carouselProducts } from '../data/products'
 import { parseUsdPrice } from '../data/currencies'
 import { useCurrency } from '../context/CurrencyContext'
 import { useProducts } from '../api'
+import { productPricing } from '../utils/wholesale'
 
 export default function ProductCarousel({ category }) {
   const trackRef = useRef(null)
@@ -13,12 +14,17 @@ export default function ProductCarousel({ category }) {
   const params = category ? { limit: 10, category } : { limit: 10, featured: 'true' }
   const { items } = useProducts(params, carouselProducts)
 
-  const list = items.map((p) => ({
-    slug: p.slug,
-    image: p.image,
-    title: p.title,
-    price: parseUsdPrice(p.price),
-  }))
+  const list = items.map((p) => {
+    const pr = productPricing(p)
+    return {
+      slug: p.slug,
+      image: p.image,
+      title: p.title,
+      price: pr.wholesale !== null && pr.wholesale !== undefined ? pr.wholesale : parseUsdPrice(pr.retail),
+      retailPrice: pr.retail,
+      hasWholesale: pr.hasWholesale,
+    }
+  })
   const listKey = list.map((p) => p.slug).join('|')
 
   const scrollByCards = (direction) => {
@@ -56,7 +62,10 @@ export default function ProductCarousel({ category }) {
           >
             <img src={`/${product.image}`} alt={product.title} draggable="false" />
             <h3>{product.title}</h3>
-            <p className="price">{formatPrice(product.price)}</p>
+            <p className="price">
+              {formatPrice(product.price)}
+              {product.hasWholesale && <span className="old-price">{formatPrice(product.retailPrice)}</span>}
+            </p>
           </Link>
         ))}
       </div>

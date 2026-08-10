@@ -6,6 +6,7 @@ import { FooterAmazon } from '../components/Footers'
 import { getCategoryBySlug, products } from '../data/products'
 import { useCurrency } from '../context/CurrencyContext'
 import { useProducts } from '../api'
+import { productPricing } from '../utils/wholesale'
 
 const shopTabs = [
   { id: 'basketball-tab', label: 'Basketball Uniform', sport: 'Basketball', active: true },
@@ -107,6 +108,7 @@ function SearchResults({ query, products: source }) {
 
 function ProductCard({ product }) {
   const { formatPrice } = useCurrency()
+  const pr = productPricing(product)
   return (
     <Link
       to={`/product/${product.slug}`}
@@ -118,7 +120,8 @@ function ProductCard({ product }) {
       <h3 className="text-xs font-extrabold text-black uppercase tracking-wider mb-2">
         {product.title.toUpperCase()}
       </h3>
-      <p className="text-sm font-bold text-gray-500">{formatPrice(product.price)}</p>
+      <p className="text-sm font-bold text-gray-500">{formatPrice(pr.wholesale || pr.retail)}</p>
+      {pr.hasWholesale && <p className="text-xs text-gray-400 line-through">{formatPrice(pr.retail)}</p>}
     </Link>
   )
 }

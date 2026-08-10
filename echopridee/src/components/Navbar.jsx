@@ -211,6 +211,7 @@ export default function Navbar({
         </nav>
 
         <div className={`flex items-center shrink-0 ${isLight ? 'gap-5 text-gray-700' : 'gap-6 text-base'}`}>
+          {/* Desktop-only: currency selector & account (hidden on mobile — moved into the menu drawer) */}
           <div className="hidden md:block">
             <CurrencySelector variant={isLight ? 'light' : 'dark'} />
           </div>
@@ -395,15 +396,24 @@ export default function Navbar({
                     </button>
                   </div>
                 ) : (
-                  <button
-                    onClick={() => {
-                      setMenuOpen(false)
-                      openLogin()
-                    }}
-                    className="flex items-center gap-2 py-2 text-sm font-bold uppercase tracking-widest text-gray-700 hover:text-black transition-colors"
-                  >
-                    <i className="fa-solid fa-user text-xs"></i> Sign In / Create Account
-                  </button>
+                  <div className="space-y-1">
+                    <Link
+                      to="/account"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-2 py-2 text-sm font-bold uppercase tracking-widest text-gray-700 hover:text-black transition-colors"
+                    >
+                      <i className="fa-solid fa-user text-xs"></i> My Account
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setMenuOpen(false)
+                        openLogin()
+                      }}
+                      className="flex items-center gap-2 py-2 text-sm font-bold uppercase tracking-widest text-gray-700 hover:text-black transition-colors"
+                    >
+                      <i className="fa-solid fa-arrow-right-to-bracket text-xs"></i> Sign In / Create Account
+                    </button>
+                  </div>
                 )}
               </div>
 

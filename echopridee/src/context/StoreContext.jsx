@@ -147,7 +147,12 @@ export function StoreProvider({ children }) {
   const addToCart = (product, options = {}) => {
     const { openCart: shouldOpenCart = true } = options
     setCart((prev) => {
-      const existingIndex = prev.findIndex((item) => item.id === product.id && item.size === product.size)
+      const existingIndex = prev.findIndex(
+        (item) =>
+          item.id === product.id &&
+          item.size === product.size &&
+          (item.orderType || 'retail') === (product.orderType || 'retail'),
+      )
       if (existingIndex > -1) {
         const next = [...prev]
         next[existingIndex] = {
