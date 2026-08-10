@@ -211,8 +211,10 @@ export default function Navbar({
         </nav>
 
         <div className={`flex items-center shrink-0 ${isLight ? 'gap-5 text-gray-700' : 'gap-6 text-base'}`}>
-          <CurrencySelector variant={isLight ? 'light' : 'dark'} />
-          <div className="relative">
+          <div className="hidden md:block">
+            <CurrencySelector variant={isLight ? 'light' : 'dark'} />
+          </div>
+          <div className="relative hidden md:block">
             <button
               onClick={() => (isLoggedIn ? setUserMenuOpen((v) => !v) : openLogin())}
               className={`inline-flex items-center justify-center hover:opacity-75 cursor-pointer leading-none ${
@@ -366,6 +368,49 @@ export default function Navbar({
                   </Link>
                 )
               })}
+            </div>
+
+            <div className="pt-4 border-t border-gray-200 space-y-6">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Account</p>
+                {isLoggedIn ? (
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold text-gray-900 truncate">{user?.name || 'Account'}</p>
+                    <p className="text-xs text-gray-500 truncate">{user?.email || ''}</p>
+                    <Link
+                      to="/account"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-2 py-2 text-sm font-bold uppercase tracking-widest text-gray-700 hover:text-black transition-colors"
+                    >
+                      <i className="fa-solid fa-user text-xs"></i> My Account
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setMenuOpen(false)
+                        logout()
+                      }}
+                      className="flex items-center gap-2 py-2 text-sm font-bold uppercase tracking-widest text-gray-700 hover:text-black transition-colors"
+                    >
+                      <i className="fa-solid fa-arrow-right-from-bracket text-xs"></i> Logout
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false)
+                      openLogin()
+                    }}
+                    className="flex items-center gap-2 py-2 text-sm font-bold uppercase tracking-widest text-gray-700 hover:text-black transition-colors"
+                  >
+                    <i className="fa-solid fa-user text-xs"></i> Sign In / Create Account
+                  </button>
+                )}
+              </div>
+
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Country / Currency</p>
+                <CurrencySelector variant="light" inline />
+              </div>
             </div>
           </nav>
         </aside>
