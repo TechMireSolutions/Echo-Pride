@@ -5,7 +5,7 @@ function BackToTop({ className = '' }) {
   return (
     <button
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      className={`block w-full bg-[#37475a] hover:bg-[#485769] text-center text-xs font-semibold py-4 text-white transition-colors duration-300 cursor-pointer ${className}`}
+      className={`block w-full bg-black hover:bg-neutral-900 border-b border-neutral-800 text-center text-xs font-semibold py-4 text-white transition-colors duration-300 cursor-pointer ${className}`}
     >
       Back to top
     </button>
@@ -60,7 +60,7 @@ const footerColumns = [
 
 function SelectorButtons({ small = false }) {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-gray-300">
+    <div className="flex flex-wrap items-center justify-center gap-3 md:justify-start text-xs text-gray-300">
       <button className="border border-gray-600 hover:border-gray-300 rounded px-3 py-1.5 flex items-center gap-2 bg-transparent transition-colors">
         <i className="fa-solid fa-globe text-sm"></i>
         <span>English</span>
@@ -80,7 +80,7 @@ function SelectorButtons({ small = false }) {
 
 export function FooterAmazon() {
   return (
-    <footer className="bg-[#232f3e] text-white select-none">
+    <footer className="bg-black text-white select-none">
       <BackToTop />
       <div className="max-w-7xl mx-auto px-8 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
@@ -90,7 +90,7 @@ export function FooterAmazon() {
               <ul className="space-y-2 text-sm text-gray-300">
                 {col.links.map((link) => (
                   <li key={link.label}>
-                    <Link to={link.to} className="hover:underline">
+                    <Link to={link.to} className="hover:underline hover:text-white">
                       {link.label}
                     </Link>
                   </li>
@@ -100,20 +100,22 @@ export function FooterAmazon() {
           ))}
         </div>
       </div>
-      <div className="bg-[#131a22] border-t border-gray-700/60 py-8 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-center gap-6">
-          <Link to="/" className="flex items-center">
-            <img src="/imgi_2_WLogowithicon.webp" alt="Echo Pride Logo" className="h-10 w-auto object-contain" />
-          </Link>
-          <SelectorButtons />
+      <div className="bg-black border-t border-neutral-800 py-8 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-6">
+            <Link to="/" className="flex items-center">
+              <img src="/imgi_2_WLogowithicon.webp" alt="Echo Pride Logo" className="h-10 w-auto object-contain" />
+            </Link>
+            <SelectorButtons />
+          </div>
+          <p className="text-xs text-white text-center md:text-right">
+            &copy; 2026 Echo Pride. All rights reserved. Developed by{" "}
+            <a href="https://techmiresolutions.com/" target="_blank" rel="noopener noreferrer" className="text-[#EC6929] hover:text-[#f5854d] transition-colors">
+              Techmire Solutions
+            </a>
+            .
+          </p>
         </div>
-        <p className="mt-6 text-center text-xs text-white">
-          &copy; 2026 Echo Pride. All rights reserved. Developed by{" "}
-          <a href="https://techmiresolutions.com/" target="_blank" rel="noopener noreferrer" className="text-[#EC6929] hover:text-[#f5854d] transition-colors">
-            Techmire Solutions
-          </a>
-          .
-        </p>
       </div>
     </footer>
   )
@@ -145,7 +147,7 @@ export function FooterCard() {
         </div>
       </div>
       <BackToTop className="py-3 text-xs" />
-      <div className="bg-[#232f3e] text-white py-12 px-6">
+      <div className="bg-black text-white py-12 px-6">
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {footerColumns.map((col) => (
             <div key={col.title}>
@@ -153,7 +155,7 @@ export function FooterCard() {
               <ul className="space-y-2 text-xs text-gray-300">
                 {col.links.map((link) => (
                   <li key={link.label}>
-                    <Link to={link.to} className="hover:underline">
+                    <Link to={link.to} className="hover:underline hover:text-white">
                       {link.label}
                     </Link>
                   </li>
@@ -163,12 +165,12 @@ export function FooterCard() {
           ))}
         </div>
       </div>
-      <div className="bg-[#131a22] border-t border-gray-700/60 py-8 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-center gap-6">
+      <div className="bg-black border-t border-neutral-800 py-8 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <Link to="/" className="flex items-center">
             <img src="/imgi_2_WLogowithicon.webp" alt="Echo Pride Logo" className="h-8 w-auto object-contain" />
           </Link>
-          <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-gray-300">
+          <div className="flex flex-wrap items-center justify-center gap-3 md:justify-end text-xs text-gray-300">
             <button className="border border-gray-600 rounded px-3 py-1.5 flex items-center gap-2 hover:border-white transition-colors">
               <i className="fa-solid fa-globe text-gray-400"></i>
               <span>English</span>
