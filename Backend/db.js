@@ -25,6 +25,8 @@ db.exec(`
     description TEXT NOT NULL DEFAULT '',
     sku TEXT NOT NULL DEFAULT '',
     price REAL NOT NULL DEFAULT 0,
+    retail_price REAL NOT NULL DEFAULT 0,
+    wholesale_min_quantity INTEGER NOT NULL DEFAULT 0,
     compare_at_price REAL,
     stock_quantity INTEGER NOT NULL DEFAULT 0,
     is_featured INTEGER NOT NULL DEFAULT 0,
@@ -260,6 +262,41 @@ function migrateDemoOrdersFlag() {
 }
 
 migrateDemoOrdersFlag()
+
+function migrateRetailPricing() {
+  const cols = db.prepare('PRAGMA table_info(products)').all()
+  const hadRetail = cols.some((c) => c.name === 'retail_price')
+  const hadMin = cols.some((c) => c.name === 'wholesale_min_quantity')
+  if (!hadRetail) {
+    db.prepare('ALTER TABLE products ADD COLUMN retail_price REAL NOT NULL DEFAULT 0').run()
+  }
+  if (!hadMin) {
+    db.prepare('ALTER TABLE products ADD COLUMN wholesale_min_quantity INTEGER NOT NULL DEFAULT 0').run()
+  }
+  // Legacy products: promote the compare-at (MSRP) into a real retail price and
+  // default to a 12-unit wholesale threshold so the retail/wholesale model is
+  // meaningful without requiring manual re-entry.
+  if (!hadRetail) {
+    db.prepare(
+      `UPDATE products
+       SET retail_price = compare_at_price, wholesale_min_quantity = 12
+       WHERE compare_at_price IS NOT NULL AND compare_at_price > price`,
+    ).run()
+  }
+  // Idempotent: keep legacy retail tier rows aligned with the retail_price
+  // column (the column is the source of truth for the retail base price).
+  db.prepare(
+    `UPDATE price_tiers
+     SET price = (SELECT p.retail_price FROM products p WHERE p.id = price_tiers.product_id)
+     WHERE type = 'retail'
+       AND EXISTS (
+         SELECT 1 FROM products p
+         WHERE p.id = price_tiers.product_id AND p.retail_price > 0
+       )`,
+  ).run()
+}
+
+migrateRetailPricing()
 
 const CATEGORY_SEEDS = [
   { slug: 'basketball', name: 'Basketball', image: 'imgi_5_m3_cat_01.jpg' },
@@ -571,8 +608,8 @@ function seed() {
   }
 
   const insertProduct = db.prepare(`
-    INSERT INTO products (slug, name, description, price, compare_at_price, stock_quantity, is_featured, category_id)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO products (slug, name, description, price, compare_at_price, stock_quantity, is_featured, category_id, retail_price, wholesale_min_quantity)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `)
   const insertImage = db.prepare(
     'INSERT INTO product_images (product_id, url, position) VALUES (?, ?, ?)',
@@ -585,6 +622,8 @@ function seed() {
     for (const p of PRODUCT_SEEDS) {
       const categorySlug = slugToName(p.category)
       const categoryId = categoryIdBySlug[categorySlug]
+      const retailPrice = Number(p.retailPrice) || Number(p.compareAtPrice) || Number(p.price) || 0
+      const wholesaleMinQuantity = Number(p.wholesaleMinQuantity) || (retailPrice > Number(p.price) ? 12 : 0)
       const { lastInsertRowid } = insertProduct.run(
         p.slug,
         p.name,
@@ -594,6 +633,8 @@ function seed() {
         p.stock,
         p.featured ? 1 : 0,
         categoryId ?? null,
+        retailPrice,
+        wholesaleMinQuantity,
       )
       insertImage.run(Number(lastInsertRowid), p.image, 0)
     }

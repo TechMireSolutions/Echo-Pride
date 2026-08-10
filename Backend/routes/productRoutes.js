@@ -79,6 +79,8 @@ function serializeProduct(row) {
     description: row.description,
     sku: row.sku,
     price: Number(row.price),
+    retailPrice: Number(row.retail_price) || Number(row.price) || 0,
+    wholesaleMinQuantity: Number(row.wholesale_min_quantity) || 0,
     compareAtPrice: row.compare_at_price === null || row.compare_at_price === undefined
       ? null
       : Number(row.compare_at_price),
@@ -132,7 +134,10 @@ const asyncWrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)
 
 function parseTiers(body) {
   const raw = Array.isArray(body.tiers) ? body.tiers : []
-  const normalized = normalizeTiers(raw, body.price)
+  const retailPrice = Number(body.retailPrice) || Number(body.price) || 0
+  const wholesaleMinQuantity = Math.max(0, Math.floor(Number(body.wholesaleMinQuantity) || 0))
+  const wholesalePrice = Number(body.price) || 0
+  const normalized = normalizeTiers(raw, retailPrice, { wholesaleMinQuantity, wholesalePrice })
   const list = normalized.filter((t) => t.price > 0)
   return list
 }
@@ -319,8 +324,8 @@ router.post(
     const result = db
       .prepare(
         `INSERT INTO products
-           (slug, name, description, sku, price, compare_at_price, stock_quantity, is_featured, category_id)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+           (slug, name, description, sku, price, compare_at_price, stock_quantity, is_featured, category_id, retail_price, wholesale_min_quantity)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .run(
         slug,
@@ -334,6 +339,8 @@ router.post(
         Number(body.stockQuantity) || 0,
         body.isFeatured ? 1 : 0,
         categoryId,
+        Number(body.retailPrice) || 0,
+        Math.max(0, Math.floor(Number(body.wholesaleMinQuantity) || 0)),
       )
 
     const productId = Number(result.lastInsertRowid)
@@ -375,7 +382,7 @@ router.put(
     db.prepare(
       `UPDATE products SET
          slug = ?, name = ?, description = ?, sku = ?, price = ?, compare_at_price = ?,
-         stock_quantity = ?, is_featured = ?, category_id = ?, updated_at = datetime('now')
+         retail_price = ?, wholesale_min_quantity = ?, stock_quantity = ?, is_featured = ?, category_id = ?, updated_at = datetime('now')
        WHERE id = ?`,
     ).run(
       slug,
@@ -388,6 +395,12 @@ router.put(
           ? null
           : Number(body.compareAtPrice)
         : current.compare_at_price,
+      body.retailPrice !== undefined
+        ? Number(body.retailPrice)
+        : Number(current.retail_price) || 0,
+      body.wholesaleMinQuantity !== undefined
+        ? Math.max(0, Math.floor(Number(body.wholesaleMinQuantity) || 0))
+        : Number(current.wholesale_min_quantity) || 0,
       body.stockQuantity !== undefined ? Number(body.stockQuantity) : current.stock_quantity,
       body.isFeatured !== undefined ? (body.isFeatured ? 1 : 0) : current.is_featured,
       categoryId,
@@ -403,7 +416,18 @@ router.put(
     }
 
     if (body.tiers !== undefined) {
-      replaceProductTiers(id, parseTiers({ ...body, price: body.price !== undefined ? body.price : current.price }))
+      replaceProductTiers(id, parseTiers({
+        ...body,
+        price: body.price !== undefined ? body.price : current.price,
+        retailPrice:
+          body.retailPrice !== undefined
+            ? body.retailPrice
+            : Number(current.retail_price) || current.price,
+        wholesaleMinQuantity:
+          body.wholesaleMinQuantity !== undefined
+            ? body.wholesaleMinQuantity
+            : Number(current.wholesale_min_quantity) || 0,
+      }))
     }
     if (body.videos !== undefined) {
       replaceProductVideos(id, parseVideos(body))
@@ -437,7 +461,13 @@ router.get(
     }
     const quantity = Math.max(1, Math.floor(Number(req.query.qty) || 1))
     const tiers = getTiers(product.id)
-    const result = quote({ retailPrice: Number(product.price), tiers, quantity })
+    const result = quote({
+      retailPrice: Number(product.retail_price) || Number(product.price) || 0,
+      tiers,
+      quantity,
+      wholesaleMinQuantity: Number(product.wholesale_min_quantity) || 0,
+      wholesalePrice: Number(product.price) || 0,
+    })
     res.json({ success: true, data: result })
   }),
 )
@@ -452,7 +482,13 @@ router.post(
     }
     const quantity = Math.max(1, Math.floor(Number(req.body?.quantity) || 1))
     const tiers = getTiers(product.id)
-    const result = quote({ retailPrice: Number(product.price), tiers, quantity })
+    const result = quote({
+      retailPrice: Number(product.retail_price) || Number(product.price) || 0,
+      tiers,
+      quantity,
+      wholesaleMinQuantity: Number(product.wholesale_min_quantity) || 0,
+      wholesalePrice: Number(product.price) || 0,
+    })
     res.json({ success: true, data: result })
   }),
 )

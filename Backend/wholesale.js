@@ -18,8 +18,15 @@ function asNumber(value, fallback = 0) {
  * Coerce an arbitrary tiers payload into a normalised array:
  *   [{ type: 'retail'|'wholesale', minQuantity: int, price: number, label: string }]
  * Retail is always a single breakpoint starting at quantity 1.
+ *
+ * Options:
+ *   wholesaleMinQuantity {number} product-level minimum quantity that unlocks
+ *     wholesale pricing when no explicit wholesale break is configured.
+ *   wholesalePrice {number} unit price used at/above wholesaleMinQuantity when
+ *     no explicit wholesale break is configured.
  */
-function normalizeTiers(raw = [], retailPrice = 0) {
+function normalizeTiers(raw = [], retailPrice = 0, opts = {}) {
+  const { wholesaleMinQuantity = 0, wholesalePrice = 0 } = opts || {}
   const out = []
   if (Array.isArray(raw)) {
     for (const t of raw) {
@@ -35,6 +42,22 @@ function normalizeTiers(raw = [], retailPrice = 0) {
 
   if (!out.some((t) => t.type === 'retail')) {
     out.unshift({ type: 'retail', minQuantity: 1, price: round2(Math.max(0, asNumber(retailPrice))), label: 'Retail' })
+  }
+
+  // Product-level minimum quantity rule: synthesise a wholesale break when the
+  // merchant configured a threshold but did not define explicit wholesale tiers.
+  if (
+    !out.some((t) => t.type === 'wholesale') &&
+    asNumber(wholesaleMinQuantity) > 0 &&
+    asNumber(wholesalePrice) > 0
+  ) {
+    const minQty = Math.max(1, Math.floor(asNumber(wholesaleMinQuantity)))
+    out.push({
+      type: 'wholesale',
+      minQuantity: minQty,
+      price: round2(Math.max(0, asNumber(wholesalePrice))),
+      label: `Wholesale ${minQty}+`,
+    })
   }
 
   out.sort((a, b) => (a.type === 'retail' ? -1 : b.type === 'retail' ? 1 : a.minQuantity - b.minQuantity))
@@ -68,16 +91,32 @@ function retailPriceOf(tiers, fallback = 0) {
 }
 
 /**
+ * Entry point to wholesale pricing for a product: the first (lowest-quantity)
+ * wholesale break, plus the retail base price.
+ */
+function wholesaleSummary(tiers, retailPrice = 0) {
+  const normalized = normalizeTiers(tiers, retailPrice)
+  const wholesale = normalized.filter((t) => t.type === 'wholesale')
+  const entry = wholesale.length ? wholesale[0] : null
+  return {
+    retailPrice: retailPriceOf(normalized, retailPrice),
+    threshold: entry ? entry.minQuantity : null,
+    unitPrice: entry ? entry.price : null,
+  }
+}
+
+/**
  * Compute a quote for `quantity` units of a product.
  *
  * @returns {{
  *   quantity, unitPrice, total, saving, savingPct, discountPct,
- *   appliedTier: ({minQuantity, price, label}|null), retailPrice
+ *   appliedTier: ({minQuantity, price, label}|null), retailPrice,
+ *   wholesaleThreshold, wholesaleUnitPrice
  * }}
  */
-function quote({ retailPrice = 0, tiers = [], quantity = 1 }) {
+function quote({ retailPrice = 0, tiers = [], quantity = 1, wholesaleMinQuantity = 0, wholesalePrice = 0 }) {
   const qty = Math.max(1, Math.floor(asNumber(quantity, 1)))
-  const normalized = normalizeTiers(tiers, retailPrice)
+  const normalized = normalizeTiers(tiers, retailPrice, { wholesaleMinQuantity, wholesalePrice })
   const base = retailPriceOf(normalized, retailPrice)
 
   const appliedTier = tierForQuantity(normalized, qty)
@@ -87,6 +126,8 @@ function quote({ retailPrice = 0, tiers = [], quantity = 1 }) {
   const saving = round2(Math.max(0, retailTotal - total))
   const discountPct = retailTotal > 0 ? round2((saving / retailTotal) * 100) : 0
   const unitSaving = base > 0 ? round2(((base - unitPrice) / base) * 100) : 0
+
+  const wholesale = wholesaleSummary(normalized, base)
 
   return {
     quantity: qty,
@@ -98,7 +139,9 @@ function quote({ retailPrice = 0, tiers = [], quantity = 1 }) {
     savingPct: discountPct,
     discountPct: unitSaving,
     appliedTier,
+    wholesaleThreshold: wholesale.threshold,
+    wholesaleUnitPrice: wholesale.unitPrice === null ? null : round2(wholesale.unitPrice),
   }
 }
 
-module.exports = { quote, normalizeTiers, tierForQuantity, retailPriceOf }
+module.exports = { quote, normalizeTiers, tierForQuantity, retailPriceOf, wholesaleSummary }

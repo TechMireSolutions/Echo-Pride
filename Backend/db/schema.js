@@ -14,6 +14,8 @@ const products = sqliteTable('products', {
   description: text('description').notNull().default(''),
   sku: text('sku').notNull().default(''),
   price: real('price').notNull().default(0),
+  retailPrice: real('retail_price').notNull().default(0),
+  wholesaleMinQuantity: integer('wholesale_min_quantity').notNull().default(0),
   compareAtPrice: real('compare_at_price'),
   stockQuantity: integer('stock_quantity').notNull().default(0),
   isFeatured: integer('is_featured').notNull().default(0),
