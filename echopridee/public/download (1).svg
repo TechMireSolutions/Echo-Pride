@@ -1,0 +1,5 @@
+<svg class="nova-close-canvas" xmlns="http://www.w3.org/2000/svg"><defs><symbol id="nova-close-canvas" viewBox="0 0 22 22">
+<path d="M12.592 11.015l8.988-8.939c.43-.426.43-1.117 0-1.542a1.108 1.108 0 0 0-1.558 0l-8.98 8.931L1.977.401A1.1 1.1 0 0 0 .42.4a1.107 1.107 0 0 0 0 1.562l9.057 9.058-9.09 9.039a1.084 1.084 0 0 0 0 1.543c.43.426 1.129.426 1.558 0l9.082-9.032 9.028 9.028a1.1 1.1 0 0 0 1.557 0c.43-.432.43-1.131 0-1.562l-9.02-9.022z" fill="currentColor" fill-rule="evenodd"></path>
+</symbol></defs>
+<use href="#nova-close-canvas"></use>
+</svg>

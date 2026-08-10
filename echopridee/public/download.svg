@@ -1,0 +1,5 @@
+<svg class="natsy-btn-search" xmlns="http://www.w3.org/2000/svg"><defs><symbol id="natsy-btn-search" viewBox="0 0 22 22">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M14.962 14.12l4.86 4.86a.6.6 0 0 1-.42 1.02.603.603 0 0 1-.422-.177l-4.86-4.86a8.493 8.493 0 0 1-5.592 2.092C3.827 17.055 0 13.228 0 8.528 0 3.827 3.823 0 8.528 0c4.7 0 8.527 3.823 8.527 8.528 0 2.137-.789 4.093-2.093 5.592zM8.523 1.197c-4.04 0-7.33 3.286-7.33 7.33 0 4.045 3.29 7.336 7.33 7.336 4.045 0 7.33-3.295 7.33-7.335s-3.285-7.33-7.33-7.33z" fill="currentColor"></path>
+</symbol></defs>
+<use href="#natsy-btn-search"></use>
+</svg>

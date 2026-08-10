@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+.vite/
+
+# Build output
+dist/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Database & data
+Backend/data/
+
+# Uploads
+Backend/uploads/
+
+# OS / editor
+.DS_Store
+Thumbs.db

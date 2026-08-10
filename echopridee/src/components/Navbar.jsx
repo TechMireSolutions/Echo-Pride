@@ -1,0 +1,375 @@
+import React, { useEffect, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import { useStore } from '../context/StoreContext'
+import CurrencySelector from './CurrencySelector'
+
+const fullDropdown = [
+  {
+    label: 'Basketball',
+    items: [
+      { label: "Basketball Coach's Gear", to: '/product/quarter-zip-basketball-coachs-pullover' },
+      { label: 'Basketball Jackets/Hoodies', to: '/product/quarter-zip-basketball-coachs-pullover' },
+      { label: 'Basketball Jersey', to: '/product/quarter-zip-basketball-coachs-pullover' },
+      { label: 'Basketball Pants/Shorts', to: '/product/waterproof-basketball-coachs-jacket' },
+      { label: 'Basketball Referee Uniforms', to: '/product/waterproof-basketball-coachs-jacket' },
+      { label: 'Basketball Socks', to: '/product/waterproof-basketball-coachs-jacket' },
+    ],
+  },
+  {
+    label: 'Football Uniform',
+    items: [
+      { label: "Football Coach's Gear", to: '/product/basketball-coachs-zip-up-hoodie' },
+      { label: 'Football Jackets/Hoodies', to: '/product/basketball-coachs-zip-up-hoodie' },
+      { label: 'Football Jersey', to: '/product/basketball-coachs-zip-up-hoodie' },
+      { label: 'Football Pants/Shorts', to: '/product/high-performance-basketball-fleece-hoodie' },
+      { label: 'Football Referee Uniforms', to: '/product/high-performance-basketball-fleece-hoodie' },
+      { label: 'Football Socks', to: '/product/high-performance-basketball-fleece-hoodie' },
+    ],
+  },
+  {
+    label: 'Rugby Uniform',
+    items: [
+      { label: "Rugby Coach's Gear", to: '/product/basketball-coachs-lightweight-windbreaker' },
+      { label: 'Rugby Jackets/Hoodies', to: '/product/basketball-coachs-lightweight-windbreaker' },
+      { label: 'Rugby Jersey', to: '/product/basketball-coachs-lightweight-windbreaker' },
+      { label: 'Rugby Pants/Shorts', to: '/product/basketball-coachs-minimalist-hoodie' },
+      { label: 'Rugby Referee Uniforms', to: '/product/basketball-coachs-minimalist-hoodie' },
+      { label: 'Rugby Socks', to: '/product/basketball-coachs-minimalist-hoodie' },
+    ],
+  },
+  {
+    label: 'Soccer Uniform',
+    items: [
+      { label: "Soccer Coach's Gear", to: '/product/moisture-wicking-basketball-coachs-hoodie' },
+      { label: 'Soccer Jackets/Hoodies', to: '/product/moisture-wicking-basketball-coachs-hoodie' },
+      { label: 'Soccer Jersey', to: '/product/moisture-wicking-basketball-coachs-hoodie' },
+      { label: 'Soccer Pants/Shorts', to: '/product/moisture-wicking-hoodie-bold-design' },
+      { label: 'Soccer Referee Uniforms', to: '/product/moisture-wicking-hoodie-bold-design' },
+      { label: 'Soccer Socks', to: '/product/moisture-wicking-hoodie-bold-design' },
+    ],
+  },
+  {
+    label: 'Softball Uniform',
+    items: [
+      { label: "Softball Coach's Gear", to: '/product/premium-varsity-style-basketball-coaching-jacket' },
+      { label: 'Softball Jackets/Hoodies', to: '/product/premium-varsity-style-basketball-coaching-jacket' },
+      { label: 'Softball Jersey', to: '/product/premium-varsity-style-basketball-coaching-jacket' },
+      { label: 'Softball Pants/Shorts', to: '/product/quarter-zip-basketball-coachs-pullover-alternate' },
+      { label: 'Softball Referee Uniforms', to: '/product/quarter-zip-basketball-coachs-pullover-alternate' },
+      { label: 'Softball Socks', to: '/product/quarter-zip-basketball-coachs-pullover-alternate' },
+    ],
+  },
+]
+
+const simpleDropdown = [
+  {
+    label: 'Basketball',
+    items: [
+      { label: "Basketball Coach's Gear", to: '/shop/basketball' },
+      { label: 'Basketball Jackets/Hoodies', to: '/shop/basketball' },
+      { label: 'Basketball Jersey', to: '/shop/basketball' },
+      { label: 'Basketball Pants/Shorts', to: '/shop/basketball' },
+    ],
+  },
+  {
+    label: 'Football Uniform',
+    items: [
+      { label: 'Football Jersey', to: '/shop/football' },
+      { label: 'Football Pants', to: '/shop/football' },
+    ],
+  },
+]
+
+export default function Navbar({
+  variant = 'dark',
+  links = [],
+  showDropdown = false,
+  dropdownType = 'full',
+  topOffset = 'top-9',
+  logoSize = 'h-12 md:h-14',
+}) {
+  const { totalCount, openSearch, openLogin, openCart, isLoggedIn, user, logout } = useStore()
+  const location = useLocation()
+  const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [shopOpen, setShopOpen] = useState(true)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 30)
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  const isLight = variant === 'light'
+  const dropdown = dropdownType === 'full' ? fullDropdown : simpleDropdown
+
+  return (
+    <>
+      <header
+        id="navbar"
+      className={`${isLight ? 'w-full bg-white text-gray-900 border-b border-gray-200 sticky top-0 z-40 shadow-sm' : `fixed ${topOffset} left-0 w-full z-40 text-white transition-all duration-700`} ${
+        !isLight && scrolled ? 'scrolled-nav [&_*]:!text-black [&_svg]:!text-black [&_svg]:!stroke-black' : ''
+      }`}
+    >
+      <div
+        className={`${
+          isLight
+            ? 'max-w-7xl mx-auto px-6 sm:px-10 py-4 w-full flex items-center justify-between'
+            : 'max-w-7xl mx-auto px-8 py-5 w-full flex items-center justify-between'
+        }`}
+      >
+        <div className="flex items-center gap-4 shrink-0">
+          <button
+            onClick={() => setMenuOpen(true)}
+            className={`md:hidden inline-flex items-center justify-center hover:opacity-75 cursor-pointer leading-none ${
+              isLight ? 'hover:text-[#baf120] transition-colors' : 'text-white'
+            }`}
+            aria-label="Menu"
+          >
+            <i className="fa-solid fa-bars text-xl"></i>
+          </button>
+          <Link to="/" className="flex items-center">
+            {isLight ? (
+              <img src="/imgi_1_BLogowithicon.webp" alt="EchoPride Logo" className="h-10 md:h-12 w-auto object-contain" />
+            ) : (
+              <>
+                <img
+                  src="/imgi_2_WLogowithicon.webp"
+                  alt="Echo Pride Logo"
+                  className={`logo-white ${logoSize} w-auto object-contain block`}
+                />
+                <img
+                  src="/imgi_1_BLogowithicon.webp"
+                  alt="Echo Pride Logo"
+                  className={`logo-black ${logoSize} w-auto object-contain hidden`}
+                />
+              </>
+            )}
+          </Link>
+        </div>
+
+        <nav
+          className={`hidden md:flex items-center font-bold text-xs tracking-widest ${
+            isLight ? 'space-x-8 tracking-wider uppercase' : 'space-x-10'
+          }`}
+        >
+          {showDropdown && (
+            <div className="dropdown py-2">
+              <Link
+                to="/shop"
+                className={`flex items-center gap-1.5 ${
+                  isLight ? 'hover:text-[#baf120] transition-colors' : 'hover:opacity-75'
+                }`}
+              >
+                SHOP <i className="fa-solid fa-chevron-down text-[10px]"></i>
+              </Link>
+              <div className="dropdown-menu mega-menu">
+                <div
+                  className="mega-inner max-w-7xl mx-auto px-6 sm:px-10 py-6"
+                  style={{ gridTemplateColumns: `repeat(${Math.min(dropdown.length, 5)}, minmax(160px, 1fr))` }}
+                >
+                  {dropdown.map((cat) => (
+                    <div key={cat.label} className="mega-column">
+                      <Link to={cat.items[0].to} className="mega-heading">
+                        {cat.label}
+                      </Link>
+                      <div className="mega-links">
+                        {cat.items.map((item) => (
+                          <Link key={item.label} to={item.to} className="mega-link">
+                            {item.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {links.map((link) => {
+            const active = location.pathname === link.to
+            return isLight ? (
+              <Link
+                key={link.label}
+                to={link.to}
+                className={
+                  active
+                    ? 'text-black font-extrabold border-b-2 border-[#baf120] pb-0.5'
+                    : 'hover:text-[#baf120] transition-colors'
+                }
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <Link key={link.label} to={link.to} className="hover:opacity-75">
+                {link.label.toUpperCase()}
+              </Link>
+            )
+          })}
+        </nav>
+
+        <div className={`flex items-center shrink-0 ${isLight ? 'gap-5 text-gray-700' : 'gap-6 text-base'}`}>
+          <CurrencySelector variant={isLight ? 'light' : 'dark'} />
+          <div className="relative">
+            <button
+              onClick={() => (isLoggedIn ? setUserMenuOpen((v) => !v) : openLogin())}
+              className={`inline-flex items-center justify-center hover:opacity-75 cursor-pointer leading-none ${
+                isLight ? 'hover:text-[#baf120] transition-colors' : ''
+              }`}
+              aria-label="Account"
+            >
+              {isLight ? (
+                <i className="fa-regular fa-user text-xl"></i>
+              ) : (
+                <img src="/download (4).svg" alt="Login" className="nav-icon w-7 h-7 object-contain" />
+              )}
+            </button>
+            {isLoggedIn && userMenuOpen && (
+              <div
+                className="absolute right-0 top-full mt-3 w-60 bg-white text-gray-900 shadow-2xl border border-gray-100 rounded-lg py-3 z-50"
+                onMouseLeave={() => setUserMenuOpen(false)}
+              >
+                <div className="px-4 pb-3 border-b border-gray-100">
+                  <p className="text-sm font-bold text-gray-900 truncate">{user?.name || 'Account'}</p>
+                  <p className="text-xs text-gray-500 truncate">{user?.email || ''}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setUserMenuOpen(false)
+                    logout()
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-black transition-colors flex items-center gap-2"
+                >
+                  <i className="fa-solid fa-arrow-right-from-bracket text-xs"></i> Logout
+                </button>
+              </div>
+            )}
+          </div>
+          <button
+            onClick={openSearch}
+            className={`inline-flex items-center justify-center hover:opacity-75 cursor-pointer leading-none ${
+              isLight ? 'hover:text-[#baf120] transition-colors' : ''
+            }`}
+            aria-label="Search"
+          >
+            {isLight ? (
+              <i className="fa-solid fa-magnifying-glass text-xl"></i>
+            ) : (
+              <img src="/download (3).svg" alt="Search" className="nav-icon w-7 h-7 object-contain" />
+            )}
+          </button>
+          <button
+            onClick={openCart}
+            className={`relative inline-flex items-center justify-center hover:opacity-75 cursor-pointer leading-none ${
+              isLight ? 'hover:text-[#baf120] transition-colors' : ''
+            }`}
+            aria-label="Cart"
+          >
+            {isLight ? (
+              <i className="fa-solid fa-bag-shopping text-xl"></i>
+            ) : (
+              <img src="/download (2).svg" alt="Cart" className="nav-icon w-7 h-7 object-contain" />
+            )}
+            <span
+              className={`cart-nav-badge absolute -top-1.5 -right-2 bg-[#baf120] text-black text-[9px] font-extrabold rounded-full h-4 w-4 flex items-center justify-center`}
+            >
+              {totalCount}
+            </span>
+          </button>
+        </div>
+      </div>
+      </header>
+
+      {/* ---------- Mobile Menu Drawer & Backdrop ---------- */}      <div className={`fixed inset-0 z-50 md:hidden ${menuOpen ? '' : 'pointer-events-none'}`}>
+        <div
+          className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${
+            menuOpen ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={() => setMenuOpen(false)}
+        ></div>
+        <aside
+          className={`absolute inset-y-0 right-0 w-80 max-w-[85vw] bg-white text-gray-900 shadow-2xl flex flex-col transition-transform duration-300 ${
+            menuOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 shrink-0">
+            <Link to="/" onClick={() => setMenuOpen(false)} className="flex items-center">
+              <img src="/imgi_1_BLogowithicon.webp" alt="EchoPride Logo" className="h-10 w-auto object-contain" />
+            </Link>
+            <button
+              onClick={() => setMenuOpen(false)}
+              className="w-9 h-9 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:text-black hover:border-black transition-colors"
+              aria-label="Close menu"
+            >
+              <i className="fa-solid fa-xmark text-base"></i>
+            </button>
+          </div>
+
+          <nav className="flex-1 overflow-y-auto px-5 py-5 space-y-6">
+            {showDropdown && (
+              <div>
+                <button
+                  onClick={() => setShopOpen((v) => !v)}
+                  aria-expanded={shopOpen}
+                  className="inline-flex items-center gap-2 font-black uppercase tracking-widest text-sm text-black cursor-pointer"
+                >
+                  Shop{' '}
+                  <i
+                    className={`fa-solid fa-chevron-down text-[10px] transition-transform duration-300 ${
+                      shopOpen ? 'rotate-180' : ''
+                    }`}
+                  ></i>
+                </button>
+                <div
+                  className={`overflow-y-auto transition-all duration-300 ${
+                    shopOpen ? 'max-h-[60vh] opacity-100 mt-3' : 'max-h-0 opacity-0'
+                  }`}
+                >
+                  <div className="space-y-4">
+                    {dropdown.map((cat) => (
+                      <div key={cat.label}>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5">{cat.label}</p>
+                        <div className="space-y-1">
+                          {cat.items.map((item) => (
+                            <Link
+                              key={item.label}
+                              to={item.to}
+                              onClick={() => setMenuOpen(false)}
+                              className="block py-1 text-sm text-gray-700 hover:text-black transition-colors"
+                            >
+                              {item.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-1">
+              {links.map((link) => {
+                const active = location.pathname === link.to
+                return (
+                  <Link
+                    key={link.label}
+                    to={link.to}
+                    onClick={() => setMenuOpen(false)}
+                    className={`block py-2 text-sm font-bold uppercase tracking-widest transition-colors ${
+                      active ? 'text-black border-b-2 border-[#baf120] inline-block' : 'text-gray-700 hover:text-black'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                )
+              })}
+            </div>
+          </nav>
+        </aside>
+      </div>
+    </>
+  )
+}
