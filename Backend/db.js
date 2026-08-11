@@ -87,6 +87,7 @@ db.exec(`
     price REAL NOT NULL DEFAULT 0,
     quantity INTEGER NOT NULL DEFAULT 1,
     image TEXT NOT NULL DEFAULT '',
+    sizes TEXT NOT NULL DEFAULT '{}',
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
   );
 
@@ -263,6 +264,14 @@ function migrateDemoOrdersFlag() {
 
 migrateDemoOrdersFlag()
 
+function migrateOrderShippingFee() {
+  const cols = db.prepare('PRAGMA table_info(orders)').all()
+  if (cols.some((c) => c.name === 'shipping_fee')) return
+  db.prepare('ALTER TABLE orders ADD COLUMN shipping_fee REAL NOT NULL DEFAULT 0').run()
+}
+
+migrateOrderShippingFee()
+
 function migrateRetailPricing() {
   const cols = db.prepare('PRAGMA table_info(products)').all()
   const hadRetail = cols.some((c) => c.name === 'retail_price')
@@ -297,6 +306,14 @@ function migrateRetailPricing() {
 }
 
 migrateRetailPricing()
+
+function migrateOrderItemSizes() {
+  const cols = db.prepare('PRAGMA table_info(order_items)').all()
+  if (cols.some((c) => c.name === 'sizes')) return
+  db.prepare("ALTER TABLE order_items ADD COLUMN sizes TEXT NOT NULL DEFAULT '{}'").run()
+}
+
+migrateOrderItemSizes()
 
 const CATEGORY_SEEDS = [
   { slug: 'basketball', name: 'Basketball', image: 'imgi_5_m3_cat_01.jpg' },
@@ -579,6 +596,8 @@ const DEFAULT_SETTINGS = {
   tagline: 'Premium sports apparel & custom team uniforms',
   currency: 'PKR',
   taxPercent: 5,
+  shippingFee: 0,
+  shippingTiers: [{ minQuantity: 50, fee: 0 }],
   contact: { email: 'support@echopride.com', phone: '', address: '' },
   heroBanners: [],
   currencyRates: {},

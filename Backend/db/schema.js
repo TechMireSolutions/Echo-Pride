@@ -56,6 +56,7 @@ const orders = sqliteTable('orders', {
   paymentMethod: text('payment_method').notNull().default('cod'),
   subtotal: real('subtotal').notNull().default(0),
   tax: real('tax').notNull().default(0),
+  shippingFee: real('shipping_fee').notNull().default(0),
   total: real('total').notNull().default(0),
   shippingAddress: text('shipping_address').notNull().default('{}'),
   isDemo: integer('is_demo').notNull().default(0),

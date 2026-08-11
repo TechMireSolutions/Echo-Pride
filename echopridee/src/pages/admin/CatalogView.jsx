@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { productService, adminService, useCategories, ApiError } from '../../api'
-import { computeQuote, productPricing } from '../../utils/wholesale'
 import {
   Card, Modal, Loading, EmptyState, Toast, useToast, StatusBadge, Toggle,
   inputCls, labelCls, thCls, tdCls, fmtMoney,
@@ -15,9 +14,7 @@ const EMPTY_FORM = {
   categoryId: '',
   description: '',
   price: '',
-  retailPrice: '',
   wholesaleMinQuantity: '',
-  compareAtPrice: '',
   stockQuantity: '',
   isFeatured: false,
   images: [],
@@ -37,13 +34,16 @@ function slugify(text) {
 
 function WholesalePreview({ form }) {
   const [qty, setQty] = useState(10)
-  const retailPrice = Number(form.retailPrice) || Number(form.price) || 0
   const wholesalePrice = Number(form.price) || 0
-  const wholesaleMinQuantity = Math.max(0, Math.floor(Number(form.wholesaleMinQuantity) || 0))
+  const wholesaleMinQuantity = Math.max(1, Math.floor(Number(form.wholesaleMinQuantity) || 1))
   const tiers = (form.tiers || [])
     .filter((t) => Number(t.minQuantity) > 0 && Number(t.price) > 0)
-    .map((t) => ({ type: 'wholesale', minQuantity: Number(t.minQuantity), price: Number(t.price), label: t.label }))
-  const quote = computeQuote({ retailPrice, tiers, quantity: qty, wholesaleMinQuantity, wholesalePrice })
+    .map((t) => ({ minQuantity: Number(t.minQuantity), price: Number(t.price), label: t.label }))
+    .sort((a, b) => a.minQuantity - b.minQuantity)
+  const appliedTier = tiers.filter((t) => qty >= t.minQuantity).slice(-1)[0] || null
+  const unitPrice = appliedTier ? appliedTier.price : wholesalePrice
+  const total = Math.round(unitPrice * qty * 100) / 100
+  const minMet = qty >= wholesaleMinQuantity
 
   return (
     <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4 space-y-4">
@@ -62,37 +62,36 @@ function WholesalePreview({ form }) {
           className="w-full accent-[#baf120]"
         />
       </div>
-      {quote.appliedTier ? (
+      {!minMet && (
+        <p className="text-xs font-semibold text-amber-400 flex items-center gap-1.5">
+          <i className="fa-solid fa-circle-exclamation"></i>
+          Minimum order is {wholesaleMinQuantity} pieces — current quantity is below it.
+        </p>
+      )}
+      {appliedTier ? (
         <div className="flex items-center justify-between text-sm">
           <span className="text-gray-400">Applied tier</span>
-          <span className="font-bold text-[#baf120]">{quote.appliedTier.minQuantity}+ · {fmtMoney(quote.appliedTier.price)}/unit</span>
+          <span className="font-bold text-[#baf120]">{appliedTier.minQuantity}+ · {fmtMoney(appliedTier.price)}/unit</span>
         </div>
       ) : (
-        <p className="text-xs text-gray-500">Retail pricing applies below the first wholesale tier.</p>
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-gray-400">Wholesale unit price</span>
+          <span className="font-bold text-[#baf120]">{fmtMoney(wholesalePrice)}/unit</span>
+        </div>
       )}
       <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/10 text-sm">
         <div>
           <p className="text-xs text-gray-500">Unit price</p>
-          <p className="font-black">{fmtMoney(quote.unitPrice)}</p>
+          <p className="font-black">{fmtMoney(unitPrice)}</p>
         </div>
         <div>
           <p className="text-xs text-gray-500">Total</p>
-          <p className="font-black">{fmtMoney(quote.total)}</p>
+          <p className="font-black">{fmtMoney(total)}</p>
         </div>
         <div>
-          <p className="text-xs text-gray-500">Retail equivalent</p>
-          <p className="text-gray-400">{fmtMoney(quote.retailTotal)}</p>
+          <p className="text-xs text-gray-500">Min order</p>
+          <p className="font-black">{wholesaleMinQuantity} pieces</p>
         </div>
-        <div>
-          <p className="text-xs text-gray-500">You save</p>
-          <p className="font-black text-[#baf120]">{fmtMoney(quote.saving)} ({quote.savingPct}%)</p>
-        </div>
-        {quote.wholesaleThreshold && (
-          <div className="col-span-2 pt-2 border-t border-white/5 text-xs text-gray-500">
-            Wholesale unlocks at <span className="text-white font-bold">{quote.wholesaleThreshold}+ units</span> for{' '}
-            <span className="text-[#baf120] font-bold">{fmtMoney(quote.wholesaleUnitPrice)}/unit</span>
-          </div>
-        )}
       </div>
     </div>
   )
@@ -157,9 +156,7 @@ export default function CatalogView() {
       categoryId: p.category?.id || '',
       description: p.description || '',
       price: p.price !== undefined ? String(p.price) : '',
-      retailPrice: p.retailPrice !== undefined && p.retailPrice !== null ? String(p.retailPrice) : '',
       wholesaleMinQuantity: p.wholesaleMinQuantity !== undefined && p.wholesaleMinQuantity !== null ? String(p.wholesaleMinQuantity) : '',
-      compareAtPrice: p.compareAtPrice === null || p.compareAtPrice === undefined ? '' : String(p.compareAtPrice),
       stockQuantity: String(p.stockQuantity ?? ''),
       isFeatured: Boolean(p.isFeatured),
       images: p.images || [],
@@ -215,7 +212,6 @@ export default function CatalogView() {
       push('err', 'Product name is required.')
       return
     }
-    const retailPrice = Number(form.retailPrice) || Number(form.price) || 0
     const payload = {
       name: form.name.trim(),
       slug: form.slug.trim() || slugify(form.name),
@@ -223,18 +219,13 @@ export default function CatalogView() {
       categoryId: form.categoryId || null,
       description: form.description,
       price: Number(form.price) || 0,
-      retailPrice,
       wholesaleMinQuantity: Math.max(0, Math.floor(Number(form.wholesaleMinQuantity) || 0)),
-      compareAtPrice: form.compareAtPrice === '' ? null : Number(form.compareAtPrice) || 0,
       stockQuantity: Number(form.stockQuantity) || 0,
       isFeatured: form.isFeatured,
       images: form.images,
-      tiers: [
-        { type: 'retail', minQuantity: 1, price: retailPrice, label: 'Retail' },
-        ...form.tiers
-          .filter((t) => Number(t.minQuantity) > 0 && Number(t.price) > 0)
-          .map((t) => ({ type: 'wholesale', minQuantity: Number(t.minQuantity), price: Number(t.price), label: t.label || `Wholesale ${t.minQuantity}+` })),
-      ],
+      tiers: form.tiers
+        .filter((t) => Number(t.minQuantity) > 0 && Number(t.price) > 0)
+        .map((t) => ({ type: 'wholesale', minQuantity: Number(t.minQuantity), price: Number(t.price), label: t.label || `Wholesale ${t.minQuantity}+` })),
       videos: form.videos
         .filter((v) => String(v.url || '').trim())
         .map((v) => ({ url: v.url.trim(), poster: v.poster, title: v.title, kind: v.kind === 'upload' ? 'upload' : 'link' })),
@@ -371,17 +362,10 @@ export default function CatalogView() {
                     <td className={`${tdCls} text-gray-500 font-mono text-xs`}>{p.sku || '—'}</td>
                     <td className={`${tdCls} text-gray-400`}>{p.category?.name || '—'}</td>
                     <td className={tdCls}>
-                      {(() => {
-                        const pr = productPricing(p)
-                        return (
-                          <>
-                            <p className="text-gray-200 font-bold">{fmtMoney(pr.retail)}</p>
-                            {pr.hasWholesale && pr.threshold && (
-                              <p className="text-[11px] text-[#baf120] whitespace-nowrap">{fmtMoney(pr.wholesale)}/u from {pr.threshold}+</p>
-                            )}
-                          </>
-                        )
-                      })()}
+                      <p className="text-gray-200 font-bold">{fmtMoney(Number(p.price) || 0)}/u</p>
+                      {Number(p.wholesaleMinQuantity) > 0 && (
+                        <p className="text-[11px] text-[#baf120] whitespace-nowrap">min {p.wholesaleMinQuantity}+</p>
+                      )}
                     </td>
                     <td className={tdCls}>
                       <span className={`font-bold ${p.stockQuantity === 0 ? 'text-rose-400' : p.stockQuantity < 20 ? 'text-amber-400' : 'text-white'}`}>{p.stockQuantity}</span>
@@ -452,26 +436,17 @@ export default function CatalogView() {
             <textarea rows="3" value={form.description} onChange={set('description')} placeholder="Product description…" className={inputCls}></textarea>
           </div>
           <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
-            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3">Pricing</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3">Wholesale pricing</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className={labelCls}>Retail price ($)</label>
-                <input type="number" min="0" step="0.01" value={form.retailPrice} onChange={set('retailPrice')} placeholder="0.00" className={inputCls} />
-                <p className="text-[11px] text-gray-600 mt-1">Customer-facing price. Falls back to wholesale price if empty.</p>
-              </div>
               <div>
                 <label className={labelCls}>Wholesale price ($) *</label>
                 <input type="number" min="0" step="0.01" value={form.price} onChange={set('price')} placeholder="0.00" className={inputCls} />
-                <p className="text-[11px] text-gray-600 mt-1">Base price — applied once the min-qty threshold is met.</p>
+                <p className="text-[11px] text-gray-600 mt-1">Per-unit wholesale price.</p>
               </div>
               <div>
                 <label className={labelCls}>Wholesale min qty</label>
                 <input type="number" min="0" step="1" value={form.wholesaleMinQuantity} onChange={set('wholesaleMinQuantity')} placeholder="e.g. 12" className={inputCls} />
-                <p className="text-[11px] text-gray-600 mt-1">Units needed to unlock wholesale price. 0 = retail only.</p>
-              </div>
-              <div>
-                <label className={labelCls}>Compare-at price ($)</label>
-                <input type="number" min="0" step="0.01" value={form.compareAtPrice} onChange={set('compareAtPrice')} placeholder="optional" className={inputCls} />
+                <p className="text-[11px] text-gray-600 mt-1">Minimum pieces required per wholesale order.</p>
               </div>
             </div>
           </div>
@@ -520,7 +495,7 @@ export default function CatalogView() {
                 <i className="fa-solid fa-plus text-[10px]"></i> Add tier
               </button>
             </div>
-            {form.tiers.length === 0 && <p className="text-xs text-gray-600 mb-3">No extra tiers — the wholesale min qty above is used, otherwise retail pricing applies to all quantities.</p>}
+            {form.tiers.length === 0 && <p className="text-xs text-gray-600 mb-3">No extra tiers — the wholesale min qty above applies to the base wholesale price.</p>}
             <div className="space-y-2 mb-4">
               {form.tiers.map((t, i) => (
                 <div key={i} className="grid grid-cols-[1fr_1fr_1.4fr_auto] items-center gap-2">

@@ -4,6 +4,7 @@ import { FooterCard } from '../components/Footers'
 import { useStore } from '../context/StoreContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { orderService } from '../api'
+import { sizesLabel } from '../utils/sizes'
 
 const MIN_ORDER_QTY = 12
 
@@ -22,16 +23,25 @@ export default function CheckoutPage() {
 
   const taxPercent = Number(settings?.taxPercent) || 0
   const tax = (subtotal * taxPercent) / 100
-  const total = subtotal + tax
+
+  const totalQuantity = cart.reduce((sum, item) => sum + (Number(item.qty) || 0), 0)
+  const shippingTiers = Array.isArray(settings?.shippingTiers) ? settings.shippingTiers : []
+  const appliedShippingTier = shippingTiers
+    .filter((t) => totalQuantity >= Number(t.minQuantity))
+    .sort((a, b) => Number(b.minQuantity) - Number(a.minQuantity))[0]
+  const shipping = appliedShippingTier ? Number(appliedShippingTier.fee) || 0 : Number(settings?.shippingFee) || 0
+  const shippingDiscounted = Boolean(appliedShippingTier)
+  const shippingLabel = shipping === 0 && shippingDiscounted ? 'Free Shipping' : 'Discounted'
+  const total = subtotal + tax + shipping
 
   const setField = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    const lowQtyItem = cart.find((item) => item.qty < MIN_ORDER_QTY)
+    const lowQtyItem = cart.find((item) => item.qty < (item.minQuantity || MIN_ORDER_QTY))
     if (lowQtyItem) {
-      alert(`Minimum wholesale order quantity is ${MIN_ORDER_QTY} pieces`)
+      alert(`Minimum wholesale order quantity is ${lowQtyItem.minQuantity || MIN_ORDER_QTY} pieces`)
       return
     }
     if (!form.name.trim()) {
@@ -52,7 +62,7 @@ export default function CheckoutPage() {
           country: 'Pakistan',
         },
         paymentMethod,
-        items: cart.map((item) => ({ productId: item.id, quantity: item.qty })),
+        items: cart.map((item) => ({ productId: item.id, quantity: item.qty, sizes: item.sizes || {} })),
       })
       const order = result?.order || result
       clearCart()
@@ -211,7 +221,7 @@ export default function CheckoutPage() {
                 {cart.map((item, index) => {
                   const lineTotal = item.price * item.qty
                   return (
-                    <div key={`${item.id}-${item.size}`} className="flex items-center gap-4 pb-4 border-b border-neutral-800 last:border-0">
+                    <div key={`${item.id}-${index}-${JSON.stringify(item.sizes || item.size || 'L')}`} className="flex items-center gap-4 pb-4 border-b border-neutral-800 last:border-0">
                       <div className="relative shrink-0">
                         <img src={`/${item.image}`} alt={item.title} className="w-16 h-16 object-cover rounded-lg border border-neutral-800" />
                         <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#baf120] text-black text-[10px] font-black flex items-center justify-center">
@@ -220,7 +230,9 @@ export default function CheckoutPage() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <h4 className="text-sm font-bold leading-snug truncate">{item.title}</h4>
-                        <p className="text-[11px] text-gray-500 mt-0.5">Size: {item.size || 'L'} · {formatPrice(item.price)}</p>
+                        <p className="text-[11px] text-gray-500 mt-0.5">
+                          {sizesLabel(item.sizes) || `Size: ${item.size || 'L'}`} · {formatPrice(item.price)}
+                        </p>
                       </div>
                       <span className="text-sm font-extrabold whitespace-nowrap">{formatPrice(lineTotal)}</span>
                     </div>
@@ -236,6 +248,17 @@ export default function CheckoutPage() {
                 <div className="flex justify-between text-gray-400">
                   <span>Tax ({taxPercent}%)</span>
                   <span className="text-white font-bold">{formatPrice(tax)}</span>
+                </div>
+                <div className="flex justify-between text-gray-400">
+                  <span className="flex items-center gap-2">
+                    Shipping
+                    {shippingDiscounted && (
+                      <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-500/15 text-emerald-400 px-1.5 py-0.5 rounded-full">
+                        {shippingLabel}
+                      </span>
+                    )}
+                  </span>
+                  <span className="text-white font-bold">{shipping > 0 ? formatPrice(shipping) : 'Free'}</span>
                 </div>
                 <div className="flex justify-between items-center pt-3 border-t border-neutral-800 text-base">
                   <span className="font-bold uppercase tracking-wider">Total</span>

@@ -18,6 +18,8 @@ const FALLBACK_SETTINGS = {
   tagline: 'Premium sports apparel & custom team uniforms',
   currency: 'PKR',
   taxPercent: 5,
+  shippingFee: 0,
+  shippingTiers: [{ minQuantity: 50, fee: 0 }],
   contact: { email: 'support@echopride.com', phone: '', address: '' },
   heroBanners: [],
   currencyRates: {},

@@ -5,6 +5,7 @@ import {
   inputCls, labelCls, thCls, tdCls,
   ORDER_FLOW, canonicalStatus, canonicalLabel, fmtMoney, timeAgo,
 } from './ui'
+import { sizesLabel } from '../../utils/sizes'
 
 const STATUS_CHIPS = [
   { key: '', label: 'All' },
@@ -544,6 +545,9 @@ export default function OrdersView() {
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-bold truncate">{it.productName}</p>
                         <p className="text-xs text-gray-500">{it.quantity} × {fmtMoney(it.price)}</p>
+                        {sizesLabel(it.sizes) && (
+                          <p className="text-[11px] text-[#baf120] font-semibold mt-0.5">{sizesLabel(it.sizes)}</p>
+                        )}
                       </div>
                       <p className="text-sm font-bold">{fmtMoney(it.price * it.quantity)}</p>
                     </div>
@@ -552,6 +556,7 @@ export default function OrdersView() {
                 <div className="mt-4 pt-3 border-t border-white/10 space-y-1 text-sm">
                   <div className="flex justify-between text-gray-400"><span>Subtotal</span><span>{fmtMoney(selected.subtotal)}</span></div>
                   <div className="flex justify-between text-gray-400"><span>Tax</span><span>{fmtMoney(selected.tax)}</span></div>
+                  <div className="flex justify-between text-gray-400"><span>Shipping</span><span>{(selected.shippingFee || 0) > 0 ? fmtMoney(selected.shippingFee) : 'Free'}</span></div>
                   <div className="flex justify-between font-black text-white pt-1"><span>Total</span><span>{fmtMoney(selected.total)}</span></div>
                 </div>
               </div>

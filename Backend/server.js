@@ -434,19 +434,38 @@ function effectiveUnitPrice(product, quantity) {
   return q.unitPrice
 }
 
+function normalizeSizes(sizes) {
+  if (!sizes || typeof sizes !== 'object') return '{}'
+  const out = {}
+  for (const [size, qty] of Object.entries(sizes)) {
+    const n = Math.floor(Number(qty))
+    if (Number.isFinite(n) && n > 0) out[size] = n
+  }
+  return JSON.stringify(out)
+}
+
 function serializeOrder(row) {
   if (!row) return null
   const items = db
-    .prepare('SELECT id, product_id, product_name, price, quantity, image FROM order_items WHERE order_id = ? ORDER BY id ASC')
+    .prepare('SELECT id, product_id, product_name, price, quantity, image, sizes FROM order_items WHERE order_id = ? ORDER BY id ASC')
     .all(row.id)
-    .map((i) => ({
-      id: i.id,
-      productId: i.product_id,
-      productName: i.product_name,
-      price: Number(i.price),
-      quantity: i.quantity,
-      image: i.image,
-    }))
+    .map((i) => {
+      let sizes = {}
+      try {
+        sizes = JSON.parse(i.sizes || '{}')
+      } catch {
+        sizes = {}
+      }
+      return {
+        id: i.id,
+        productId: i.product_id,
+        productName: i.product_name,
+        price: Number(i.price),
+        quantity: i.quantity,
+        sizes,
+        image: i.image,
+      }
+    })
 
   let shippingAddress = {}
   try {
@@ -486,6 +505,7 @@ function serializeOrder(row) {
     paymentMethod: row.payment_method,
     subtotal: Number(row.subtotal),
     tax: Number(row.tax),
+    shippingFee: Number(row.shipping_fee ?? 0),
     total: Number(row.total),
     shippingAddress,
     items,
@@ -499,6 +519,18 @@ function generateOrderNumber() {
   const stamp = Date.now().toString().slice(-6)
   const rand = String(Math.floor(Math.random() * 90) + 10)
   return `EP-${stamp}${rand}`
+}
+
+function resolveShipping(settings, totalQuantity) {
+  const base = Math.max(0, Number(settings?.shippingFee) || 0)
+  const tiers = Array.isArray(settings?.shippingTiers) ? settings.shippingTiers : []
+  const hit = tiers
+    .filter((t) => totalQuantity >= Number(t.minQuantity))
+    .sort((a, b) => Number(b.minQuantity) - Number(a.minQuantity))[0]
+  if (hit) {
+    return { fee: Math.max(0, Number(hit.fee) || 0), tier: hit, discounted: true }
+  }
+  return { fee: base, tier: null, discounted: false }
 }
 
 app.post(
@@ -522,6 +554,7 @@ app.post(
            WHERE ci.user_id = ?`,
         )
         .all(req.user.id)
+        .map((row) => ({ ...row, sizes: {} }))
     } else if (Array.isArray(req.body?.items) && req.body.items.length) {
       const productStmt = db.prepare(
         `SELECT p.id, p.name, p.price,
@@ -540,7 +573,14 @@ app.post(
           return
         }
         seen.add(productId)
-        cartRows.push({ product_id: p.id, name: p.name, price: p.price, quantity, image: p.image })
+        cartRows.push({
+          product_id: p.id,
+          name: p.name,
+          price: p.price,
+          quantity,
+          image: p.image,
+          sizes: normalizeSizes(it?.sizes),
+        })
       }
     }
 
@@ -550,19 +590,22 @@ app.post(
     }
 
     const settingsRow = db.prepare('SELECT payload FROM settings WHERE id = 1').get()
-    let taxPercent = 0
+    let parsed = {}
     try {
-      taxPercent = Number(settingsRow?.payload ? JSON.parse(settingsRow.payload).taxPercent : 0) || 0
+      parsed = settingsRow?.payload ? JSON.parse(settingsRow.payload) : {}
     } catch {
-      taxPercent = 0
+      parsed = {}
     }
+    const taxPercent = Number(parsed.taxPercent) || 0
 
     const subtotal = cartRows.reduce((sum, item) => {
       const unitPrice = effectiveUnitPrice({ id: item.product_id, price: item.price }, item.quantity)
       return sum + unitPrice * item.quantity
     }, 0)
     const tax = (subtotal * taxPercent) / 100
-    const total = subtotal + tax
+    const totalQuantity = cartRows.reduce((sum, item) => sum + item.quantity, 0)
+    const shipping = resolveShipping(parsed, totalQuantity).fee
+    const total = subtotal + tax + shipping
     const paymentMethod = String(req.body?.paymentMethod || 'cod')
 
     let orderNumber = generateOrderNumber()
@@ -575,8 +618,8 @@ app.post(
     try {
       const result = db
         .prepare(
-          `INSERT INTO orders (order_number, user_id, status, payment_method, subtotal, tax, total, shipping_address, is_demo)
-           VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, 0)`,
+          `INSERT INTO orders (order_number, user_id, status, payment_method, subtotal, tax, shipping_fee, total, shipping_address, is_demo)
+           VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, 0)`,
         )
         .run(
           orderNumber,
@@ -584,6 +627,7 @@ app.post(
           paymentMethod,
           subtotal,
           tax,
+          shipping,
           total,
           JSON.stringify(shippingAddress),
         )
@@ -591,12 +635,12 @@ app.post(
       insertOrderStatusEvent(orderId, '', 'pending', 'Order placed by customer')
 
       const insertItem = db.prepare(
-        `INSERT INTO order_items (order_id, product_id, product_name, price, quantity, image)
-         VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO order_items (order_id, product_id, product_name, price, quantity, image, sizes)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
       )
       for (const item of cartRows) {
         const unitPrice = effectiveUnitPrice({ id: item.product_id, price: item.price }, item.quantity)
-        insertItem.run(orderId, item.product_id, item.name, unitPrice, item.quantity, item.image)
+        insertItem.run(orderId, item.product_id, item.name, unitPrice, item.quantity, item.image, item.sizes || '{}')
       }
 
       if (req.user) {

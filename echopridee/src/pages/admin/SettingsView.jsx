@@ -6,7 +6,7 @@ import { Card, SectionTitle, Toast, useToast, inputCls, labelCls } from './ui'
 export default function SettingsView() {
   const { adminUser } = useAuth()
   const [store, setStore] = useState(null)
-  const [form, setForm] = useState({ storeName: '', supportEmail: '', phone: '', address: '' })
+  const [form, setForm] = useState({ storeName: '', supportEmail: '', phone: '', address: '', shippingFee: 0, taxPercent: 0, freeShippingFromQuantity: 0 })
   const [saved, setSaved] = useState(false)
   const { toast, push } = useToast()
 
@@ -21,6 +21,9 @@ export default function SettingsView() {
           supportEmail: s.supportEmail || '',
           phone: s.phone || '',
           address: s.address || '',
+          shippingFee: Number(s.shippingFee) || 0,
+          taxPercent: Number(s.taxPercent) || 0,
+          freeShippingFromQuantity: Number(s.shippingTiers?.[0]?.minQuantity) || 0,
         })
       })
       .catch(() => setStore({}))
@@ -28,12 +31,27 @@ export default function SettingsView() {
 
   const save = async () => {
     try {
-      await settingsService.update({ ...(store || {}), ...form })
+      const next = { ...(store || {}) }
+      for (const key of ['storeName', 'supportEmail', 'phone', 'address', 'shippingFee', 'taxPercent']) {
+        next[key] = form[key]
+      }
+      next.shippingTiers =
+        Number(form.freeShippingFromQuantity) > 0
+          ? [{ minQuantity: Math.max(1, Number(form.freeShippingFromQuantity)), fee: 0 }]
+          : []
+      await settingsService.update(next)
       push('ok', 'Settings saved successfully.')
       setSaved(true)
     } catch (err) {
       push('error', err.message || 'Could not save settings.')
     }
+  }
+
+  const setField = (key) => (e) => {
+    const value = ['shippingFee', 'taxPercent', 'freeShippingFromQuantity'].includes(key)
+      ? Number(e.target.value)
+      : e.target.value
+    setForm((f) => ({ ...f, [key]: value }))
   }
 
   const initial = (adminUser?.name || 'Admin').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
@@ -61,19 +79,41 @@ export default function SettingsView() {
           <div className="space-y-4">
             <div>
               <label className={labelCls}>Display name</label>
-              <input value={form.storeName} onChange={(e) => setForm((f) => ({ ...f, storeName: e.target.value }))} placeholder="Store name" className={inputCls} />
+              <input value={form.storeName} onChange={setField('storeName')} placeholder="Store name" className={inputCls} />
             </div>
             <div>
               <label className={labelCls}>Support email</label>
-              <input value={form.supportEmail} onChange={(e) => setForm((f) => ({ ...f, supportEmail: e.target.value }))} placeholder="support@echopride.com" className={inputCls} />
+              <input value={form.supportEmail} onChange={setField('supportEmail')} placeholder="support@echopride.com" className={inputCls} />
             </div>
             <div>
               <label className={labelCls}>Support phone</label>
-              <input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} placeholder="+1 (555) 000-0000" className={inputCls} />
+              <input value={form.phone} onChange={setField('phone')} placeholder="+1 (555) 000-0000" className={inputCls} />
             </div>
             <div>
               <label className={labelCls}>Address</label>
-              <input value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} placeholder="Store address" className={inputCls} />
+              <input value={form.address} onChange={setField('address')} placeholder="Store address" className={inputCls} />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <SectionTitle icon="fa-solid fa-truck-fast" tint="bg-amber-500/15 text-amber-400" title="Checkout & shipping" />
+          <p className="text-xs text-gray-500 mb-4">Charges applied to every order total (Subtotal + Tax + Shipping).</p>
+          <div className="space-y-4">
+            <div>
+              <label className={labelCls}>Tax percentage (%)</label>
+              <input type="number" min="0" max="100" step="0.01" value={form.taxPercent} onChange={setField('taxPercent')} placeholder="e.g. 5" className={inputCls} />
+              <p className="text-[11px] text-gray-600 mt-1">Percent of subtotal charged as tax. 0 = no tax.</p>
+            </div>
+            <div>
+              <label className={labelCls}>Shipping fee</label>
+              <input type="number" min="0" step="0.01" value={form.shippingFee} onChange={setField('shippingFee')} placeholder="0.00" className={inputCls} />
+              <p className="text-[11px] text-gray-600 mt-1">Flat shipping charge per order. 0 = free shipping.</p>
+            </div>
+            <div>
+              <label className={labelCls}>Free shipping from quantity</label>
+              <input type="number" min="0" step="1" value={form.freeShippingFromQuantity} onChange={setField('freeShippingFromQuantity')} placeholder="e.g. 50" className={inputCls} />
+              <p className="text-[11px] text-gray-600 mt-1">Orders at or above this item quantity get free shipping. 0 = never.</p>
             </div>
           </div>
         </Card>

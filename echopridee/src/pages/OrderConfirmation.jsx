@@ -2,6 +2,7 @@ import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { FooterCard } from '../components/Footers'
 import { useCurrency } from '../context/CurrencyContext'
+import { sizesLabel } from '../utils/sizes'
 
 export default function OrderConfirmation() {
   const { state } = useLocation()
@@ -47,6 +48,9 @@ export default function OrderConfirmation() {
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-bold truncate">{it.productName || it.name}</p>
                     <p className="text-xs text-gray-500">{it.quantity} × {formatPrice(it.price)}</p>
+                    {sizesLabel(it.sizes) && (
+                      <p className="text-[11px] text-[#baf120] font-semibold mt-0.5">{sizesLabel(it.sizes)}</p>
+                    )}
                   </div>
                   <p className="text-sm font-bold">{formatPrice(it.price * it.quantity)}</p>
                 </div>
@@ -55,6 +59,7 @@ export default function OrderConfirmation() {
             <div className="mt-5 pt-4 border-t border-neutral-800 space-y-1.5 text-sm">
               <div className="flex justify-between text-gray-400"><span>Subtotal</span><span>{formatPrice(order?.subtotal || 0)}</span></div>
               <div className="flex justify-between text-gray-400"><span>Tax</span><span>{formatPrice(order?.tax || 0)}</span></div>
+              <div className="flex justify-between text-gray-400"><span>Shipping</span><span>{(order?.shippingFee || 0) > 0 ? formatPrice(order.shippingFee) : 'Free'}</span></div>
               <div className="flex justify-between font-black text-white pt-1"><span>Total</span><span>{formatPrice(order?.total || 0)}</span></div>
             </div>
           </div>
