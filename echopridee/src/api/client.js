@@ -1,4 +1,4 @@
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api').replace(/\/$/, '')
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5005/api').replace(/\/$/, '')
 
 const TOKEN_KEY = 'ep_access_token'
 
@@ -44,7 +44,7 @@ export async function apiFetch(path, { method = 'GET', body, token, ...options }
       credentials: 'include',
     })
   } catch (err) {
-    throw new ApiError(0, 'Unable to reach the server. Is the backend running on port 5000?')
+    throw new ApiError(0, 'Unable to reach the server. Is the backend running on port 5005?')
   }
 
   let payload = null

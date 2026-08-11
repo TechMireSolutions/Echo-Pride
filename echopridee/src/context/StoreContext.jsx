@@ -150,8 +150,8 @@ export function StoreProvider({ children }) {
       const existingIndex = prev.findIndex(
         (item) =>
           item.id === product.id &&
-          item.size === product.size &&
-          (item.orderType || 'retail') === (product.orderType || 'retail'),
+          (item.orderType || 'retail') === (product.orderType || 'retail') &&
+          JSON.stringify(item.sizes || null) === JSON.stringify(product.sizes || null),
       )
       if (existingIndex > -1) {
         const next = [...prev]

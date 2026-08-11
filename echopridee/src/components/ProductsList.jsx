@@ -6,7 +6,7 @@ const ProductsList = () => {
 
   useEffect(() => {
     // Backend API se data fetch karna
-    fetch('http://localhost:5000/api/products')
+    fetch('http://localhost:5005/api/products')
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {

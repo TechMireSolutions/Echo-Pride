@@ -27,8 +27,8 @@ const menuGroups = [
     items: [
       { key: 'catalog', label: 'Products', icon: 'fa-solid fa-box-open' },
       { key: 'categories', label: 'Categories', icon: 'fa-solid fa-tags' },
-      { key: 'brands', label: 'Brands', icon: 'fa-solid fa-copyright' },
-      { key: 'badges', label: 'Badges', icon: 'fa-solid fa-medal' },
+      /* { key: 'brands', label: 'Brands', icon: 'fa-solid fa-copyright' },
+      { key: 'badges', label: 'Badges', icon: 'fa-solid fa-medal' }, */
       { key: 'media', label: 'Media Library', icon: 'fa-solid fa-photo-film' },
     ],
   },

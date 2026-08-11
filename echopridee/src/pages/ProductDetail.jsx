@@ -6,13 +6,13 @@ import { useStore } from '../context/StoreContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { useProduct } from '../api'
 import { productPricing } from '../utils/wholesale'
+import { SIZES } from '../utils/sizes'
 
-const sizes = ['S', 'M', 'L', 'XL', 'XXL']
-
-const ORDER_TYPES = [
-  { id: 'retail', label: 'Retail Order' },
-  { id: 'wholesale', label: 'Wholesale Order' },
-]
+function initialBreakdown(minQty) {
+  const base = Math.floor(minQty / SIZES.length)
+  const remainder = minQty % SIZES.length
+  return Object.fromEntries(SIZES.map((size, i) => [size, base + (i < remainder ? 1 : 0)]))
+}
 
 export default function ProductDetail() {
   const { slug } = useParams()
@@ -21,10 +21,10 @@ export default function ProductDetail() {
   const { formatPrice } = useCurrency()
   const navigate = useNavigate()
 
-  const [orderType, setOrderType] = useState('retail')
-  const [selectedSize, setSelectedSize] = useState('L')
-  const [qty, setQty] = useState(1)
-  const [qtyError, setQtyError] = useState('')
+  const [breakdown, setBreakdown] = useState(() => {
+    const pr = productPricing(getProduct(slug))
+    return initialBreakdown(pr.hasWholesale ? Math.max(1, pr.threshold || 1) : 1)
+  })
 
   if (!product) {
     return (
@@ -44,61 +44,43 @@ export default function ProductDetail() {
   const others = related.length > 0 ? related : products.filter((p) => p.slug !== product.slug).slice(0, 4)
 
   const pricing = productPricing(product)
-  const isWholesale = orderType === 'wholesale'
-  const minQty = isWholesale ? Math.max(1, pricing.threshold || 1) : 1
-  const unitPrice = isWholesale
-    ? pricing.wholesale !== null && pricing.wholesale !== undefined
+  const minQty = Math.max(1, pricing.threshold || 1)
+  const unitPrice =
+    pricing.wholesale !== null && pricing.wholesale !== undefined
       ? pricing.wholesale
       : pricing.retail
-    : pricing.retail
-  const totalPrice = Math.round(unitPrice * qty * 100) / 100
-  const compareAt = product.oldPrice && product.oldPrice > pricing.retail ? product.oldPrice : null
-  const retailSavePct = compareAt ? Math.round((1 - pricing.retail / compareAt) * 100) : 0
+  const totalPieces = SIZES.reduce((sum, size) => sum + (breakdown[size] || 0), 0)
+  const totalPrice = Math.round(unitPrice * totalPieces * 100) / 100
+  const meetMin = totalPieces >= minQty
+  const orderedSizes = Object.fromEntries(
+    SIZES.filter((size) => (breakdown[size] || 0) > 0).map((size) => [size, breakdown[size]]),
+  )
 
   const payload = {
     id: product.id,
     title: product.title,
     price: unitPrice,
-    size: selectedSize,
-    qty,
+    qty: totalPieces,
+    sizes: orderedSizes,
     image: product.image,
-    orderType,
+    orderType: 'wholesale',
     minQuantity: minQty,
   }
 
-  const switchMode = (mode) => {
-    setOrderType(mode)
-    setQty(mode === 'wholesale' ? Math.max(1, pricing.threshold || 1) : 1)
-    setQtyError('')
+  const setSizeQty = (size, value) => {
+    setBreakdown((prev) => {
+      const raw = String(value).replace(/[^\d]/g, '')
+      return { ...prev, [size]: raw === '' ? 0 : Number(raw) }
+    })
   }
 
-  const handleQtyStep = (next) => {
-    setQty(Math.max(minQty, next))
-    setQtyError('')
-  }
-
-  const handleQtyInput = (e) => {
-    const raw = e.target.value.replace(/[^\d]/g, '')
-    const next = raw === '' ? 0 : Number(raw)
-    setQty(next)
-    if (next < minQty) {
-      setQtyError(
-        isWholesale
-          ? `Minimum wholesale order quantity is ${minQty} pieces`
-          : 'Minimum quantity is 1 piece',
-      )
-    } else {
-      setQtyError('')
-    }
+  const stepSizeQty = (size, delta) => {
+    setBreakdown((prev) => ({ ...prev, [size]: Math.max(0, (prev[size] || 0) + delta) }))
   }
 
   const validateQty = () => {
-    if (qty < minQty) {
-      alert(
-        isWholesale
-          ? `Minimum wholesale order quantity is ${minQty} pieces`
-          : 'Minimum quantity is 1 piece',
-      )
+    if (!meetMin) {
+      alert(`Minimum wholesale order quantity is ${minQty} pieces. You entered ${totalPieces}.`)
       return false
     }
     return true
@@ -162,113 +144,87 @@ export default function ProductDetail() {
               <span className="text-gray-400 text-xs font-medium">({product.reviews} Customer Reviews)</span>
             </div>
 
-            <div
-              className="inline-flex w-full sm:w-auto grid grid-cols-2 rounded-xl bg-neutral-900 border border-neutral-800 p-1.5"
-              role="tablist"
-              aria-label="Order type"
-            >
-              {ORDER_TYPES.map((mode) => (
-                <button
-                  key={mode.id}
-                  role="tab"
-                  aria-selected={orderType === mode.id}
-                  onClick={() => switchMode(mode.id)}
-                  className={`px-5 py-3 rounded-lg text-[10px] font-extrabold uppercase tracking-widest transition-colors duration-300 ${
-                    orderType === mode.id
-                      ? 'bg-[#baf120] text-black shadow'
-                      : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  {mode.label}
-                </button>
-              ))}
-            </div>
-
             <div className="border-y border-white/10 py-4 space-y-2.5">
-              {isWholesale ? (
-                <div className="flex items-baseline gap-2.5 flex-wrap">
-                  <span className="text-4xl font-extrabold text-white">{formatPrice(unitPrice)}</span>
-                  <span className="text-xs font-extrabold uppercase tracking-widest text-[#baf120]">Per Piece</span>
-                  <p className="w-full flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                    <i className="fa-solid fa-boxes-stacked text-[#baf120]"></i>
-                    Minimum Order: {minQty} Pieces
-                  </p>
-                </div>
-              ) : (
-                <div className="flex items-baseline gap-3 flex-wrap">
-                  <span className="text-4xl font-extrabold text-white">{formatPrice(unitPrice)}</span>
-                  <span className="text-xs font-extrabold uppercase tracking-widest text-[#baf120]">Retail Price</span>
-                  {compareAt && (
-                    <>
-                      <span className="text-sm text-gray-500 line-through">{formatPrice(compareAt)}</span>
-                      <span className="bg-[#baf120]/10 text-[#baf120] text-xs font-bold px-2.5 py-1 rounded">
-                        SAVE {retailSavePct}%
-                      </span>
-                    </>
-                  )}
-                </div>
-              )}
+              <div className="flex items-baseline gap-2.5 flex-wrap">
+                <span className="text-4xl font-extrabold text-white">{formatPrice(unitPrice)}</span>
+                <span className="text-xs font-extrabold uppercase tracking-widest text-[#baf120]">Per Piece</span>
+                <p className="w-full flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                  <i className="fa-solid fa-boxes-stacked text-[#baf120]"></i>
+                  Minimum Order: {minQty} Pieces
+                </p>
+              </div>
             </div>
 
             <p className="text-sm text-gray-300 leading-relaxed">{product.description}</p>
 
-            <div className="space-y-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-300">Select Size:</label>
-              <div className="flex flex-wrap gap-2.5">
-                {sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`size-btn border border-gray-700 px-4 py-2 text-xs font-bold rounded hover:border-white transition-colors ${
-                      selectedSize === size ? 'active' : ''
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
+            <div className="space-y-3">
               <label className="block text-xs font-bold uppercase tracking-wider text-gray-300">
-                Quantity{isWholesale ? ` (Min. ${minQty} Pieces)` : ''}:
+                Size Breakdown (Min. {minQty} Pieces Total)
               </label>
-              <div className="inline-flex items-center border border-gray-700 rounded bg-neutral-900">
-                <button
-                  onClick={() => handleQtyStep(qty - 1)}
-                  disabled={qty <= minQty}
-                  className="px-3 py-2 text-gray-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed font-bold text-sm"
-                >
-                  -
-                </button>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={qty}
-                  onChange={handleQtyInput}
-                  aria-label="Quantity"
-                  className="w-20 bg-transparent text-center px-2 py-2 text-sm font-bold text-white outline-none"
-                />
-                <button
-                  onClick={() => handleQtyStep(qty + 1)}
-                  className="px-3 py-2 text-gray-300 hover:text-white font-bold text-sm"
-                >
-                  +
-                </button>
+              <div className="rounded-xl bg-neutral-900 border border-neutral-800 divide-y divide-neutral-800">
+                {SIZES.map((size) => {
+                  const value = breakdown[size] || 0
+                  return (
+                    <div key={size} className="flex items-center justify-between px-4 py-2.5">
+                      <span className="text-sm font-bold text-white w-12">{size}</span>
+                      <div className="inline-flex items-center border border-gray-700 rounded bg-black/30">
+                        <button
+                          onClick={() => stepSizeQty(size, -1)}
+                          disabled={value <= 0}
+                          className="px-3 py-1.5 text-gray-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed font-bold text-xs"
+                          aria-label={`Decrease quantity for size ${size}`}
+                        >
+                          −
+                        </button>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          value={value}
+                          onChange={(e) => setSizeQty(size, e.target.value)}
+                          aria-label={`Quantity for size ${size}`}
+                          className="w-14 bg-transparent text-center px-1 py-1.5 text-sm font-bold text-white outline-none"
+                        />
+                        <button
+                          onClick={() => stepSizeQty(size, 1)}
+                          className="px-3 py-1.5 text-gray-300 hover:text-white font-bold text-xs"
+                          aria-label={`Increase quantity for size ${size}`}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
-              {qtyError && (
+
+              <div
+                className={`flex items-center justify-between gap-4 rounded-lg border px-4 py-3 ${
+                  meetMin ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-red-500/30 bg-red-500/5'
+                }`}
+              >
+                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                  Total{' '}
+                  <span className={meetMin ? 'text-emerald-400' : 'text-red-400'}>
+                    {totalPieces} / {minQty}
+                  </span>{' '}
+                  pieces
+                </span>
+                {!meetMin && (
+                  <span className="text-[10px] font-bold text-red-400">Add {minQty - totalPieces} more</span>
+                )}
+              </div>
+              {!meetMin && (
                 <p className="text-xs font-semibold text-red-400 flex items-center gap-1.5">
-                  <i className="fa-solid fa-circle-exclamation"></i> {qtyError}
+                  <i className="fa-solid fa-circle-exclamation"></i> Minimum wholesale order quantity is {minQty} pieces.
                 </p>
               )}
-              {!qtyError && qty > 0 && (
-                <div className="flex items-center justify-between gap-4 rounded bg-neutral-900 border border-neutral-800 px-4 py-2.5 max-w-sm">
-                  <span className="text-xs text-gray-400 font-medium">
-                    Total ({qty} pieces × {formatPrice(unitPrice, { showCode: false })})
-                  </span>
-                  <span className="text-sm font-extrabold text-[#baf120]">{formatPrice(totalPrice)}</span>
-                </div>
-              )}
+
+              <div className="flex items-center justify-between gap-4 rounded bg-neutral-900 border border-neutral-800 px-4 py-2.5">
+                <span className="text-xs text-gray-400 font-medium">
+                  Subtotal ({totalPieces} pieces × {formatPrice(unitPrice, { showCode: false })})
+                </span>
+                <span className="text-sm font-extrabold text-[#baf120]">{formatPrice(totalPrice)}</span>
+              </div>
             </div>
 
             <div className="pt-2">
@@ -283,13 +239,15 @@ export default function ProductDetail() {
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button
                 onClick={handleAddToCart}
-                className="flex-1 bg-[#baf120] hover:bg-[#a6e216] text-black font-extrabold text-xs uppercase tracking-widest py-4 px-6 rounded shadow-xl flex items-center justify-center gap-2 transition-transform hover:scale-[1.02]"
+                disabled={!meetMin}
+                className="flex-1 bg-[#baf120] hover:bg-[#a6e216] text-black font-extrabold text-xs uppercase tracking-widest py-4 px-6 rounded shadow-xl flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
                 <i className="fa-solid fa-cart-shopping"></i> Add to Cart
               </button>
               <button
                 onClick={handleExpressCheckout}
-                className="flex-1 bg-white hover:bg-gray-200 text-black font-extrabold text-xs uppercase tracking-widest py-4 px-6 rounded shadow-xl flex items-center justify-center gap-2 transition-transform hover:scale-[1.02]"
+                disabled={!meetMin}
+                className="flex-1 bg-white hover:bg-gray-200 text-black font-extrabold text-xs uppercase tracking-widest py-4 px-6 rounded shadow-xl flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
                 <i className="fa-solid fa-bolt"></i> Express Checkout
               </button>

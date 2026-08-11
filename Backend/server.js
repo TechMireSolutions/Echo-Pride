@@ -112,7 +112,7 @@ function notifyClients(notification) {
 }
 
 const app = express()
-const PORT = Number(process.env.PORT) || 5000
+const PORT = Number(process.env.PORT) || 5005
 const UPLOAD_DIR = path.resolve(__dirname, process.env.UPLOAD_DIR || './uploads')
 
 app.use(
