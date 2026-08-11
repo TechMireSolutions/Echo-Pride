@@ -2,6 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../context/StoreContext'
 import { useCurrency } from '../context/CurrencyContext'
+import { sizesLabel } from '../utils/sizes'
 
 const MIN_ORDER_QTY = 12
 export default function CartDrawer() {
@@ -43,9 +44,10 @@ export default function CartDrawer() {
             const itemTotal = item.price * item.qty
             const orderLabel = item.orderType === 'wholesale' ? 'Wholesale' : 'Retail'
             const minQty = item.orderType === 'wholesale' ? item.minQuantity || MIN_ORDER_QTY : 1
+            const breakdownLabel = sizesLabel(item.sizes)
             return (
               <div
-                key={`${item.id}-${item.size}-${item.orderType || 'retail'}`}
+                key={`${item.id}-${item.orderType || 'retail'}-${JSON.stringify(item.sizes || item.size || 'L')}`}
                 className="flex items-center gap-4 pb-4 border-b border-gray-100"
               >
                 <img
@@ -56,7 +58,7 @@ export default function CartDrawer() {
                 <div className="flex-1">
                   <h4 className="text-xs font-bold text-gray-900 leading-snug">{item.title}</h4>
                   <p className="text-[11px] text-gray-500 mt-0.5">
-                    Size: {item.size || 'L'} | {orderLabel}: {formatPrice(item.price)}
+                    {breakdownLabel || `Size: ${item.size || 'L'}`} | {orderLabel}: {formatPrice(item.price)}
                   </p>
                   <div className="flex items-center gap-2 mt-2">
                     <button
