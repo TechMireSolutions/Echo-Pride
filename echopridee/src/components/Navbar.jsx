@@ -90,7 +90,7 @@ export default function Navbar() {
                 <img
                   src="/imgi_1_BLogowithicon.webp"
                   alt="EchoPride Logo"
-                  className="h-9 w-auto object-contain"
+                  className="h-11 md:h-12 w-auto object-contain"
                 />
               </Link>
 
@@ -117,154 +117,150 @@ export default function Navbar() {
             </div>
 
             {/* Desktop Structured Header (>= lg) */}
-            <div className="hidden lg:flex items-center justify-between gap-8 py-3.5">
+            <div className="hidden lg:block py-3">
 
-              {/* LEFT COLUMN: Brand Logo */}
-              <div className="shrink-0 flex items-center">
-                <Link to="/" className="flex items-center">
-                  <img
-                    src="/imgi_1_BLogowithicon.webp"
-                    alt="EchoPride Logo"
-                    className="h-12 xl:h-14 w-auto object-contain transition-transform hover:scale-[1.02]"
-                  />
-                </Link>
+              {/* ROW 1: Logo (Left) + Search & Contact Stack (Center) + Account & Cart (Right) */}
+              <div className="flex items-center justify-between gap-8 py-2">
+
+                {/* Brand Logo */}
+                <div className="shrink-0 flex items-center">
+                  <Link to="/" className="flex items-center">
+                    <img
+                      src="/imgi_1_BLogowithicon.webp"
+                      alt="EchoPride Logo"
+                      className="h-16 xl:h-20 w-auto object-contain transition-transform hover:scale-[1.02]"
+                    />
+                  </Link>
+                </div>
+
+                {/* SEARCH BAR & CONTACT STACK (Search bar on top, Phone & Email directly underneath as in reference image) */}
+                <div className="flex-1 flex justify-center">
+                  <div className="flex flex-col items-center gap-1 w-80 xl:w-96">
+                    {/* Search Input Bar */}
+                    <form
+                      onSubmit={(e) => { e.preventDefault(); openSearch() }}
+                      className="w-full"
+                    >
+                      <div className="relative w-full">
+                        <input
+                          name="searchQuery"
+                          type="text"
+                          placeholder="What are you looking for?"
+                          readOnly
+                          onClick={openSearch}
+                          className="w-full border border-gray-300 rounded-full pl-4 pr-10 py-1.5 text-xs text-gray-700 placeholder-gray-400 bg-gray-50/80 hover:bg-gray-50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer shadow-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={openSearch}
+                          className="absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors cursor-pointer"
+                          aria-label="Search"
+                        >
+                          <i className="fa-solid fa-magnifying-glass text-[11px]"></i>
+                        </button>
+                      </div>
+                    </form>
+
+                    {/* Phone Number & Support Email directly UNDERNEATH Search Bar */}
+                    <div className="flex items-center justify-center gap-4 text-[12px] text-gray-600 font-medium w-full">
+                      <a
+                        href={'tel:' + SUPPORT_PHONE.replace(/\s/g, '')}
+                        className="hover:text-blue-600 transition-colors whitespace-nowrap"
+                      >
+                        <span>{SUPPORT_PHONE}</span>
+                      </a>
+                      <a
+                        href={'mailto:' + SUPPORT_EMAIL}
+                        className="hover:text-blue-600 transition-colors whitespace-nowrap"
+                      >
+                        <span>{SUPPORT_EMAIL}</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Account & Cart User Actions */}
+                <div className="flex items-center gap-4 text-sm shrink-0">
+                  {/* Account */}
+                  <div className="relative">
+                    <button
+                      onClick={() => (isLoggedIn ? setUserMenuOpen((v) => !v) : openLogin())}
+                      className="flex items-center gap-2 font-semibold uppercase tracking-wide text-gray-700 hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap py-1 px-2.5 rounded-lg hover:bg-gray-50"
+                    >
+                      <i className="fa-regular fa-user text-base text-blue-600"></i>
+                      <span>{isLoggedIn ? (user?.name?.split(' ')[0] || 'Account') : 'Sign In'}</span>
+                      <i className="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
+                    </button>
+
+                    {isLoggedIn && userMenuOpen && (
+                      <div
+                        className="absolute right-0 top-full mt-2 w-52 bg-white shadow-xl border border-gray-100 rounded-lg py-2 z-50"
+                        onMouseLeave={() => setUserMenuOpen(false)}
+                      >
+                        <div className="px-4 pb-2 border-b border-gray-100">
+                          <p className="text-sm font-bold text-gray-900 truncate">{user?.name || 'Account'}</p>
+                          <p className="text-[11px] text-gray-500 truncate">{user?.email || ''}</p>
+                        </div>
+                        <Link
+                          to="/account"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <i className="fa-solid fa-user-gear text-xs mr-2"></i> My Account
+                        </Link>
+                        <Link
+                          to="/orders"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <i className="fa-solid fa-box text-xs mr-2"></i> Orders
+                        </Link>
+                        <button
+                          onClick={() => { setUserMenuOpen(false); logout() }}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <i className="fa-solid fa-arrow-right-from-bracket text-xs mr-2"></i> Logout
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <span className="w-px h-5 bg-gray-200"></span>
+
+                  {/* Cart with Item Count Badge */}
+                  <button
+                    onClick={openCart}
+                    className="inline-flex items-center gap-2.5 font-semibold uppercase tracking-wide text-gray-700 hover:text-blue-600 transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-gray-50"
+                    aria-label="Cart"
+                  >
+                    <i className="fa-solid fa-bag-shopping text-lg text-blue-600"></i>
+                    <span className="text-xs font-bold uppercase tracking-wider">Cart</span>
+                    <span className="bg-[#baf120] text-black text-[11px] font-black rounded-full min-w-[20px] h-[20px] px-1 flex items-center justify-center leading-none shadow-sm">
+                      {totalCount}
+                    </span>
+                  </button>
+                </div>
+
               </div>
 
-              {/* RIGHT COLUMN: 2-Row Vertical Stack (Search Widget on Top, Account & Cart Below) */}
-              <div className="flex-1 flex flex-col justify-center gap-2.5">
-
-                {/* ROW 1: Contact Info (Left) + Search Widget ABOVE Account & Cart (Right) */}
-                <div className="flex items-center justify-between gap-6 border-b border-gray-100 pb-2">
-                  {/* Phone number & Support Email side-by-side */}
-                  <div className="flex items-center gap-4 text-[13px] text-gray-600">
-                    <a
-                      href={'tel:' + SUPPORT_PHONE.replace(/\s/g, '')}
-                      className="flex items-center gap-1.5 hover:text-blue-600 transition-colors font-medium whitespace-nowrap"
+              {/* ROW 2: Navigation Links (CENTERED) */}
+              <div className="flex items-center justify-center border-t border-gray-100 pt-2.5 mt-2">
+                <nav className="flex items-center gap-8">
+                  {QUICK_LINKS.map((link) => (
+                    <Link
+                      key={link.label}
+                      to={link.to}
+                      className={
+                        'font-semibold text-[12px] uppercase tracking-wider transition-colors whitespace-nowrap ' +
+                        (location.pathname === link.to
+                          ? 'text-blue-600 font-bold'
+                          : 'text-gray-600 hover:text-blue-600')
+                      }
                     >
-                      <i className="fa-solid fa-phone text-xs text-blue-600"></i>
-                      <span>{SUPPORT_PHONE}</span>
-                    </a>
-
-                    <span className="w-px h-3.5 bg-gray-200"></span>
-
-                    <a
-                      href={'mailto:' + SUPPORT_EMAIL}
-                      className="flex items-center gap-1.5 hover:text-blue-600 transition-colors font-medium whitespace-nowrap"
-                    >
-                      <i className="fa-solid fa-envelope text-xs text-blue-600"></i>
-                      <span>{SUPPORT_EMAIL}</span>
-                    </a>
-                  </div>
-
-                  {/* Search Widget positioned ABOVE Account & Cart (Compact Width) */}
-                  <form
-                    onSubmit={(e) => { e.preventDefault(); openSearch() }}
-                    className="w-64 xl:w-72 shrink-0"
-                  >
-                    <div className="relative w-full">
-                      <input
-                        name="searchQuery"
-                        type="text"
-                        placeholder="What are you looking for?"
-                        readOnly
-                        onClick={openSearch}
-                        className="w-full border border-gray-300 rounded-full pl-4 pr-10 py-1.5 text-xs text-gray-700 placeholder-gray-400 bg-gray-50/80 hover:bg-gray-50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer shadow-sm"
-                      />
-                      <button
-                        type="button"
-                        onClick={openSearch}
-                        className="absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors cursor-pointer"
-                        aria-label="Search"
-                      >
-                        <i className="fa-solid fa-magnifying-glass text-[11px]"></i>
-                      </button>
-                    </div>
-                  </form>
-                </div>
-
-                {/* ROW 2: Navigation Links (CENTERED) + ACCOUNT & CART (Right) */}
-                <div className="relative flex items-center justify-between gap-6 pt-1 min-h-[36px]">
-                  {/* Centered Navigation Links */}
-                  <nav className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center gap-6">
-                    {QUICK_LINKS.map((link) => (
-                      <Link
-                        key={link.label}
-                        to={link.to}
-                        className={
-                          'font-semibold text-[12px] uppercase tracking-wider transition-colors whitespace-nowrap ' +
-                          (location.pathname === link.to
-                            ? 'text-blue-600 font-bold'
-                            : 'text-gray-600 hover:text-blue-600')
-                        }
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
-                  </nav>
-
-                  {/* Account & Cart positioned on the right */}
-                  <div className="ml-auto flex items-center gap-4 text-sm shrink-0">
-                    {/* Account */}
-                    <div className="relative">
-                      <button
-                        onClick={() => (isLoggedIn ? setUserMenuOpen((v) => !v) : openLogin())}
-                        className="flex items-center gap-2 font-semibold uppercase tracking-wide text-gray-700 hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap py-1 px-2.5 rounded-lg hover:bg-gray-50"
-                      >
-                        <i className="fa-regular fa-user text-base text-blue-600"></i>
-                        <span>{isLoggedIn ? (user?.name?.split(' ')[0] || 'Account') : 'Sign In'}</span>
-                        <i className="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
-                      </button>
-
-                      {isLoggedIn && userMenuOpen && (
-                        <div
-                          className="absolute right-0 top-full mt-2 w-52 bg-white shadow-xl border border-gray-100 rounded-lg py-2 z-50"
-                          onMouseLeave={() => setUserMenuOpen(false)}
-                        >
-                          <div className="px-4 pb-2 border-b border-gray-100">
-                            <p className="text-sm font-bold text-gray-900 truncate">{user?.name || 'Account'}</p>
-                            <p className="text-[11px] text-gray-500 truncate">{user?.email || ''}</p>
-                          </div>
-                          <Link
-                            to="/account"
-                            onClick={() => setUserMenuOpen(false)}
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                          >
-                            <i className="fa-solid fa-user-gear text-xs mr-2"></i> My Account
-                          </Link>
-                          <Link
-                            to="/orders"
-                            onClick={() => setUserMenuOpen(false)}
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                          >
-                            <i className="fa-solid fa-box text-xs mr-2"></i> Orders
-                          </Link>
-                          <button
-                            onClick={() => { setUserMenuOpen(false); logout() }}
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                          >
-                            <i className="fa-solid fa-arrow-right-from-bracket text-xs mr-2"></i> Logout
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    <span className="w-px h-5 bg-gray-200"></span>
-
-                    {/* Cart with Item Count Badge */}
-                    <button
-                      onClick={openCart}
-                      className="inline-flex items-center gap-2.5 font-semibold uppercase tracking-wide text-gray-700 hover:text-blue-600 transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-gray-50"
-                      aria-label="Cart"
-                    >
-                      <i className="fa-solid fa-bag-shopping text-lg text-blue-600"></i>
-                      <span className="text-xs font-bold uppercase tracking-wider">Cart</span>
-                      <span className="bg-[#baf120] text-black text-[11px] font-black rounded-full min-w-[20px] h-[20px] px-1 flex items-center justify-center leading-none shadow-sm">
-                        {totalCount}
-                      </span>
-                    </button>
-                  </div>
-                </div>
-
+                      {link.label}
+                    </Link>
+                  ))}
+                </nav>
               </div>
 
             </div>
