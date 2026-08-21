@@ -193,9 +193,9 @@ export default function CheckoutPage() {
                     </div>
                     <div className="sm:col-span-2">
                       <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Upload Print Design / Pattern Artwork File</label>
-                      <div className="flex items-center gap-2">
-                        <label className="flex-1 flex items-center gap-3 bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 cursor-pointer hover:border-[#baf120]/60 transition-colors">
-                          <i className="fa-solid fa-file-image text-[#baf120] text-lg"></i>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <label className="flex-1 min-w-0 flex items-center gap-3 bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 cursor-pointer hover:border-[#baf120]/60 transition-colors overflow-hidden">
+                          <i className="fa-solid fa-file-image text-[#baf120] text-lg shrink-0"></i>
                           <span className="text-sm text-gray-300 truncate">
                             {printDesignFile ? printDesignFile.name : 'Choose print design or pattern file (PNG, JPG, SVG, PDF, ZIP)'}
                           </span>
@@ -217,7 +217,7 @@ export default function CheckoutPage() {
                               setPrintDesignFile(null)
                               setForm((f) => ({ ...f, printDesignFileName: '' }))
                             }}
-                            className="p-3 text-red-400 hover:text-red-300 bg-neutral-900 border border-neutral-800 rounded-lg cursor-pointer"
+                            className="p-3 text-red-400 hover:text-red-300 bg-neutral-900 border border-neutral-800 rounded-lg cursor-pointer shrink-0"
                             title="Remove file"
                           >
                             <i className="fa-solid fa-trash-can"></i>
@@ -236,7 +236,7 @@ export default function CheckoutPage() {
                     </span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
+                    <div className="sm:col-span-2">
                       <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Logo Placement / Position *</label>
                       <select value={form.logoPlacement || 'Left Chest Logo'} onChange={setField('logoPlacement')} required className={inputCls}>
                         <option value="Left Chest Logo">Left Chest Logo</option>
@@ -250,11 +250,11 @@ export default function CheckoutPage() {
                         <option value="No Logo Needed">No Logo Needed</option>
                       </select>
                     </div>
-                    <div>
+                    <div className="sm:col-span-2">
                       <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Upload Logo Artwork File</label>
-                      <div className="flex items-center gap-2">
-                        <label className="flex-1 flex items-center gap-3 bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 cursor-pointer hover:border-[#baf120]/60 transition-colors">
-                          <i className="fa-solid fa-cloud-arrow-up text-[#baf120] text-lg"></i>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <label className="flex-1 min-w-0 flex items-center gap-3 bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 cursor-pointer hover:border-[#baf120]/60 transition-colors overflow-hidden">
+                          <i className="fa-solid fa-cloud-arrow-up text-[#baf120] text-lg shrink-0"></i>
                           <span className="text-sm text-gray-300 truncate">
                             {logoFile ? logoFile.name : 'Choose logo artwork file (PNG, JPG, SVG, PDF)'}
                           </span>
@@ -276,7 +276,7 @@ export default function CheckoutPage() {
                               setLogoFile(null)
                               setForm((f) => ({ ...f, logoName: '' }))
                             }}
-                            className="p-3 text-red-400 hover:text-red-300 bg-neutral-900 border border-neutral-800 rounded-lg cursor-pointer"
+                            className="p-3 text-red-400 hover:text-red-300 bg-neutral-900 border border-neutral-800 rounded-lg cursor-pointer shrink-0"
                             title="Remove file"
                           >
                             <i className="fa-solid fa-trash-can"></i>
