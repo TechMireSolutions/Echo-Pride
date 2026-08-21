@@ -560,6 +560,9 @@ app.post(
     }
     const customization = {
       color: typeof req.body?.color === 'string' ? req.body.color.trim() : '',
+      printDesign: typeof req.body?.printDesign === 'string' ? req.body.printDesign.trim() : '',
+      printDesignFile: typeof req.body?.printDesignFile === 'string' ? req.body.printDesignFile.trim() : '',
+      logoPlacement: typeof req.body?.logoPlacement === 'string' ? req.body.logoPlacement.trim() : '',
       logo: typeof req.body?.logo === 'string' ? req.body.logo.trim() : '',
       specialInstructions: typeof req.body?.specialInstructions === 'string' ? req.body.specialInstructions.trim() : '',
     }

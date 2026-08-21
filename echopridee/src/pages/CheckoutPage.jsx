@@ -16,74 +16,22 @@ export default function CheckoutPage() {
   const { formatPrice } = useCurrency()
   const navigate = useNavigate()
 
-  const [form, setForm] = useState(() => ({
+  const [form, setForm] = useState({
     name: '',
     phone: '',
     city: '',
     address: '',
     color: '',
-    printDesign: cart[0]?.printDesign || 'Dye Sublimation Printing',
+    printDesign: 'Full Dye Sublimation Printing',
+    printDesignFileName: '',
+    logoPlacement: 'Left Chest Logo',
+    logoName: '',
     instructions: '',
-    logoName: cart[0]?.logoName || '',
-  }))
+  })
   const [logoFile, setLogoFile] = useState(null)
-  const [logoPreview, setLogoPreview] = useState(() => cart[0]?.logoPreview || null)
-  const [isDragging, setIsDragging] = useState(false)
+  const [printDesignFile, setPrintDesignFile] = useState(null)
   const [submitting, setSubmitting] = useState(false)
   const [orderError, setOrderError] = useState(null)
-
-  const PRINT_PLACEMENTS = [
-    { id: 'front', label: 'Front Chest Logo', icon: 'fa-shirt' },
-    { id: 'back', label: 'Back Design & Number', icon: 'fa-user-tag' },
-    { id: 'sleeve', label: 'Sleeve / Shoulder', icon: 'fa-tag' },
-    { id: 'extra', label: 'Full Pattern / Extra', icon: 'fa-images' },
-  ]
-
-  const [activePlacement, setActivePlacement] = useState('front')
-  const [placementFiles, setPlacementFiles] = useState({})
-  const [placementPreviews, setPlacementPreviews] = useState({})
-
-  const handleFileSelect = (file) => {
-    if (!file) return
-    setLogoFile(file)
-    setForm((f) => ({ ...f, logoName: file.name }))
-    if (file.type.startsWith('image/')) {
-      const url = URL.createObjectURL(file)
-      setLogoPreview(url)
-    } else {
-      setLogoPreview(null)
-    }
-  }
-
-  const handleRemoveFile = () => {
-    setLogoFile(null)
-    setLogoPreview(null)
-    setForm((f) => ({ ...f, logoName: '' }))
-  }
-
-  const handlePlacementFile = (placementId, file) => {
-    if (!file) return
-    setPlacementFiles((prev) => ({ ...prev, [placementId]: file }))
-    if (file.type.startsWith('image/')) {
-      const url = URL.createObjectURL(file)
-      setPlacementPreviews((prev) => ({ ...prev, [placementId]: url }))
-    } else {
-      setPlacementPreviews((prev) => ({ ...prev, [placementId]: null }))
-    }
-  }
-
-  const handlePlacementRemove = (placementId) => {
-    setPlacementFiles((prev) => {
-      const next = { ...prev }
-      delete next[placementId]
-      return next
-    })
-    setPlacementPreviews((prev) => {
-      const next = { ...prev }
-      delete next[placementId]
-      return next
-    })
-  }
 
   const taxPercent = Number(settings?.taxPercent) || 0
   const tax = (subtotal * taxPercent) / 100
@@ -128,6 +76,8 @@ export default function CheckoutPage() {
         paymentMethod: 'card',
         color: form.color.trim(),
         printDesign: form.printDesign,
+        printDesignFile: form.printDesignFileName,
+        logoPlacement: form.logoPlacement,
         logo: form.logoName,
         specialInstructions: form.instructions.trim(),
         items: cart.map((item) => ({ productId: item.id, quantity: item.qty, sizes: item.sizes || {} })),
@@ -217,203 +167,128 @@ export default function CheckoutPage() {
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Complete Delivery Address *</label>
                   <textarea value={form.address} onChange={setField('address')} placeholder="House / building, street, area, landmark" autoComplete="street-address" required rows="3" className={`${inputCls} resize-none`} />
                 </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Color Selection *</label>
-                  <input type="text" value={form.color} onChange={setField('color')} placeholder="e.g. Royal Blue / White" required className={inputCls} />
-                </div>
-                <div className="sm:col-span-2 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-300">
-                      Print Design / Technique & Multi-Location Artwork *
-                    </label>
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#baf120] bg-[#baf120]/10 px-2 py-0.5 rounded border border-[#baf120]/30">
-                      PNG, WEBP, JPG, SVG, PDF & More
+
+                <div className="sm:col-span-2 pt-3 border-t border-neutral-800">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-xs font-black uppercase tracking-wider text-[#baf120] bg-[#baf120]/10 px-2.5 py-1 rounded border border-[#baf120]/30 flex items-center gap-2">
+                      <i className="fa-solid fa-palette"></i> 1. Color & Print Design Options
                     </span>
                   </div>
-
-                  <div>
-                    <select
-                      value={form.printDesign || 'Dye Sublimation Printing'}
-                      onChange={setField('printDesign')}
-                      required
-                      className={inputCls}
-                    >
-                      <option value="Dye Sublimation Printing">Full Dye Sublimation Printing</option>
-                      <option value="Screen Printing">Screen Printing</option>
-                      <option value="Custom Embroidery">Custom Embroidery</option>
-                      <option value="DTF Heat Transfer">DTF / Heat Transfer</option>
-                      <option value="Tackle Twill Stitching">Tackle Twill Stitching</option>
-                      <option value="No Printing (Blank)">No Printing (Blank Gear)</option>
-                    </select>
-                  </div>
-
-                  {/* Print Artwork Placement Tabs & Uploaders */}
-                  <div className="bg-black/50 border border-neutral-800 rounded-xl p-4 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
-                        <i className="fa-solid fa-paintbrush text-[#baf120]"></i> Upload Design Image Per Print Location
-                      </span>
-                      {Object.keys(placementFiles).length > 0 && (
-                        <span className="text-[10px] font-extrabold bg-[#baf120] text-black px-2 py-0.5 rounded uppercase tracking-wider">
-                          {Object.keys(placementFiles).length} Image(s) Attached
-                        </span>
-                      )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Color Selection *</label>
+                      <input type="text" value={form.color} onChange={setField('color')} placeholder="e.g. Royal Blue / White" required className={inputCls} />
                     </div>
-
-                    {/* Tabs */}
-                    <div className="flex flex-wrap gap-2 border-b border-neutral-800 pb-3">
-                      {PRINT_PLACEMENTS.map((item) => {
-                        const hasFile = Boolean(placementFiles[item.id] || (item.id === 'front' && logoFile))
-                        const isActive = activePlacement === item.id
-                        return (
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Print Design / Technique *</label>
+                      <select value={form.printDesign || 'Full Dye Sublimation Printing'} onChange={setField('printDesign')} required className={inputCls}>
+                        <option value="Full Dye Sublimation Printing">Full Dye Sublimation Printing</option>
+                        <option value="Screen Printing">Screen Printing</option>
+                        <option value="Custom Embroidery">Custom Embroidery</option>
+                        <option value="DTF Heat Transfer">DTF / Heat Transfer</option>
+                        <option value="Tackle Twill Stitching">Tackle Twill Stitching</option>
+                        <option value="Full Custom Pattern / All-Over Print">Full Custom Pattern / All-Over Print</option>
+                        <option value="No Printing (Blank)">No Printing (Blank Gear)</option>
+                      </select>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Upload Print Design / Pattern Artwork File</label>
+                      <div className="flex items-center gap-2">
+                        <label className="flex-1 flex items-center gap-3 bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 cursor-pointer hover:border-[#baf120]/60 transition-colors">
+                          <i className="fa-solid fa-file-image text-[#baf120] text-lg"></i>
+                          <span className="text-sm text-gray-300 truncate">
+                            {printDesignFile ? printDesignFile.name : 'Choose print design or pattern file (PNG, JPG, SVG, PDF, ZIP)'}
+                          </span>
+                          <input
+                            type="file"
+                            accept="image/png,image/jpeg,image/svg+xml,application/pdf,application/zip,.ai,.psd"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0]
+                              setPrintDesignFile(file || null)
+                              setForm((f) => ({ ...f, printDesignFileName: file ? file.name : '' }))
+                            }}
+                          />
+                        </label>
+                        {printDesignFile && (
                           <button
-                            key={item.id}
                             type="button"
-                            onClick={() => setActivePlacement(item.id)}
-                            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-                              isActive
-                                ? 'bg-[#baf120] text-black shadow-md'
-                                : 'bg-neutral-900 text-gray-300 border border-neutral-800 hover:border-gray-600'
-                            }`}
+                            onClick={() => {
+                              setPrintDesignFile(null)
+                              setForm((f) => ({ ...f, printDesignFileName: '' }))
+                            }}
+                            className="p-3 text-red-400 hover:text-red-300 bg-neutral-900 border border-neutral-800 rounded-lg cursor-pointer"
+                            title="Remove file"
                           >
-                            <i className={`fa-solid ${item.icon}`}></i>
-                            {item.label}
-                            {hasFile && (
-                              <i className={`fa-solid fa-circle-check text-xs ${isActive ? 'text-black' : 'text-[#baf120]'}`}></i>
-                            )}
+                            <i className="fa-solid fa-trash-can"></i>
                           </button>
-                        )
-                      })}
+                        )}
+                      </div>
+                      <p className="text-[11px] text-gray-500 mt-1.5">Upload full body patterns, graphics, or print design files.</p>
                     </div>
-
-                    {/* Active Tab Dropzone / Card */}
-                    {(() => {
-                      const curId = activePlacement
-                      const file = placementFiles[curId] || (curId === 'front' ? logoFile : null)
-                      const preview = placementPreviews[curId] || (curId === 'front' ? logoPreview : null)
-                      const activeLabel = PRINT_PLACEMENTS.find((p) => p.id === curId)?.label || 'Print Design'
-
-                      return (
-                        <div>
-                          {!file && !preview ? (
-                            <div
-                              onDragOver={(e) => {
-                                e.preventDefault()
-                                setIsDragging(true)
-                              }}
-                              onDragLeave={() => setIsDragging(false)}
-                              onDrop={(e) => {
-                                e.preventDefault()
-                                setIsDragging(false)
-                                const droppedFile = e.dataTransfer.files?.[0]
-                                if (droppedFile) {
-                                  handlePlacementFile(curId, droppedFile)
-                                  if (curId === 'front') handleFileSelect(droppedFile)
-                                }
-                              }}
-                              className={`relative border-2 border-dashed rounded-xl p-5 text-center transition-all ${
-                                isDragging
-                                  ? 'border-[#baf120] bg-[#baf120]/10 scale-[1.01]'
-                                  : 'border-neutral-800 bg-neutral-900/60 hover:border-[#baf120]/60'
-                              }`}
-                            >
-                              <label className="cursor-pointer block">
-                                <div className="w-10 h-10 rounded-full bg-[#baf120]/10 border border-[#baf120]/30 text-[#baf120] flex items-center justify-center mx-auto mb-2 text-lg">
-                                  <i className="fa-solid fa-cloud-arrow-up"></i>
-                                </div>
-                                <p className="text-xs font-bold text-white mb-0.5">
-                                  Upload {activeLabel} Artwork Image
-                                </p>
-                                <p className="text-[11px] text-gray-400 max-w-sm mx-auto mb-2">
-                                  Supports PNG, WEBP, JPG, JPEG, SVG, GIF, AVIF, HEIC, BMP, TIFF & PDF
-                                </p>
-                                <div className="flex flex-wrap items-center justify-center gap-1">
-                                  {['PNG', 'WEBP', 'JPG', 'JPEG', 'SVG', 'GIF', 'AVIF', 'HEIC', 'PDF'].map((ext) => (
-                                    <span key={ext} className="text-[9px] font-black bg-black text-gray-400 px-1.5 py-0.5 rounded border border-neutral-800">
-                                      {ext}
-                                    </span>
-                                  ))}
-                                </div>
-                                <input
-                                  type="file"
-                                  accept="image/*,.png,.jpg,.jpeg,.webp,.svg,.gif,.avif,.heic,.heif,.bmp,.tiff,.pdf"
-                                  className="hidden"
-                                  onChange={(e) => {
-                                    const selectedFile = e.target.files?.[0]
-                                    if (selectedFile) {
-                                      handlePlacementFile(curId, selectedFile)
-                                      if (curId === 'front') handleFileSelect(selectedFile)
-                                    }
-                                  }}
-                                />
-                              </label>
-                            </div>
-                          ) : (
-                            <div className="bg-neutral-900 border border-[#baf120]/40 rounded-xl p-3.5 flex items-center justify-between gap-4">
-                              <div className="flex items-center gap-3.5 min-w-0">
-                                {preview ? (
-                                  <div className="w-12 h-12 rounded-lg bg-black border border-neutral-800 overflow-hidden shrink-0 flex items-center justify-center">
-                                    <img src={preview} alt="Artwork Preview" className="w-full h-full object-contain" />
-                                  </div>
-                                ) : (
-                                  <div className="w-12 h-12 rounded-lg bg-black border border-neutral-800 flex items-center justify-center text-[#baf120] text-lg shrink-0">
-                                    <i className="fa-solid fa-file-image"></i>
-                                  </div>
-                                )}
-                                <div className="min-w-0">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-xs font-bold text-white truncate max-w-[180px] sm:max-w-[240px]">
-                                      {file ? file.name : 'Attached Artwork'}
-                                    </span>
-                                    <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[#baf120]/20 text-[#baf120] border border-[#baf120]/30 shrink-0">
-                                      {(file ? file.name : '').split('.').pop()?.toUpperCase() || 'IMAGE'}
-                                    </span>
-                                  </div>
-                                  <p className="text-[11px] text-gray-400 mt-0.5">
-                                    Location: <span className="text-[#baf120] font-bold">{activeLabel}</span> · {file ? (file.size / (1024 * 1024) >= 1 ? `${(file.size / (1024 * 1024)).toFixed(2)} MB` : `${Math.round(file.size / 1024)} KB`) : 'Attached'}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2 shrink-0">
-                                <label className="cursor-pointer text-xs font-bold text-gray-300 hover:text-white bg-black border border-neutral-800 hover:border-gray-600 px-3 py-1.5 rounded-lg transition-colors">
-                                  Change
-                                  <input
-                                    type="file"
-                                    accept="image/*,.png,.jpg,.jpeg,.webp,.svg,.gif,.avif,.heic,.heif,.bmp,.tiff,.pdf"
-                                    className="hidden"
-                                    onChange={(e) => {
-                                      const selectedFile = e.target.files?.[0]
-                                      if (selectedFile) {
-                                        handlePlacementFile(curId, selectedFile)
-                                        if (curId === 'front') handleFileSelect(selectedFile)
-                                      }
-                                    }}
-                                  />
-                                </label>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    handlePlacementRemove(curId)
-                                    if (curId === 'front') handleRemoveFile()
-                                  }}
-                                  className="text-xs font-bold text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 px-3 py-1.5 rounded-lg transition-colors"
-                                >
-                                  Remove
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )
-                    })()}
                   </div>
-
-                  <p className="text-[11px] text-gray-500">
-                    <i className="fa-solid fa-shield-halved text-[#baf120] mr-1"></i>
-                    Upload design images for Front, Back, Sleeves, or Full Pattern. Digital proof sent before printing.
-                  </p>
                 </div>
-                <div className="sm:col-span-2">
+
+                <div className="sm:col-span-2 pt-3 border-t border-neutral-800">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-xs font-black uppercase tracking-wider text-[#baf120] bg-[#baf120]/10 px-2.5 py-1 rounded border border-[#baf120]/30 flex items-center gap-2">
+                      <i className="fa-solid fa-shield-cat"></i> 2. Logo Customization Options
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Logo Placement / Position *</label>
+                      <select value={form.logoPlacement || 'Left Chest Logo'} onChange={setField('logoPlacement')} required className={inputCls}>
+                        <option value="Left Chest Logo">Left Chest Logo</option>
+                        <option value="Center Chest Logo">Center Chest Logo</option>
+                        <option value="Full Front Logo">Full Front Logo</option>
+                        <option value="Left Sleeve Logo">Left Sleeve Logo</option>
+                        <option value="Right Sleeve Logo">Right Sleeve Logo</option>
+                        <option value="Upper Back / Neck Logo">Upper Back / Neck Logo</option>
+                        <option value="Full Back Logo">Full Back Logo</option>
+                        <option value="Multiple Custom Placements">Multiple Custom Placements</option>
+                        <option value="No Logo Needed">No Logo Needed</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Upload Logo Artwork File</label>
+                      <div className="flex items-center gap-2">
+                        <label className="flex-1 flex items-center gap-3 bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 cursor-pointer hover:border-[#baf120]/60 transition-colors">
+                          <i className="fa-solid fa-cloud-arrow-up text-[#baf120] text-lg"></i>
+                          <span className="text-sm text-gray-300 truncate">
+                            {logoFile ? logoFile.name : 'Choose logo artwork file (PNG, JPG, SVG, PDF)'}
+                          </span>
+                          <input
+                            type="file"
+                            accept="image/png,image/jpeg,image/svg+xml,application/pdf,.ai,.eps"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0]
+                              setLogoFile(file || null)
+                              setForm((f) => ({ ...f, logoName: file ? file.name : '' }))
+                            }}
+                          />
+                        </label>
+                        {logoFile && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setLogoFile(null)
+                              setForm((f) => ({ ...f, logoName: '' }))
+                            }}
+                            className="p-3 text-red-400 hover:text-red-300 bg-neutral-900 border border-neutral-800 rounded-lg cursor-pointer"
+                            title="Remove file"
+                          >
+                            <i className="fa-solid fa-trash-can"></i>
+                          </button>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-gray-500 mt-1.5">High resolution vector or transparent PNG recommended.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="sm:col-span-2 pt-2 border-t border-neutral-800">
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Any Special Instructions</label>
                   <textarea value={form.instructions} onChange={setField('instructions')} placeholder="Tell us anything else — font styles, team name placement, number preferences..." rows="3" className={`${inputCls} resize-none`} />
                 </div>
