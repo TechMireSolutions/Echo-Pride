@@ -180,7 +180,7 @@ export default function Navbar() {
               </div>
 
               {/* ROW 2: Navigation Links (PERFECTLY CENTERED IN HEADER) + ACCOUNT & CART (Far Right) */}
-              <div className="relative flex items-center justify-between border-t border-gray-100 pt-2.5 min-h-[36px]">
+              <div className="relative flex items-center justify-between pt-2.5 min-h-[36px]">
                 {/* Truly Centered Navigation Links */}
                 <nav className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center gap-8">
                   {QUICK_LINKS.map((link) => (
