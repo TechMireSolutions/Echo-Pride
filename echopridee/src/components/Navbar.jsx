@@ -130,36 +130,14 @@ export default function Navbar() {
                 </Link>
               </div>
 
-              {/* RIGHT COLUMN: 2-Row Vertical Stack (Search Widget on Top, Account & Cart Below) */}
-              <div className="flex-1 flex flex-col justify-center gap-2.5">
+              {/* RIGHT COLUMN: 3-Row Vertical Stack */}
+              <div className="flex-1 flex flex-col justify-center gap-2">
 
-                {/* ROW 1: Contact Info (Left) + Search Widget ABOVE Account & Cart (Right) */}
-                <div className="flex items-center justify-between gap-6 border-b border-gray-100 pb-2">
-                  {/* Phone number & Support Email side-by-side */}
-                  <div className="flex items-center gap-4 text-[13px] text-gray-600">
-                    <a
-                      href={'tel:' + SUPPORT_PHONE.replace(/\s/g, '')}
-                      className="flex items-center gap-1.5 hover:text-blue-600 transition-colors font-medium whitespace-nowrap"
-                    >
-                      <i className="fa-solid fa-phone text-xs text-blue-600"></i>
-                      <span>{SUPPORT_PHONE}</span>
-                    </a>
-
-                    <span className="w-px h-3.5 bg-gray-200"></span>
-
-                    <a
-                      href={'mailto:' + SUPPORT_EMAIL}
-                      className="flex items-center gap-1.5 hover:text-blue-600 transition-colors font-medium whitespace-nowrap"
-                    >
-                      <i className="fa-solid fa-envelope text-xs text-blue-600"></i>
-                      <span>{SUPPORT_EMAIL}</span>
-                    </a>
-                  </div>
-
-                  {/* Search Widget positioned ABOVE Account & Cart */}
+                {/* ROW 1 (TOP): Rounded Search Bar */}
+                <div className="flex items-center justify-between gap-6">
                   <form
                     onSubmit={(e) => { e.preventDefault(); openSearch() }}
-                    className="flex-1 max-w-xl"
+                    className="flex-1 max-w-2xl"
                   >
                     <div className="relative w-full">
                       <input
@@ -182,7 +160,28 @@ export default function Navbar() {
                   </form>
                 </div>
 
-                {/* ROW 2: Navigation Links (Left) + ACCOUNT & CART (Right, UNDERNEATH Search Widget) */}
+                {/* ROW 2 (MIDDLE): Phone Number & Support Email (Below Search, Above Account & Cart) */}
+                <div className="flex items-center gap-4 text-[13px] text-gray-600 border-b border-gray-100 pb-1.5">
+                  <a
+                    href={'tel:' + SUPPORT_PHONE.replace(/\s/g, '')}
+                    className="flex items-center gap-1.5 hover:text-blue-600 transition-colors font-medium whitespace-nowrap"
+                  >
+                    <i className="fa-solid fa-phone text-xs text-blue-600"></i>
+                    <span>{SUPPORT_PHONE}</span>
+                  </a>
+
+                  <span className="w-px h-3.5 bg-gray-200"></span>
+
+                  <a
+                    href={'mailto:' + SUPPORT_EMAIL}
+                    className="flex items-center gap-1.5 hover:text-blue-600 transition-colors font-medium whitespace-nowrap"
+                  >
+                    <i className="fa-solid fa-envelope text-xs text-blue-600"></i>
+                    <span>{SUPPORT_EMAIL}</span>
+                  </a>
+                </div>
+
+                {/* ROW 3 (BOTTOM): Navigation Links (Left) + ACCOUNT & CART (Right) */}
                 <div className="flex items-center justify-between gap-6 pt-0.5">
                   {/* Navigation Links */}
                   <nav className="flex items-center gap-6">
@@ -202,7 +201,7 @@ export default function Navbar() {
                     ))}
                   </nav>
 
-                  {/* Account & Cart positioned UNDERNEATH Search Widget on the right */}
+                  {/* Account & Cart positioned underneath Phone & Email on the right */}
                   <div className="flex items-center gap-4 text-sm shrink-0">
                     {/* Account */}
                     <div className="relative">
