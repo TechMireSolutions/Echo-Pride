@@ -380,12 +380,25 @@ export const categorySlugs = {
   Basketball: 'basketball',
   Football: 'football',
   Soccers: 'soccers',
+  Soccer: 'soccer',
   SoftBalls: 'softballs',
+  Softball: 'softball',
   Rugby: 'rugby',
+  Baseball: 'baseball',
+  Volleyball: 'volleyball',
+  Lacrosse: 'lacrosse',
+  Cycling: 'cycling',
+  Running: 'running',
+  Hockey: 'hockey',
+  Others: 'others',
 }
 
-export const getCategoryBySlug = (slug) =>
-  Object.keys(categorySlugs).find((sport) => categorySlugs[sport] === (slug || '').toLowerCase())
+export const getCategoryBySlug = (slug) => {
+  const s = (slug || '').toLowerCase()
+  const key = Object.keys(categorySlugs).find((sport) => categorySlugs[sport] === s)
+  if (key) return key
+  return Object.keys(categorySlugs).find((sport) => sport.toLowerCase() === s) || null
+}
 
 export const categorySlides = [
   {

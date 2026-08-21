@@ -37,6 +37,9 @@ import ManageDevices from './pages/ManageDevices'
 import Help from './pages/Help'
 import Admin from './pages/Admin'
 import AdminLogin from './pages/AdminLogin'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsOfService from './pages/TermsOfService'
+import StoreLocations from './pages/StoreLocations'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -136,6 +139,10 @@ export default function App() {
             <Route path="/returns" element={<Returns />} />
             <Route path="/manage-devices" element={<ManageDevices />} />
             <Route path="/help" element={<Help />} />
+            <Route path="/store-locations" element={<StoreLocations />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/terms" element={<TermsOfService />} />
             <Route path="/admin" element={<AdminGate />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route

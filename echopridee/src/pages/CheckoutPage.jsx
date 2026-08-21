@@ -22,6 +22,7 @@ export default function CheckoutPage() {
     city: '',
     address: '',
     color: '',
+    printDesign: 'Dye Sublimation Printing',
     instructions: '',
     logoName: '',
   })
@@ -71,6 +72,7 @@ export default function CheckoutPage() {
         },
         paymentMethod: 'card',
         color: form.color.trim(),
+        printDesign: form.printDesign,
         logo: form.logoName,
         specialInstructions: form.instructions.trim(),
         items: cart.map((item) => ({ productId: item.id, quantity: item.qty, sizes: item.sizes || {} })),
@@ -165,13 +167,24 @@ export default function CheckoutPage() {
                   <input type="text" value={form.color} onChange={setField('color')} placeholder="e.g. Royal Blue / White" required className={inputCls} />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Upload Your Logo</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Print Design / Technique *</label>
+                  <select value={form.printDesign || 'Dye Sublimation Printing'} onChange={setField('printDesign')} required className={inputCls}>
+                    <option value="Dye Sublimation Printing">Full Dye Sublimation Printing</option>
+                    <option value="Screen Printing">Screen Printing</option>
+                    <option value="Custom Embroidery">Custom Embroidery</option>
+                    <option value="DTF Heat Transfer">DTF / Heat Transfer</option>
+                    <option value="Tackle Twill Stitching">Tackle Twill Stitching</option>
+                    <option value="No Printing (Blank)">No Printing (Blank Gear)</option>
+                  </select>
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Upload Your Logo / Design Artwork</label>
                   <label className="flex items-center gap-3 bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 cursor-pointer hover:border-[#baf120]/60 transition-colors">
                     <i className="fa-solid fa-cloud-arrow-up text-[#baf120] text-lg"></i>
-                    <span className="text-sm text-gray-300 truncate">{logoFile ? logoFile.name : 'Choose a logo image (PNG, JPG, SVG)'}</span>
+                    <span className="text-sm text-gray-300 truncate">{logoFile ? logoFile.name : 'Choose a logo or design file (PNG, JPG, SVG, PDF)'}</span>
                     <input
                       type="file"
-                      accept="image/png,image/jpeg,image/svg+xml"
+                      accept="image/png,image/jpeg,image/svg+xml,application/pdf"
                       className="hidden"
                       onChange={(e) => {
                         const file = e.target.files?.[0]

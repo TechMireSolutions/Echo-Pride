@@ -70,7 +70,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header id="navbar" className="w-full bg-white text-gray-900 sticky top-0 z-40 shadow-sm">
+      <header id="navbar" className="w-full bg-white text-gray-900 relative z-40 shadow-sm">
 
         {/* ======================== TOP INFO BAR ======================== */}
         <div className="border-b border-gray-100">
@@ -117,149 +117,151 @@ export default function Navbar() {
             </div>
 
             {/* Desktop Structured Header (>= lg) */}
-            <div className="hidden lg:block relative py-3.5">
+            <div className="hidden lg:flex items-center justify-between gap-8 py-2.5">
 
-              {/* ROW 1: Logo (Left) + Search & Contact Stack (Upper Right) */}
-              <div className="flex items-center justify-between gap-8 pb-3">
-
-                {/* Brand Logo */}
-                <div className="shrink-0 flex items-center">
-                  <Link to="/" className="flex items-center">
-                    <img
-                      src="/imgi_1_BLogowithicon.webp"
-                      alt="EchoPride Logo"
-                      className="h-16 xl:h-20 w-auto object-contain transition-transform hover:scale-[1.02]"
-                    />
-                  </Link>
-                </div>
-
-                {/* Search Bar + Phone & Email Stack (Upper Right) */}
-                <div className="flex flex-col items-center gap-1 w-80 xl:w-96">
-                  {/* Search Input Bar */}
-                  <form
-                    onSubmit={(e) => { e.preventDefault(); openSearch() }}
-                    className="w-full"
-                  >
-                    <div className="relative w-full">
-                      <input
-                        name="searchQuery"
-                        type="text"
-                        placeholder="What are you looking for?"
-                        readOnly
-                        onClick={openSearch}
-                        className="w-full border border-gray-300 rounded-full pl-4 pr-10 py-1.5 text-xs text-gray-700 placeholder-gray-400 bg-gray-50/80 hover:bg-gray-50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer shadow-sm"
-                      />
-                      <button
-                        type="button"
-                        onClick={openSearch}
-                        className="absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors cursor-pointer"
-                        aria-label="Search"
-                      >
-                        <i className="fa-solid fa-magnifying-glass text-[11px]"></i>
-                      </button>
-                    </div>
-                  </form>
-
-                  {/* Phone Number & Support Email directly UNDERNEATH Search Bar */}
-                  <div className="flex items-center justify-center gap-4 text-[12px] text-gray-600 font-medium w-full">
-                    <a
-                      href={'tel:' + SUPPORT_PHONE.replace(/\s/g, '')}
-                      className="hover:text-blue-600 transition-colors whitespace-nowrap"
-                    >
-                      <span>{SUPPORT_PHONE}</span>
-                    </a>
-                    <a
-                      href={'mailto:' + SUPPORT_EMAIL}
-                      className="hover:text-blue-600 transition-colors whitespace-nowrap"
-                    >
-                      <span>{SUPPORT_EMAIL}</span>
-                    </a>
-                  </div>
-                </div>
-
+              {/* LEFT COLUMN: Brand Logo (Vertically Centered across full header height) */}
+              <div className="shrink-0 flex items-center self-center">
+                <Link to="/" className="flex items-center">
+                  <img
+                    src="/imgi_1_BLogowithicon.webp"
+                    alt="EchoPride Logo"
+                    className="h-16 xl:h-20 w-auto object-contain transition-transform hover:scale-[1.02]"
+                  />
+                </Link>
               </div>
 
-              {/* ROW 2: Navigation Links (PERFECTLY CENTERED IN HEADER) + ACCOUNT & CART (Far Right) */}
-              <div className="relative flex items-center justify-between pt-2.5 min-h-[36px]">
-                {/* Truly Centered Navigation Links */}
-                <nav className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center gap-8">
-                  {QUICK_LINKS.map((link) => (
-                    <Link
-                      key={link.label}
-                      to={link.to}
-                      className={
-                        'font-semibold text-[12px] uppercase tracking-wider transition-colors whitespace-nowrap ' +
-                        (location.pathname === link.to
-                          ? 'text-blue-600 font-bold'
-                          : 'text-gray-600 hover:text-blue-600')
-                      }
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </nav>
+              {/* RIGHT COLUMN: 2-Row Vertical Stack */}
+              <div className="flex-1 flex flex-col justify-center gap-2 relative">
 
-                {/* Account & Cart positioned on the Far Right */}
-                <div className="ml-auto flex items-center gap-4 text-sm shrink-0">
-                  {/* Account */}
-                  <div className="relative">
-                    <button
-                      onClick={() => (isLoggedIn ? setUserMenuOpen((v) => !v) : openLogin())}
-                      className="flex items-center gap-2 font-semibold uppercase tracking-wide text-gray-700 hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap py-1 px-2.5 rounded-lg hover:bg-gray-50"
+                {/* ROW 1 (TOP): Search Widget & Phone/Email Stack ABOVE Account & Cart (Upper Right) */}
+                <div className="flex items-center justify-end border-b border-gray-100 pb-1.5">
+                  <div className="flex flex-col items-center gap-1.5 w-80 xl:w-[410px]">
+                    {/* Search Input Bar */}
+                    <form
+                      onSubmit={(e) => { e.preventDefault(); openSearch() }}
+                      className="w-full"
                     >
-                      <i className="fa-regular fa-user text-base text-blue-600"></i>
-                      <span>{isLoggedIn ? (user?.name?.split(' ')[0] || 'Account') : 'Sign In'}</span>
-                      <i className="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
-                    </button>
-
-                    {isLoggedIn && userMenuOpen && (
-                      <div
-                        className="absolute right-0 top-full mt-2 w-52 bg-white shadow-xl border border-gray-100 rounded-lg py-2 z-50"
-                        onMouseLeave={() => setUserMenuOpen(false)}
-                      >
-                        <div className="px-4 pb-2 border-b border-gray-100">
-                          <p className="text-sm font-bold text-gray-900 truncate">{user?.name || 'Account'}</p>
-                          <p className="text-[11px] text-gray-500 truncate">{user?.email || ''}</p>
-                        </div>
-                        <Link
-                          to="/account"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                        >
-                          <i className="fa-solid fa-user-gear text-xs mr-2"></i> My Account
-                        </Link>
-                        <Link
-                          to="/orders"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                        >
-                          <i className="fa-solid fa-box text-xs mr-2"></i> Orders
-                        </Link>
+                      <div className="relative w-full">
+                        <input
+                          name="searchQuery"
+                          type="text"
+                          placeholder="What are you looking for?"
+                          readOnly
+                          onClick={openSearch}
+                          className="w-full border border-gray-300 rounded-full pl-4 pr-10 py-1.5 text-xs text-gray-700 placeholder-gray-400 bg-gray-50/80 hover:bg-gray-50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer shadow-sm"
+                        />
                         <button
-                          onClick={() => { setUserMenuOpen(false); logout() }}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          type="button"
+                          onClick={openSearch}
+                          className="absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors cursor-pointer"
+                          aria-label="Search"
                         >
-                          <i className="fa-solid fa-arrow-right-from-bracket text-xs mr-2"></i> Logout
+                          <i className="fa-solid fa-magnifying-glass text-[11px]"></i>
                         </button>
                       </div>
-                    )}
+                    </form>
+
+                    {/* Phone Number & Support Email directly UNDERNEATH Search Bar (Increased Font Size & Gap) */}
+                    <div className="flex items-center justify-center gap-6 xl:gap-8 text-[13px] xl:text-[14px] text-gray-700 font-semibold w-full mt-0.5">
+                      <a
+                        href={'tel:' + SUPPORT_PHONE.replace(/\s/g, '')}
+                        className="hover:text-blue-600 transition-colors whitespace-nowrap"
+                      >
+                        <span>{SUPPORT_PHONE}</span>
+                      </a>
+                      <a
+                        href={'mailto:' + SUPPORT_EMAIL}
+                        className="hover:text-blue-600 transition-colors whitespace-nowrap"
+                      >
+                        <span>{SUPPORT_EMAIL}</span>
+                      </a>
+                    </div>
                   </div>
-
-                  <span className="w-px h-5 bg-gray-200"></span>
-
-                  {/* Cart with Item Count Badge */}
-                  <button
-                    onClick={openCart}
-                    className="inline-flex items-center gap-2.5 font-semibold uppercase tracking-wide text-gray-700 hover:text-blue-600 transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-gray-50"
-                    aria-label="Cart"
-                  >
-                    <i className="fa-solid fa-bag-shopping text-lg text-blue-600"></i>
-                    <span className="text-xs font-bold uppercase tracking-wider">Cart</span>
-                    <span className="bg-[#baf120] text-black text-[11px] font-black rounded-full min-w-[20px] h-[20px] px-1 flex items-center justify-center leading-none shadow-sm">
-                      {totalCount}
-                    </span>
-                  </button>
                 </div>
+
+                {/* ROW 2 (BOTTOM): Navigation Links (CENTERED) + ACCOUNT & CART (Far Right) */}
+                <div className="relative flex items-center justify-between pt-0.5 min-h-[32px]">
+                  {/* Centered Navigation Links */}
+                  <nav className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center gap-8">
+                    {QUICK_LINKS.map((link) => (
+                      <Link
+                        key={link.label}
+                        to={link.to}
+                        className={
+                          'font-bold text-[14px] xl:text-[15px] uppercase tracking-wider transition-colors whitespace-nowrap ' +
+                          (location.pathname === link.to
+                            ? 'text-blue-600 font-extrabold'
+                            : 'text-gray-700 hover:text-blue-600')
+                        }
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </nav>
+
+                  {/* Account & Cart positioned on the Far Right */}
+                  <div className="ml-auto flex items-center gap-4 text-sm shrink-0">
+                    {/* Account */}
+                    <div className="relative">
+                      <button
+                        onClick={() => (isLoggedIn ? setUserMenuOpen((v) => !v) : openLogin())}
+                        className="flex items-center gap-2 font-semibold uppercase tracking-wide text-gray-700 hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap py-1 px-2.5 rounded-lg hover:bg-gray-50"
+                      >
+                        <i className="fa-regular fa-user text-base text-blue-600"></i>
+                        <span>{isLoggedIn ? (user?.name?.split(' ')[0] || 'Account') : 'Sign In'}</span>
+                        <i className="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
+                      </button>
+
+                      {isLoggedIn && userMenuOpen && (
+                        <div
+                          className="absolute right-0 top-full mt-2 w-52 bg-white shadow-xl border border-gray-100 rounded-lg py-2 z-50"
+                          onMouseLeave={() => setUserMenuOpen(false)}
+                        >
+                          <div className="px-4 pb-2 border-b border-gray-100">
+                            <p className="text-sm font-bold text-gray-900 truncate">{user?.name || 'Account'}</p>
+                            <p className="text-[11px] text-gray-500 truncate">{user?.email || ''}</p>
+                          </div>
+                          <Link
+                            to="/account"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          >
+                            <i className="fa-solid fa-user-gear text-xs mr-2"></i> My Account
+                          </Link>
+                          <Link
+                            to="/orders"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          >
+                            <i className="fa-solid fa-box text-xs mr-2"></i> Orders
+                          </Link>
+                          <button
+                            onClick={() => { setUserMenuOpen(false); logout() }}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          >
+                            <i className="fa-solid fa-arrow-right-from-bracket text-xs mr-2"></i> Logout
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <span className="w-px h-5 bg-gray-200"></span>
+
+                    {/* Cart with Item Count Badge */}
+                    <button
+                      onClick={openCart}
+                      className="inline-flex items-center gap-2.5 font-semibold uppercase tracking-wide text-gray-700 hover:text-blue-600 transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-gray-50"
+                      aria-label="Cart"
+                    >
+                      <i className="fa-solid fa-bag-shopping text-lg text-blue-600"></i>
+                      <span className="text-xs font-bold uppercase tracking-wider">Cart</span>
+                      <span className="bg-[#baf120] text-black text-[11px] font-black rounded-full min-w-[20px] h-[20px] px-1 flex items-center justify-center leading-none shadow-sm">
+                        {totalCount}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+
               </div>
 
             </div>
@@ -268,6 +270,22 @@ export default function Navbar() {
         </div>
 
         {/* ======================== CATEGORY BAR ======================== */}
+        {/* Mobile Horizontal Scrollable Category Bar (< lg) */}
+        <div className="bg-[#1e3a5f] lg:hidden border-t border-blue-900/40 py-2 px-4">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
+            {CATEGORIES.map((cat) => (
+              <Link
+                key={cat.slug}
+                to={'/shop/' + cat.slug}
+                className="inline-block px-3 py-1 bg-white/10 hover:bg-white/20 active:bg-white/30 rounded-full text-white text-[11px] font-bold uppercase tracking-wider transition-colors shadow-xs"
+              >
+                {cat.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop Category Megamenu Bar (>= lg) */}
         <div className="bg-[#1e3a5f] hidden lg:block">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
             <div className="flex items-center overflow-x-auto no-scrollbar">
@@ -304,22 +322,22 @@ export default function Navbar() {
         </div>
 
         {/* ======================== FEATURE STRIP ======================== */}
-        <div className="bg-[#f8f9fb] border-b border-gray-200 hidden lg:block">
+        <div className="bg-[#f8f9fb] border-b border-gray-200">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
-            <div className="grid grid-cols-4 divide-x divide-gray-200">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-0 py-2.5 lg:py-0 lg:divide-x divide-gray-200">
               {FEATURES.map((feat) => (
                 <div
                   key={feat.title}
-                  className="flex items-center gap-3 py-3 px-5 xl:px-6"
+                  className="flex items-center gap-2.5 lg:gap-3 py-1.5 lg:py-3 px-2 sm:px-4 xl:px-6 bg-white lg:bg-transparent rounded-xl lg:rounded-none border border-gray-100 lg:border-0 shadow-xs lg:shadow-none"
                 >
-                  <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-                    <i className={feat.icon + ' text-blue-600 text-base'}></i>
+                  <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
+                    <i className={feat.icon + ' text-blue-600 text-xs lg:text-base'}></i>
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 leading-none mb-0.5">
+                    <p className="text-[9px] lg:text-[11px] font-bold uppercase tracking-wider text-gray-400 leading-none mb-0.5 truncate">
                       {feat.title}
                     </p>
-                    <p className="text-[13px] font-semibold text-gray-800 leading-tight">
+                    <p className="text-[11px] lg:text-[13px] font-semibold text-gray-800 leading-tight truncate">
                       {feat.line1}{' '}
                       <span className="text-blue-600">{feat.highlight}</span>
                     </p>

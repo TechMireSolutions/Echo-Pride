@@ -42,7 +42,7 @@ function Hero({ heroTag, title, intro, image, variant, heroAside, heroBottom }) 
               <span className="text-[#baf120] text-xs sm:text-sm font-extrabold uppercase tracking-[0.25em] inline-block animate-fade-in-up delay-1">
                 {heroTag}
               </span>
-              <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tight text-white animate-fade-in-up delay-2">
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white animate-fade-in-up delay-2">
                 {title}
               </h1>
               <p className="text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed max-w-xl font-light animate-fade-in-up delay-3">
@@ -60,7 +60,7 @@ function Hero({ heroTag, title, intro, image, variant, heroAside, heroBottom }) 
               <span className="text-[#baf120] text-xs sm:text-sm font-extrabold uppercase tracking-[0.25em] inline-block animate-fade-in-up delay-1">
                 {heroTag}
               </span>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-white animate-fade-in-up delay-2">
+              <h1 className="text-2xl sm:text-4xl md:text-6xl font-black uppercase tracking-tight text-white animate-fade-in-up delay-2">
                 {title}
               </h1>
               <p className="text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed max-w-2xl mx-auto font-light animate-fade-in-up delay-3">
@@ -77,7 +77,7 @@ function Hero({ heroTag, title, intro, image, variant, heroAside, heroBottom }) 
             <span className="text-[#baf120] text-xs sm:text-sm font-extrabold uppercase tracking-[0.25em] inline-block animate-fade-in-up delay-1">
               {heroTag}
             </span>
-            <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tight text-white animate-fade-in-up delay-2">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-white animate-fade-in-up delay-2">
               {title}
             </h1>
             <p className="text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed max-w-2xl font-light animate-fade-in-up delay-3">

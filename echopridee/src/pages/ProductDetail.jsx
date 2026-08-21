@@ -115,7 +115,7 @@ export default function ProductDetail() {
               <img
                 src={`/${product.image}`}
                 alt={product.title}
-                className="w-full h-[520px] object-cover transition-transform duration-700 group-hover:scale-105"
+                className="w-full h-[320px] sm:h-[420px] lg:h-[520px] object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <span className="absolute top-4 left-4 bg-[#baf120] text-black text-xs font-bold px-3 py-1 rounded uppercase tracking-wider">
                 In Stock
@@ -144,31 +144,61 @@ export default function ProductDetail() {
             <div className="border-y border-white/10 py-4 space-y-2.5">
               <div className="flex items-baseline gap-2.5 flex-wrap">
                 <span className="text-4xl font-extrabold text-white">{formatPrice(unitPrice)}</span>
-                <span className="text-xs font-extrabold uppercase tracking-widest text-[#baf120]">Per Piece</span>
-                <p className="w-full flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                  <i className="fa-solid fa-boxes-stacked text-[#baf120]"></i>
-                  Minimum Order: {minQty} Pieces
-                </p>
+                <span className="text-xs font-extrabold uppercase tracking-widest text-[#baf120] bg-[#baf120]/10 px-2.5 py-1 rounded border border-[#baf120]/30">Wholesale Bulk Rate</span>
               </div>
+              <p className="w-full flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                <i className="fa-solid fa-boxes-stacked text-[#baf120]"></i>
+                Minimum Bulk Order: {minQty} Pieces Total
+              </p>
             </div>
 
             <p className="text-sm text-gray-300 leading-relaxed">{product.description}</p>
 
-            <div className="space-y-3">
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-300">
-                Size Breakdown (Min. {minQty} Pieces Total)
-              </label>
-              <div className="rounded-xl bg-neutral-900 border border-neutral-800 divide-y divide-neutral-800">
+            <div className="space-y-4 bg-neutral-900/60 p-5 rounded-2xl border border-neutral-800">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-extrabold uppercase tracking-wider text-white">
+                  Bulk Size Selection (Enter Quantity Per Size)
+                </label>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#baf120] bg-[#baf120]/10 px-2 py-0.5 rounded">
+                  Bulk Wholesale Only
+                </span>
+              </div>
+
+              {/* Quick Bulk Presets */}
+              <div className="space-y-1.5 pt-1">
+                <span className="text-[11px] font-semibold text-gray-400">Quick Bulk Presets (Auto-Split Across Sizes):</span>
+                <div className="flex flex-wrap gap-2">
+                  {[12, 24, 36, 48, 100].map((presetQty) => (
+                    <button
+                      key={presetQty}
+                      type="button"
+                      onClick={() => setBreakdown(initialBreakdown(presetQty))}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-extrabold border transition-all cursor-pointer ${
+                        totalPieces === presetQty
+                          ? 'bg-[#baf120] text-black border-[#baf120] shadow-md scale-105'
+                          : 'bg-black/60 text-gray-300 border-neutral-700 hover:border-white hover:text-white'
+                      }`}
+                    >
+                      {presetQty} Pcs
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-xl bg-black/40 border border-neutral-800 divide-y divide-neutral-800/80">
                 {SIZES.map((size) => {
                   const value = breakdown[size] || 0
                   return (
-                    <div key={size} className="flex items-center justify-between px-4 py-2.5">
-                      <span className="text-sm font-bold text-white w-12">{size}</span>
-                      <div className="inline-flex items-center border border-gray-700 rounded bg-black/30">
+                    <div key={size} className="flex items-center justify-between px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-white w-12">{size}</span>
+                        <span className="text-[10px] text-gray-500 font-medium hidden sm:inline">Size {size}</span>
+                      </div>
+                      <div className="inline-flex items-center border border-gray-700 rounded-lg bg-black/60">
                         <button
                           onClick={() => stepSizeQty(size, -1)}
                           disabled={value <= 0}
-                          className="px-3 py-1.5 text-gray-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed font-bold text-xs"
+                          className="px-3.5 py-2 text-gray-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed font-bold text-sm cursor-pointer"
                           aria-label={`Decrease quantity for size ${size}`}
                         >
                           −
@@ -179,11 +209,11 @@ export default function ProductDetail() {
                           value={value}
                           onChange={(e) => setSizeQty(size, e.target.value)}
                           aria-label={`Quantity for size ${size}`}
-                          className="w-14 bg-transparent text-center px-1 py-1.5 text-sm font-bold text-white outline-none"
+                          className="w-16 bg-transparent text-center px-1 py-2 text-sm font-extrabold text-white outline-none"
                         />
                         <button
                           onClick={() => stepSizeQty(size, 1)}
-                          className="px-3 py-1.5 text-gray-300 hover:text-white font-bold text-xs"
+                          className="px-3.5 py-2 text-gray-300 hover:text-white font-bold text-sm cursor-pointer"
                           aria-label={`Increase quantity for size ${size}`}
                         >
                           +
@@ -195,32 +225,32 @@ export default function ProductDetail() {
               </div>
 
               <div
-                className={`flex items-center justify-between gap-4 rounded-lg border px-4 py-3 ${
-                  meetMin ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-red-500/30 bg-red-500/5'
+                className={`flex items-center justify-between gap-4 rounded-xl border px-4 py-3 ${
+                  meetMin ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-red-500/30 bg-red-500/10'
                 }`}
               >
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
-                  Total{' '}
-                  <span className={meetMin ? 'text-emerald-400' : 'text-red-400'}>
+                <span className="text-xs font-bold uppercase tracking-wider text-gray-300">
+                  Total Bulk Order:{' '}
+                  <span className={meetMin ? 'text-emerald-400 font-extrabold text-sm' : 'text-red-400 font-extrabold text-sm'}>
                     {totalPieces} / {minQty}
                   </span>{' '}
-                  pieces
+                  Pieces
                 </span>
                 {!meetMin && (
-                  <span className="text-[10px] font-bold text-red-400">Add {minQty - totalPieces} more</span>
+                  <span className="text-[10px] font-bold text-red-400 bg-red-500/20 px-2 py-0.5 rounded">Add {minQty - totalPieces} more pieces</span>
                 )}
               </div>
               {!meetMin && (
                 <p className="text-xs font-semibold text-red-400 flex items-center gap-1.5">
-                  <i className="fa-solid fa-circle-exclamation"></i> Minimum wholesale order quantity is {minQty} pieces.
+                  <i className="fa-solid fa-circle-exclamation"></i> Minimum wholesale order is {minQty} pieces total across selected sizes.
                 </p>
               )}
 
-              <div className="flex items-center justify-between gap-4 rounded bg-neutral-900 border border-neutral-800 px-4 py-2.5">
+              <div className="flex items-center justify-between gap-4 rounded-xl bg-black/60 border border-neutral-800 px-4 py-3">
                 <span className="text-xs text-gray-400 font-medium">
                   Subtotal ({totalPieces} pieces × {formatPrice(unitPrice, { showCode: false })})
                 </span>
-                <span className="text-sm font-extrabold text-[#baf120]">{formatPrice(totalPrice)}</span>
+                <span className="text-base font-extrabold text-[#baf120]">{formatPrice(totalPrice)}</span>
               </div>
             </div>
 

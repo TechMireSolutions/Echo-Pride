@@ -9,7 +9,7 @@ export default function GlobalHeader() {
   if (pathname.startsWith('/admin')) return null
 
   return (
-    <header className="sticky top-0 z-50">
+    <header className="relative z-40">
       <AnnouncementBar />
       <Navbar />
     </header>

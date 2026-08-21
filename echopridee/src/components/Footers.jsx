@@ -78,6 +78,84 @@ function SelectorButtons({ small = false }) {
   )
 }
 
+export function UltimateFooterBottom() {
+  return (
+    <div className="bg-black text-white border-t border-neutral-800 py-10 px-6 font-sans">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-start justify-between gap-8 pb-8 border-b border-neutral-800/80">
+        
+        {/* Contact Us Section */}
+        <div className="flex flex-col items-center md:items-start gap-1">
+          <h3 className="font-extrabold text-white text-base tracking-wide mb-1">Contact Us</h3>
+          <a
+            href="tel:+17139975586"
+            className="text-sm md:text-base font-bold text-white hover:text-[#baf120] transition-colors"
+          >
+            +1 (713) 997-5586
+          </a>
+          <a
+            href="mailto:support@echopride.com"
+            className="text-xs md:text-sm text-gray-300 hover:text-[#baf120] transition-colors"
+          >
+            support@echopride.com
+          </a>
+        </div>
+
+        {/* We Accept Section */}
+        <div className="flex flex-col items-center md:items-end gap-2">
+          <h3 className="font-extrabold text-white text-base tracking-wide mb-1">We Accept</h3>
+          <div className="flex items-center gap-2 flex-wrap justify-center">
+            {/* PayPal */}
+            <div className="bg-white rounded px-2.5 py-1.5 flex items-center justify-center shadow-sm h-8 w-14">
+              <span className="font-extrabold italic text-xs text-[#003087]">Pay<span className="text-[#0079C1]">Pal</span></span>
+            </div>
+            {/* VISA */}
+            <div className="bg-white rounded px-2.5 py-1.5 flex items-center justify-center shadow-sm h-8 w-14">
+              <span className="font-black italic text-xs tracking-wider text-[#1A1F71]">VISA</span>
+            </div>
+            {/* MasterCard */}
+            <div className="bg-white rounded px-2.5 py-1.5 flex items-center justify-center shadow-sm h-8 w-14">
+              <div className="flex items-center -space-x-1.5">
+                <span className="w-3.5 h-3.5 rounded-full bg-[#EB001B] inline-block opacity-90"></span>
+                <span className="w-3.5 h-3.5 rounded-full bg-[#F79E1B] inline-block opacity-90"></span>
+              </div>
+            </div>
+            {/* Discover */}
+            <div className="bg-white rounded px-2.5 py-1.5 flex items-center justify-center shadow-sm h-8 w-14">
+              <span className="font-bold text-[10px] text-gray-800 uppercase tracking-tighter">DISCOVER</span>
+            </div>
+            {/* AMEX */}
+            <div className="bg-[#016FD0] rounded px-2.5 py-1.5 flex items-center justify-center shadow-sm h-8 w-14">
+              <span className="font-black text-[9px] text-white uppercase tracking-tighter">AMEX</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Copyright & Developed By */}
+      <div className="max-w-7xl mx-auto pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-400">
+        <p className="text-gray-300 text-center md:text-left">
+          &copy; 2026 Echo Pride. All rights reserved. Developed by{" "}
+          <a
+            href="https://techmiresolutions.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#EC6929] font-bold hover:text-[#f5854d] transition-colors"
+          >
+            Techmire Solutions
+          </a>
+          .
+        </p>
+        <div className="flex items-center gap-4 text-xs text-gray-400">
+          <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+          <span>•</span>
+          <Link to="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function FooterAmazon() {
   return (
     <footer className="bg-black text-white select-none">
@@ -100,23 +178,7 @@ export function FooterAmazon() {
           ))}
         </div>
       </div>
-      <div className="bg-black border-t border-neutral-800 py-8 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-6">
-            <Link to="/" className="flex items-center">
-              <img src="/imgi_2_WLogowithicon.webp" alt="Echo Pride Logo" className="h-10 w-auto object-contain" />
-            </Link>
-            <SelectorButtons />
-          </div>
-          <p className="text-xs text-white text-center md:text-right">
-            &copy; 2026 Echo Pride. All rights reserved. Developed by{" "}
-            <a href="https://techmiresolutions.com/" target="_blank" rel="noopener noreferrer" className="text-[#EC6929] hover:text-[#f5854d] transition-colors">
-              Techmire Solutions
-            </a>
-            .
-          </p>
-        </div>
-      </div>
+      <UltimateFooterBottom />
     </footer>
   )
 }
@@ -165,28 +227,7 @@ export function FooterCard() {
           ))}
         </div>
       </div>
-      <div className="bg-black border-t border-neutral-800 py-8 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <Link to="/" className="flex items-center">
-            <img src="/imgi_2_WLogowithicon.webp" alt="Echo Pride Logo" className="h-8 w-auto object-contain" />
-          </Link>
-          <div className="flex flex-wrap items-center justify-center gap-3 md:justify-end text-xs text-gray-300">
-            <button className="border border-gray-600 rounded px-3 py-1.5 flex items-center gap-2 hover:border-white transition-colors">
-              <i className="fa-solid fa-globe text-gray-400"></i>
-              <span>English</span>
-              <i className="fa-solid fa-sort text-[10px] text-gray-400 ml-1"></i>
-            </button>
-            <button className="border border-gray-600 rounded px-3 py-1.5 flex items-center gap-2 hover:border-white transition-colors">
-              <span className="font-semibold text-gray-400">USD</span>
-              <span>US Dollar</span>
-            </button>
-            <button className="border border-gray-600 rounded px-3 py-1.5 flex items-center gap-2 hover:border-white transition-colors">
-              <span className="font-semibold text-gray-400">us</span>
-              <span>United States</span>
-            </button>
-          </div>
-        </div>
-      </div>
+      <UltimateFooterBottom />
     </footer>
   )
 }
@@ -240,12 +281,12 @@ export function FooterAbout() {
               </Link>
             </li>
             <li>
-              <Link to="/contact" className="hover:text-[#baf120] transition-colors">
+              <Link to="/orders" className="hover:text-[#baf120] transition-colors">
                 Order Status
               </Link>
             </li>
             <li>
-              <Link to="/contact" className="hover:text-[#baf120] transition-colors">
+              <Link to="/help" className="hover:text-[#baf120] transition-colors">
                 Help & FAQs
               </Link>
             </li>
@@ -305,7 +346,7 @@ export function FooterAbout() {
           </form>
         </div>
       </div>
-
+      <UltimateFooterBottom />
     </footer>
   )
 }
@@ -333,12 +374,12 @@ export function FooterContact() {
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:underline">
+                <Link to="/careers" className="hover:underline">
                   Careers
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:underline">
+                <Link to="/store-locations" className="hover:underline">
                   Store Locations
                 </Link>
               </li>
@@ -370,17 +411,17 @@ export function FooterContact() {
             <h3 className="font-bold text-white text-base mb-3">Customer Support</h3>
             <ul className="space-y-2 text-sm text-gray-300">
               <li>
-                <Link to="/contact" className="hover:underline">
+                <Link to="/help" className="hover:underline">
                   Help & Contact Us
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:underline">
+                <Link to="/shipping-policies" className="hover:underline">
                   Shipping & Returns
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:underline">
+                <Link to="/help" className="hover:underline">
                   FAQ
                 </Link>
               </li>
@@ -406,26 +447,7 @@ export function FooterContact() {
           </div>
         </div>
       </div>
-
-      <div className="bg-[#131a22] border-t border-gray-700/60 py-6 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-400">
-          <p className="text-white">
-            &copy; 2026 Echo Pride. All rights reserved. Developed by{" "}
-            <a href="https://techmiresolutions.com/" target="_blank" rel="noopener noreferrer" className="text-[#EC6929] hover:text-[#f5854d] transition-colors">
-              Techmire Solutions
-            </a>
-            .
-          </p>
-          <div className="flex items-center gap-4">
-            <Link to="/about" className="hover:underline">
-              Privacy Policy
-            </Link>
-            <Link to="/about" className="hover:underline">
-              Terms of Service
-            </Link>
-          </div>
-        </div>
-      </div>
+      <UltimateFooterBottom />
     </footer>
   )
 }
