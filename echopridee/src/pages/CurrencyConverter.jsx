@@ -6,7 +6,6 @@ const rates = [
   { currency: 'US Dollar', code: 'USD', rate: '1.0000' },
   { currency: 'Euro', code: 'EUR', rate: '0.9210' },
   { currency: 'British Pound', code: 'GBP', rate: '0.7842' },
-  { currency: 'Pakistani Rupee', code: 'PKR', rate: '278.4500' },
   { currency: 'UAE Dirham', code: 'AED', rate: '3.6725' },
   { currency: 'Saudi Riyal', code: 'SAR', rate: '3.7500' },
   { currency: 'Canadian Dollar', code: 'CAD', rate: '1.3680' },
@@ -16,7 +15,7 @@ const rates = [
 export default function CurrencyConverter() {
   const [amount, setAmount] = useState('100')
   const [from, setFrom] = useState('USD')
-  const [to, setTo] = useState('PKR')
+  const [to, setTo] = useState('EUR')
 
   const rateFrom = rates.find((r) => r.code === from)?.rate
   const rateTo = rates.find((r) => r.code === to)?.rate

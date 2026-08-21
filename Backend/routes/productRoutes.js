@@ -37,7 +37,7 @@ const slugify = (input) =>
 function getTiers(productId) {
   return db
     .prepare(
-      'SELECT id, type, min_quantity, price, label FROM price_tiers WHERE product_id = ? ORDER BY (type = \'retail\') DESC, min_quantity ASC',
+      'SELECT id, type, min_quantity, price, label FROM price_tiers WHERE product_id = ? ORDER BY min_quantity ASC',
     )
     .all(productId)
     .map((t) => ({
@@ -79,11 +79,7 @@ function serializeProduct(row) {
     description: row.description,
     sku: row.sku,
     price: Number(row.price),
-    retailPrice: Number(row.retail_price) || Number(row.price) || 0,
     wholesaleMinQuantity: Number(row.wholesale_min_quantity) || 0,
-    compareAtPrice: row.compare_at_price === null || row.compare_at_price === undefined
-      ? null
-      : Number(row.compare_at_price),
     stockQuantity: Number(row.stock_quantity),
     inventoryStatus: inventoryStatusOf(row.stock_quantity),
     isFeatured: Boolean(row.is_featured),
@@ -134,10 +130,10 @@ const asyncWrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)
 
 function parseTiers(body) {
   const raw = Array.isArray(body.tiers) ? body.tiers : []
-  const retailPrice = Number(body.retailPrice) || Number(body.price) || 0
+  const basePrice = Number(body.price) || 0
   const wholesaleMinQuantity = Math.max(0, Math.floor(Number(body.wholesaleMinQuantity) || 0))
   const wholesalePrice = Number(body.price) || 0
-  const normalized = normalizeTiers(raw, retailPrice, { wholesaleMinQuantity, wholesalePrice })
+  const normalized = normalizeTiers(raw, basePrice, { wholesaleMinQuantity, wholesalePrice })
   const list = normalized.filter((t) => t.price > 0)
   return list
 }
@@ -148,7 +144,7 @@ function replaceProductTiers(productId, tiers) {
     'INSERT INTO price_tiers (product_id, type, min_quantity, price, label) VALUES (?, ?, ?, ?, ?)',
   )
   for (const t of tiers) {
-    insert.run(productId, t.type, t.minQuantity, t.price, t.label || (t.type === 'retail' ? 'Retail' : `Wholesale ${t.minQuantity}+`))
+    insert.run(productId, 'wholesale', t.minQuantity, t.price, t.label || `Wholesale ${t.minQuantity}+`)
   }
 }
 
@@ -324,8 +320,8 @@ router.post(
     const result = db
       .prepare(
         `INSERT INTO products
-           (slug, name, description, sku, price, compare_at_price, stock_quantity, is_featured, category_id, retail_price, wholesale_min_quantity)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+           (slug, name, description, sku, price, stock_quantity, is_featured, category_id, wholesale_min_quantity)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .run(
         slug,
@@ -333,13 +329,9 @@ router.post(
         String(body.description || ''),
         String(body.sku || ''),
         Number(body.price) || 0,
-        body.compareAtPrice === undefined || body.compareAtPrice === null
-          ? null
-          : Number(body.compareAtPrice),
         Number(body.stockQuantity) || 0,
         body.isFeatured ? 1 : 0,
         categoryId,
-        Number(body.retailPrice) || 0,
         Math.max(0, Math.floor(Number(body.wholesaleMinQuantity) || 0)),
       )
 
@@ -381,8 +373,8 @@ router.put(
 
     db.prepare(
       `UPDATE products SET
-         slug = ?, name = ?, description = ?, sku = ?, price = ?, compare_at_price = ?,
-         retail_price = ?, wholesale_min_quantity = ?, stock_quantity = ?, is_featured = ?, category_id = ?, updated_at = datetime('now')
+         slug = ?, name = ?, description = ?, sku = ?, price = ?,
+         wholesale_min_quantity = ?, stock_quantity = ?, is_featured = ?, category_id = ?, updated_at = datetime('now')
        WHERE id = ?`,
     ).run(
       slug,
@@ -390,14 +382,6 @@ router.put(
       body.description !== undefined ? String(body.description) : current.description,
       body.sku !== undefined ? String(body.sku) : current.sku,
       body.price !== undefined ? Number(body.price) : current.price,
-      body.compareAtPrice !== undefined
-        ? body.compareAtPrice === null
-          ? null
-          : Number(body.compareAtPrice)
-        : current.compare_at_price,
-      body.retailPrice !== undefined
-        ? Number(body.retailPrice)
-        : Number(current.retail_price) || 0,
       body.wholesaleMinQuantity !== undefined
         ? Math.max(0, Math.floor(Number(body.wholesaleMinQuantity) || 0))
         : Number(current.wholesale_min_quantity) || 0,
@@ -419,10 +403,6 @@ router.put(
       replaceProductTiers(id, parseTiers({
         ...body,
         price: body.price !== undefined ? body.price : current.price,
-        retailPrice:
-          body.retailPrice !== undefined
-            ? body.retailPrice
-            : Number(current.retail_price) || current.price,
         wholesaleMinQuantity:
           body.wholesaleMinQuantity !== undefined
             ? body.wholesaleMinQuantity
@@ -462,7 +442,7 @@ router.get(
     const quantity = Math.max(1, Math.floor(Number(req.query.qty) || 1))
     const tiers = getTiers(product.id)
     const result = quote({
-      retailPrice: Number(product.retail_price) || Number(product.price) || 0,
+      basePrice: Number(product.price) || 0,
       tiers,
       quantity,
       wholesaleMinQuantity: Number(product.wholesale_min_quantity) || 0,
@@ -483,7 +463,7 @@ router.post(
     const quantity = Math.max(1, Math.floor(Number(req.body?.quantity) || 1))
     const tiers = getTiers(product.id)
     const result = quote({
-      retailPrice: Number(product.retail_price) || Number(product.price) || 0,
+      basePrice: Number(product.price) || 0,
       tiers,
       quantity,
       wholesaleMinQuantity: Number(product.wholesale_min_quantity) || 0,

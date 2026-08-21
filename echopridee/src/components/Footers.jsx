@@ -67,8 +67,8 @@ function SelectorButtons({ small = false }) {
         <i className="fa-solid fa-sort text-[10px] text-gray-400"></i>
       </button>
       <button className="border border-gray-600 hover:border-gray-300 rounded px-3 py-1.5 flex items-center gap-2 bg-transparent transition-colors font-medium">
-        <span className="font-semibold text-gray-400">PKR</span>
-        <span>Pakistani Rupee</span>
+        <span className="font-semibold text-gray-400">USD</span>
+        <span>US Dollar</span>
       </button>
       <button className="border border-gray-600 hover:border-gray-300 rounded px-3 py-1.5 flex items-center gap-2 bg-transparent transition-colors">
         <span className="text-sm">🇺🇸</span>
@@ -123,7 +123,7 @@ export function FooterAmazon() {
 
 const cardFeatures = [
   { icon: 'fa-solid fa-truck', title: 'Ship to Home', text: 'Order online and have products shipped to you.' },
-  { icon: 'fa-solid fa-box', title: 'Free In-Store Pickup', text: 'Order online and pick up in store.' },
+  { icon: 'fa-solid fa-box', title: 'Bulk Order Discounts', text: 'Save more on volume orders for your whole team.' },
   { icon: 'fa-solid fa-credit-card', title: 'Credit Offered', text: 'Turn big purchases into small payments.' },
   { icon: 'fa-solid fa-headset', title: 'Customer Support', text: "We're here to help you find what you need." },
 ]
@@ -177,8 +177,8 @@ export function FooterCard() {
               <i className="fa-solid fa-sort text-[10px] text-gray-400 ml-1"></i>
             </button>
             <button className="border border-gray-600 rounded px-3 py-1.5 flex items-center gap-2 hover:border-white transition-colors">
-              <span className="font-semibold text-gray-400">PKR</span>
-              <span>Pakistani Rupee</span>
+              <span className="font-semibold text-gray-400">USD</span>
+              <span>US Dollar</span>
             </button>
             <button className="border border-gray-600 rounded px-3 py-1.5 flex items-center gap-2 hover:border-white transition-colors">
               <span className="font-semibold text-gray-400">us</span>

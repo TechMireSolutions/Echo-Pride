@@ -65,7 +65,7 @@ const whyPoints = [
 
 const serviceRow = [
   { icon: 'fa-solid fa-truck', title: 'Ship to Home', text: 'Order online and have products shipped directly to your doorstep.' },
-  { icon: 'fa-solid fa-store', title: 'Free In-Store Pickup', text: 'Order online and pick up in-store at your convenience.' },
+  { icon: 'fa-solid fa-store', title: 'Bulk Order Discounts', text: 'Save more on volume orders for your whole team.' },
   { icon: 'fa-solid fa-credit-card', title: 'Flexible Payment', text: 'Turn big purchases into small, manageable payments.' },
   { icon: 'fa-solid fa-headset', title: '24/7 Support', text: 'Our team is always here to help you find what you need.' },
 ]

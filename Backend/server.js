@@ -186,11 +186,22 @@ const serializeUser = (u) => ({
 
 /* --------------------------- Seed admin user ------------------------ */
 
+// Valid bcrypt hashes look like $2a$10$<53 chars>. Anything else (plain text,
+// empty, legacy hash) cannot authenticate and is repaired on boot.
+const BCRYPT_HASH_RE = /^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$/
+
 ;(function ensureAdmin() {
   const email = (process.env.ADMIN_EMAIL || 'admin@echopride.com').toLowerCase()
-  const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email)
-  if (existing) return
-  const hash = bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'admin110', 10)
+  const password = process.env.ADMIN_PASSWORD || 'admin110'
+  const existing = db.prepare('SELECT id, password_hash FROM users WHERE email = ?').get(email)
+  if (existing && BCRYPT_HASH_RE.test(String(existing.password_hash || ''))) return
+
+  const hash = bcrypt.hashSync(password, 10)
+  if (existing) {
+    db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(hash, existing.id)
+    console.log(`[db] Repaired invalid admin password hash: ${email}`)
+    return
+  }
   db.prepare('INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)').run(
     'Echo Pride Admin',
     email,
@@ -311,7 +322,6 @@ function serializeCartItem(row) {
       slug: row.slug,
       name: row.name,
       price: Number(row.price),
-      compareAtPrice: row.compare_at_price === null ? null : Number(row.compare_at_price),
       stockQuantity: Number(row.stock_quantity),
       images: String(row.images).split(',').filter(Boolean),
       category: row.category_name
@@ -425,12 +435,18 @@ function getProductTiers(productId) {
 
 /**
  * Effective unit price for a product at a given quantity, applying the
- * dual-pricing (retail + wholesale volume tiers) engine. Falls back to the
- * retail price when no tier applies.
+ * wholesale volume-tier engine. Falls back to the wholesale unit price when no
+ * tier applies.
  */
 function effectiveUnitPrice(product, quantity) {
   const tiers = getProductTiers(product.id)
-  const q = quote({ retailPrice: Number(product.price), tiers, quantity })
+  const q = quote({
+    basePrice: Number(product.price),
+    tiers,
+    quantity,
+    wholesaleMinQuantity: Number(product.wholesale_min_quantity) || 0,
+    wholesalePrice: Number(product.price) || 0,
+  })
   return q.unitPrice
 }
 
@@ -542,6 +558,12 @@ app.post(
       res.status(400).json({ success: false, message: 'Shipping details are required.' })
       return
     }
+    const customization = {
+      color: typeof req.body?.color === 'string' ? req.body.color.trim() : '',
+      logo: typeof req.body?.logo === 'string' ? req.body.logo.trim() : '',
+      specialInstructions: typeof req.body?.specialInstructions === 'string' ? req.body.specialInstructions.trim() : '',
+    }
+    const storedShippingAddress = { ...shippingAddress, customization }
 
     let cartRows = []
     if (req.user) {
@@ -606,7 +628,7 @@ app.post(
     const totalQuantity = cartRows.reduce((sum, item) => sum + item.quantity, 0)
     const shipping = resolveShipping(parsed, totalQuantity).fee
     const total = subtotal + tax + shipping
-    const paymentMethod = String(req.body?.paymentMethod || 'cod')
+    const paymentMethod = String(req.body?.paymentMethod || 'card')
 
     let orderNumber = generateOrderNumber()
     while (db.prepare('SELECT id FROM orders WHERE order_number = ?').get(orderNumber)) {
@@ -629,7 +651,7 @@ app.post(
           tax,
           shipping,
           total,
-          JSON.stringify(shippingAddress),
+          JSON.stringify(storedShippingAddress),
         )
       orderId = Number(result.lastInsertRowid)
       insertOrderStatusEvent(orderId, '', 'pending', 'Order placed by customer')

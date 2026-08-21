@@ -6,7 +6,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node --disable-warning=ExperimentalWarning server.js",
-    "dev": "node --disable-warning=ExperimentalWarning --watch server.js"
+    "dev": "node --disable-warning=ExperimentalWarning --watch server.js",
+    "admin:setup": "node scripts/create-admin.js",
+    "admin:reset": "node scripts/create-admin.js --reset"
   },
   "engines": {
     "node": ">=22.5.0"

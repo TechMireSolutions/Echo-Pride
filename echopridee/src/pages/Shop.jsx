@@ -5,7 +5,7 @@ import ProductCarousel from '../components/ProductCarousel'
 import { FooterAmazon } from '../components/Footers'
 import { getCategoryBySlug, products } from '../data/products'
 import { useCurrency } from '../context/CurrencyContext'
-import { useProducts } from '../api'
+import { useCategories, useProducts } from '../api'
 import { productPricing } from '../utils/wholesale'
 
 const shopTabs = [
@@ -23,7 +23,7 @@ const promoBanners = [
 
 const serviceFeatures = [
   { icon: 'fa-solid fa-truck-fast', title: 'Ship to Home', text: 'Order online and have products shipped to you.' },
-  { icon: 'fa-solid fa-box-open', title: 'Free In-Store Pickup', text: 'Order online and pick up in store.' },
+  { icon: 'fa-solid fa-box-open', title: 'Bulk Order Discounts', text: 'Save more on volume orders for your whole team.' },
   { icon: 'fa-solid fa-credit-card', title: 'Credit Offered', text: 'Turn big purchases into small payments.' },
   { icon: 'fa-solid fa-headset', title: 'Customer Support', text: "We're here to help you find what you need." },
 ]
@@ -120,8 +120,7 @@ function ProductCard({ product }) {
       <h3 className="text-xs font-extrabold text-black uppercase tracking-wider mb-2">
         {product.title.toUpperCase()}
       </h3>
-      <p className="text-sm font-bold text-gray-500">{formatPrice(pr.wholesale || pr.retail)}</p>
-      {pr.hasWholesale && <p className="text-xs text-gray-400 line-through">{formatPrice(pr.retail)}</p>}
+      <p className="text-sm font-bold text-gray-500">{formatPrice(pr.wholesale ?? pr.price)}</p>
     </Link>
   )
 }
@@ -211,10 +210,18 @@ export default function Shop() {
   const [searchParams] = useSearchParams()
   const { category: categorySlug } = useParams()
   const query = searchParams.get('q') || ''
-  const category = getCategoryBySlug(categorySlug) || ''
+  const { categories: apiCategories, loading: categoriesLoading } = useCategories([])
   const { items: catalogProducts } = useProducts({ limit: 100 }, products)
 
-  if (categorySlug && !category) return <Navigate to="/shop" replace />
+  const category = useMemo(() => {
+    const slug = (categorySlug || '').toLowerCase()
+    const staticCategory = getCategoryBySlug(slug)
+    if (staticCategory) return staticCategory
+    const apiCategory = apiCategories.find((c) => (c.slug || '').toLowerCase() === slug)
+    return apiCategory?.name || apiCategory?.label || ''
+  }, [categorySlug, apiCategories])
+
+  if (categorySlug && !category && !categoriesLoading) return <Navigate to="/shop" replace />
 
   return (
     <div className="font-sans bg-white text-black overflow-x-hidden">

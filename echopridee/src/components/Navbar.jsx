@@ -6,57 +6,62 @@ import CurrencySelector from './CurrencySelector'
 const fullDropdown = [
   {
     label: 'Basketball',
+    slug: '/shop/basketball',
     items: [
-      { label: "Basketball Coach's Gear", to: '/product/quarter-zip-basketball-coachs-pullover' },
-      { label: 'Basketball Jackets/Hoodies', to: '/product/quarter-zip-basketball-coachs-pullover' },
-      { label: 'Basketball Jersey', to: '/product/quarter-zip-basketball-coachs-pullover' },
-      { label: 'Basketball Pants/Shorts', to: '/product/waterproof-basketball-coachs-jacket' },
-      { label: 'Basketball Referee Uniforms', to: '/product/waterproof-basketball-coachs-jacket' },
-      { label: 'Basketball Socks', to: '/product/waterproof-basketball-coachs-jacket' },
+      { label: "Basketball Coach's Gear", to: '/shop/basketball' },
+      { label: 'Basketball Jackets/Hoodies', to: '/shop/basketball' },
+      { label: 'Basketball Jersey', to: '/shop/basketball' },
+      { label: 'Basketball Pants/Shorts', to: '/shop/basketball' },
+      { label: 'Basketball Referee Uniforms', to: '/shop/basketball' },
+      { label: 'Basketball Socks', to: '/shop/basketball' },
     ],
   },
   {
     label: 'Football Uniform',
+    slug: '/shop/football',
     items: [
-      { label: "Football Coach's Gear", to: '/product/basketball-coachs-zip-up-hoodie' },
-      { label: 'Football Jackets/Hoodies', to: '/product/basketball-coachs-zip-up-hoodie' },
-      { label: 'Football Jersey', to: '/product/basketball-coachs-zip-up-hoodie' },
-      { label: 'Football Pants/Shorts', to: '/product/high-performance-basketball-fleece-hoodie' },
-      { label: 'Football Referee Uniforms', to: '/product/high-performance-basketball-fleece-hoodie' },
-      { label: 'Football Socks', to: '/product/high-performance-basketball-fleece-hoodie' },
+      { label: "Football Coach's Gear", to: '/shop/football' },
+      { label: 'Football Jackets/Hoodies', to: '/shop/football' },
+      { label: 'Football Jersey', to: '/shop/football' },
+      { label: 'Football Pants/Shorts', to: '/shop/football' },
+      { label: 'Football Referee Uniforms', to: '/shop/football' },
+      { label: 'Football Socks', to: '/shop/football' },
     ],
   },
   {
     label: 'Rugby Uniform',
+    slug: '/shop/rugby',
     items: [
-      { label: "Rugby Coach's Gear", to: '/product/basketball-coachs-lightweight-windbreaker' },
-      { label: 'Rugby Jackets/Hoodies', to: '/product/basketball-coachs-lightweight-windbreaker' },
-      { label: 'Rugby Jersey', to: '/product/basketball-coachs-lightweight-windbreaker' },
-      { label: 'Rugby Pants/Shorts', to: '/product/basketball-coachs-minimalist-hoodie' },
-      { label: 'Rugby Referee Uniforms', to: '/product/basketball-coachs-minimalist-hoodie' },
-      { label: 'Rugby Socks', to: '/product/basketball-coachs-minimalist-hoodie' },
+      { label: "Rugby Coach's Gear", to: '/shop/rugby' },
+      { label: 'Rugby Jackets/Hoodies', to: '/shop/rugby' },
+      { label: 'Rugby Jersey', to: '/shop/rugby' },
+      { label: 'Rugby Pants/Shorts', to: '/shop/rugby' },
+      { label: 'Rugby Referee Uniforms', to: '/shop/rugby' },
+      { label: 'Rugby Socks', to: '/shop/rugby' },
     ],
   },
   {
     label: 'Soccer Uniform',
+    slug: '/shop/soccers',
     items: [
-      { label: "Soccer Coach's Gear", to: '/product/moisture-wicking-basketball-coachs-hoodie' },
-      { label: 'Soccer Jackets/Hoodies', to: '/product/moisture-wicking-basketball-coachs-hoodie' },
-      { label: 'Soccer Jersey', to: '/product/moisture-wicking-basketball-coachs-hoodie' },
-      { label: 'Soccer Pants/Shorts', to: '/product/moisture-wicking-hoodie-bold-design' },
-      { label: 'Soccer Referee Uniforms', to: '/product/moisture-wicking-hoodie-bold-design' },
-      { label: 'Soccer Socks', to: '/product/moisture-wicking-hoodie-bold-design' },
+      { label: "Soccer Coach's Gear", to: '/shop/soccers' },
+      { label: 'Soccer Jackets/Hoodies', to: '/shop/soccers' },
+      { label: 'Soccer Jersey', to: '/shop/soccers' },
+      { label: 'Soccer Pants/Shorts', to: '/shop/soccers' },
+      { label: 'Soccer Referee Uniforms', to: '/shop/soccers' },
+      { label: 'Soccer Socks', to: '/shop/soccers' },
     ],
   },
   {
     label: 'Softball Uniform',
+    slug: '/shop/softballs',
     items: [
-      { label: "Softball Coach's Gear", to: '/product/premium-varsity-style-basketball-coaching-jacket' },
-      { label: 'Softball Jackets/Hoodies', to: '/product/premium-varsity-style-basketball-coaching-jacket' },
-      { label: 'Softball Jersey', to: '/product/premium-varsity-style-basketball-coaching-jacket' },
-      { label: 'Softball Pants/Shorts', to: '/product/quarter-zip-basketball-coachs-pullover-alternate' },
-      { label: 'Softball Referee Uniforms', to: '/product/quarter-zip-basketball-coachs-pullover-alternate' },
-      { label: 'Softball Socks', to: '/product/quarter-zip-basketball-coachs-pullover-alternate' },
+      { label: "Softball Coach's Gear", to: '/shop/softballs' },
+      { label: 'Softball Jackets/Hoodies', to: '/shop/softballs' },
+      { label: 'Softball Jersey', to: '/shop/softballs' },
+      { label: 'Softball Pants/Shorts', to: '/shop/softballs' },
+      { label: 'Softball Referee Uniforms', to: '/shop/softballs' },
+      { label: 'Softball Socks', to: '/shop/softballs' },
     ],
   },
 ]
@@ -171,7 +176,7 @@ export default function Navbar({
                 >
                   {dropdown.map((cat) => (
                     <div key={cat.label} className="mega-column">
-                      <Link to={cat.items[0].to} className="mega-heading">
+                      <Link to={cat.slug || cat.items[0].to} className="mega-heading">
                         {cat.label}
                       </Link>
                       <div className="mega-links">

@@ -42,12 +42,12 @@ export default function CartDrawer() {
         ) : (
           cart.map((item, index) => {
             const itemTotal = item.price * item.qty
-            const orderLabel = item.orderType === 'wholesale' ? 'Wholesale' : 'Retail'
-            const minQty = item.orderType === 'wholesale' ? item.minQuantity || MIN_ORDER_QTY : 1
+            const orderLabel = 'Wholesale'
+            const minQty = item.minQuantity || MIN_ORDER_QTY
             const breakdownLabel = sizesLabel(item.sizes)
             return (
               <div
-                key={`${item.id}-${item.orderType || 'retail'}-${JSON.stringify(item.sizes || item.size || 'L')}`}
+                key={`${item.id}-wholesale-${JSON.stringify(item.sizes || item.size || 'L')}`}
                 className="flex items-center gap-4 pb-4 border-b border-gray-100"
               >
                 <img
@@ -81,7 +81,7 @@ export default function CartDrawer() {
                       Remove
                     </button>
                   </div>
-                  {item.orderType === 'wholesale' && item.qty < minQty && (
+                  {item.qty < minQty && (
                     <p className="text-[10px] font-bold text-red-500 mt-1.5 flex items-center gap-1">
                       <i className="fa-solid fa-circle-exclamation"></i> Min. {minQty} pieces required
                     </p>

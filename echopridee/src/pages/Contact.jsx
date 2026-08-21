@@ -33,7 +33,7 @@ const contactDetails = [
 
 const contactFeatures = [
   { icon: 'fa-solid fa-truck', title: 'Ship to Home', text: 'Order online and have products shipped to you.' },
-  { icon: 'fa-solid fa-store', title: 'Free In-Store Pickup', text: 'Order online and pick up in store.' },
+  { icon: 'fa-solid fa-store', title: 'Bulk Order Discounts', text: 'Save more on volume orders for your whole team.' },
   { icon: 'fa-solid fa-credit-card', title: 'Credit Offered', text: 'Turn big purchases into small payments.' },
   { icon: 'fa-solid fa-headset', title: 'Customer Support', text: "We're here to help you find what you need." },
 ]

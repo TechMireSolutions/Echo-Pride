@@ -69,7 +69,7 @@ db.exec(`
     order_number TEXT NOT NULL UNIQUE,
     user_id INTEGER,
     status TEXT NOT NULL DEFAULT 'pending',
-    payment_method TEXT NOT NULL DEFAULT 'cod',
+    payment_method TEXT NOT NULL DEFAULT 'card',
     subtotal REAL NOT NULL DEFAULT 0,
     tax REAL NOT NULL DEFAULT 0,
     total REAL NOT NULL DEFAULT 0,
@@ -118,7 +118,7 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS price_tiers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     product_id INTEGER NOT NULL,
-    type TEXT NOT NULL DEFAULT 'retail',
+    type TEXT NOT NULL DEFAULT 'wholesale',
     min_quantity INTEGER NOT NULL DEFAULT 1,
     price REAL NOT NULL DEFAULT 0,
     label TEXT NOT NULL DEFAULT '',
@@ -223,7 +223,7 @@ function migrateGuestOrders() {
         order_number TEXT NOT NULL UNIQUE,
         user_id INTEGER,
         status TEXT NOT NULL DEFAULT 'pending',
-        payment_method TEXT NOT NULL DEFAULT 'cod',
+        payment_method TEXT NOT NULL DEFAULT 'card',
         subtotal REAL NOT NULL DEFAULT 0,
         tax REAL NOT NULL DEFAULT 0,
         total REAL NOT NULL DEFAULT 0,
@@ -594,7 +594,7 @@ const PRODUCT_SEEDS = [
 const DEFAULT_SETTINGS = {
   storeName: 'Echo Pride',
   tagline: 'Premium sports apparel & custom team uniforms',
-  currency: 'PKR',
+  currency: 'USD',
   taxPercent: 5,
   shippingFee: 0,
   shippingTiers: [{ minQuantity: 50, fee: 0 }],
@@ -799,7 +799,7 @@ function seedDemoOrders() {
   }
 
   const statuses = ['delivered', 'delivered', 'delivered', 'shipped', 'confirmed', 'pending', 'cancelled', 'refunded']
-  const methods = ['cod', 'card', 'paypal', 'card']
+  const methods = ['card', 'card', 'paypal', 'card']
   const DAY = 86400e3
   const now = Date.now()
 

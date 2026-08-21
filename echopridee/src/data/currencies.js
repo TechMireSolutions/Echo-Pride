@@ -24,14 +24,6 @@ export const currencies = [
     rate: 0.921,
   },
   {
-    code: 'PKR',
-    name: 'Pakistan',
-    country: 'PK',
-    flag: '🇵🇰',
-    symbol: '₨',
-    rate: 278.45,
-  },
-  {
     code: 'AED',
     name: 'United Arab Emirates',
     country: 'AE',

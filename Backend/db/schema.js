@@ -53,7 +53,7 @@ const orders = sqliteTable('orders', {
   orderNumber: text('order_number').notNull().unique(),
   userId: integer('user_id'),
   status: text('status').notNull().default('pending'),
-  paymentMethod: text('payment_method').notNull().default('cod'),
+  paymentMethod: text('payment_method').notNull().default('card'),
   subtotal: real('subtotal').notNull().default(0),
   tax: real('tax').notNull().default(0),
   shippingFee: real('shipping_fee').notNull().default(0),
@@ -100,7 +100,7 @@ const salesEvents = sqliteTable('sales_events', {
 const priceTiers = sqliteTable('price_tiers', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   productId: integer('product_id').notNull(),
-  type: text('type').notNull().default('retail'),
+  type: text('type').notNull().default('wholesale'),
   minQuantity: integer('min_quantity').notNull().default(1),
   price: real('price').notNull().default(0),
   label: text('label').notNull().default(''),

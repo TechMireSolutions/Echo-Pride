@@ -16,8 +16,16 @@ export default function CheckoutPage() {
   const { formatPrice } = useCurrency()
   const navigate = useNavigate()
 
-  const [paymentMethod, setPaymentMethod] = useState('card')
-  const [form, setForm] = useState({ name: '', phone: '', city: '', address: '' })
+  const [form, setForm] = useState({
+    name: '',
+    phone: '',
+    city: '',
+    address: '',
+    color: '',
+    instructions: '',
+    logoName: '',
+  })
+  const [logoFile, setLogoFile] = useState(null)
   const [submitting, setSubmitting] = useState(false)
   const [orderError, setOrderError] = useState(null)
 
@@ -59,9 +67,12 @@ export default function CheckoutPage() {
           phone: form.phone.trim(),
           addressLine1: form.address.trim(),
           city: form.city.trim(),
-          country: 'Pakistan',
+          country: 'United States',
         },
-        paymentMethod,
+        paymentMethod: 'card',
+        color: form.color.trim(),
+        logo: form.logoName,
+        specialInstructions: form.instructions.trim(),
         items: cart.map((item) => ({ productId: item.id, quantity: item.qty, sizes: item.sizes || {} })),
       })
       const order = result?.order || result
@@ -135,7 +146,7 @@ export default function CheckoutPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Phone Number *</label>
-                  <input type="tel" value={form.phone} onChange={setField('phone')} placeholder="e.g. +92 300 0000000" autoComplete="tel" required className={inputCls} />
+                  <input type="tel" value={form.phone} onChange={setField('phone')} placeholder="e.g. +1 555 0000000" autoComplete="tel" required className={inputCls} />
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">City *</label>
@@ -143,11 +154,58 @@ export default function CheckoutPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Country</label>
-                  <input type="text" value="Pakistan" readOnly className={`${inputCls} opacity-60 cursor-not-allowed`} />
+                  <input type="text" value="United States" readOnly className={`${inputCls} opacity-60 cursor-not-allowed`} />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Complete Delivery Address *</label>
                   <textarea value={form.address} onChange={setField('address')} placeholder="House / building, street, area, landmark" autoComplete="street-address" required rows="3" className={`${inputCls} resize-none`} />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Color Selection *</label>
+                  <input type="text" value={form.color} onChange={setField('color')} placeholder="e.g. Royal Blue / White" required className={inputCls} />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Upload Your Logo</label>
+                  <label className="flex items-center gap-3 bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 cursor-pointer hover:border-[#baf120]/60 transition-colors">
+                    <i className="fa-solid fa-cloud-arrow-up text-[#baf120] text-lg"></i>
+                    <span className="text-sm text-gray-300 truncate">{logoFile ? logoFile.name : 'Choose a logo image (PNG, JPG, SVG)'}</span>
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/svg+xml"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        setLogoFile(file || null)
+                        setForm((f) => ({ ...f, logoName: file ? file.name : '' }))
+                      }}
+                    />
+                  </label>
+                  <p className="text-[11px] text-gray-500 mt-1.5">We'll confirm your artwork and digital mockup before production.</p>
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Any Special Instructions</label>
+                  <textarea value={form.instructions} onChange={setField('instructions')} placeholder="Tell us anything else — font styles, team name placement, number preferences..." rows="3" className={`${inputCls} resize-none`} />
+                </div>
+              </div>
+            </section>
+
+            <section className="bg-[#baf120]/10 border border-[#baf120]/40 rounded-xl p-6 sm:p-7">
+              <div className="flex items-start gap-4">
+                <span className="w-11 h-11 rounded-lg bg-[#baf120] text-black flex items-center justify-center text-xl shrink-0">
+                  <i className="fa-solid fa-envelope-circle-check"></i>
+                </span>
+                <div>
+                  <h3 className="font-serif font-extrabold text-base sm:text-lg uppercase tracking-wide text-white">
+                    Order Received! Before production begins, we will contact you to confirm:
+                  </h3>
+                  <ul className="mt-3 space-y-2">
+                    {['Artwork & Digital Mockup', 'Size & Fit Breakdown', 'Final Customization Details'].map((item) => (
+                      <li key={item} className="flex items-center gap-3 text-sm text-gray-200">
+                        <i className="fa-solid fa-circle-check text-[#baf120]"></i>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             </section>
@@ -158,16 +216,11 @@ export default function CheckoutPage() {
                 <h2 className="font-serif font-extrabold text-xl uppercase tracking-wide">Payment Method</h2>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <label
-                  className={`cursor-pointer rounded-xl border-2 p-5 transition-all ${
-                    paymentMethod === 'card' ? 'border-[#baf120] bg-[#baf120]/5' : 'border-neutral-800 hover:border-neutral-600'
-                  }`}
-                >
-                  <input type="radio" name="paymentMethod" value="card" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} className="hidden" />
+                <label className="cursor-pointer rounded-xl border-2 border-[#baf120] bg-[#baf120]/5 p-5">
                   <div className="flex items-start justify-between mb-3">
                     <i className="fa-solid fa-credit-card text-2xl text-[#baf120]"></i>
-                    <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'card' ? 'border-[#baf120]' : 'border-neutral-600'}`}>
-                      {paymentMethod === 'card' && <span className="w-2.5 h-2.5 rounded-full bg-[#baf120]"></span>}
+                    <span className="w-5 h-5 rounded-full border-2 border-[#baf120] flex items-center justify-center">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#baf120]"></span>
                     </span>
                   </div>
                   <p className="font-bold text-sm">Credit / Debit Card</p>
@@ -176,38 +229,29 @@ export default function CheckoutPage() {
                   </p>
                 </label>
 
-                <label
-                  className={`cursor-pointer rounded-xl border-2 p-5 transition-all ${
-                    paymentMethod === 'cod' ? 'border-[#baf120] bg-[#baf120]/5' : 'border-neutral-800 hover:border-neutral-600'
-                  }`}
-                >
-                  <input type="radio" name="paymentMethod" value="cod" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} className="hidden" />
+                <div className="rounded-xl border-2 border-neutral-800 bg-neutral-900/40 p-5 opacity-80">
                   <div className="flex items-start justify-between mb-3">
-                    <i className="fa-solid fa-money-bill-wave text-2xl text-emerald-400"></i>
-                    <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'cod' ? 'border-[#baf120]' : 'border-neutral-600'}`}>
-                      {paymentMethod === 'cod' && <span className="w-2.5 h-2.5 rounded-full bg-[#baf120]"></span>}
-                    </span>
+                    <i className="fa-solid fa-money-check-dollar text-2xl text-gray-500"></i>
+                    <span className="w-5 h-5 rounded-full border-2 border-neutral-700"></span>
                   </div>
-                  <p className="font-bold text-sm">Cash on Delivery</p>
+                  <p className="font-bold text-sm">Bank Transfer / Wire</p>
                   <p className="text-xs text-gray-400 mt-1 leading-relaxed">
-                    Pay with cash when your order arrives at your doorstep. Please have the exact amount ready.
+                    Contact our team to arrange a bank transfer after your order is confirmed.
                   </p>
-                </label>
+                </div>
               </div>
 
-              {paymentMethod === 'card' && (
-                <div className="mt-5 space-y-4 bg-black/30 border border-neutral-800 rounded-xl p-5">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-gray-300 uppercase tracking-wider">Enter Card Information</span>
-                    <img src="/imgi_30_payment_icon.svg" alt="Payments" className="h-4 w-auto object-contain" />
-                  </div>
-                  <input type="text" placeholder="Card Number (e.g. 4111 2222 3333 4444)" maxLength="19" autoComplete="cc-number" required className={`${inputCls} font-mono`} />
-                  <div className="grid grid-cols-2 gap-4">
-                    <input type="text" placeholder="MM / YY" maxLength="5" autoComplete="cc-exp" required className={`${inputCls} font-mono`} />
-                    <input type="password" placeholder="CVV" maxLength="4" autoComplete="cc-csc" required className={`${inputCls} font-mono`} />
-                  </div>
+              <div className="mt-5 space-y-4 bg-black/30 border border-neutral-800 rounded-xl p-5">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-bold text-gray-300 uppercase tracking-wider">Enter Card Information</span>
+                  <img src="/imgi_30_payment_icon.svg" alt="Payments" className="h-4 w-auto object-contain" />
                 </div>
-              )}
+                <input type="text" placeholder="Card Number (e.g. 4111 2222 3333 4444)" maxLength="19" autoComplete="cc-number" required className={`${inputCls} font-mono`} />
+                <div className="grid grid-cols-2 gap-4">
+                  <input type="text" placeholder="MM / YY" maxLength="5" autoComplete="cc-exp" required className={`${inputCls} font-mono`} />
+                  <input type="password" placeholder="CVV" maxLength="4" autoComplete="cc-csc" required className={`${inputCls} font-mono`} />
+                </div>
+              </div>
             </section>
           </div>
 

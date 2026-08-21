@@ -23,7 +23,7 @@ export default function ProductDetail() {
 
   const [breakdown, setBreakdown] = useState(() => {
     const pr = productPricing(getProduct(slug))
-    return initialBreakdown(pr.hasWholesale ? Math.max(1, pr.threshold || 1) : 1)
+    return initialBreakdown(Math.max(1, pr.threshold || 12))
   })
 
   if (!product) {
@@ -44,11 +44,8 @@ export default function ProductDetail() {
   const others = related.length > 0 ? related : products.filter((p) => p.slug !== product.slug).slice(0, 4)
 
   const pricing = productPricing(product)
-  const minQty = Math.max(1, pricing.threshold || 1)
-  const unitPrice =
-    pricing.wholesale !== null && pricing.wholesale !== undefined
-      ? pricing.wholesale
-      : pricing.retail
+  const minQty = Math.max(1, pricing.threshold || 12)
+  const unitPrice = pricing.wholesale !== null && pricing.wholesale !== undefined ? pricing.wholesale : pricing.price
   const totalPieces = SIZES.reduce((sum, size) => sum + (breakdown[size] || 0), 0)
   const totalPrice = Math.round(unitPrice * totalPieces * 100) / 100
   const meetMin = totalPieces >= minQty
@@ -276,8 +273,7 @@ export default function ProductDetail() {
                       {other.title.toUpperCase()}
                     </h3>
                     <div className="flex items-baseline gap-2">
-                      <p className="text-sm font-bold text-[#baf120]">{formatPrice(op.wholesale || op.retail)}</p>
-                      {op.hasWholesale && <p className="text-xs text-gray-500 line-through">{formatPrice(op.retail)}</p>}
+                      <p className="text-sm font-bold text-[#baf120]">{formatPrice(op.wholesale ?? op.price)}</p>
                     </div>
                   </Link>
                 )

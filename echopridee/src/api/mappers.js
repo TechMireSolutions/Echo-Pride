@@ -6,17 +6,11 @@ export const mapApiProduct = (p) => ({
   category: p.category?.name || '',
   sport: p.category?.name || '',
   price: Number(p.price),
-  retailPrice: p.retailPrice !== undefined && p.retailPrice !== null ? Number(p.retailPrice) : undefined,
   wholesaleMinQuantity:
     p.wholesaleMinQuantity !== undefined && p.wholesaleMinQuantity !== null
       ? Number(p.wholesaleMinQuantity)
       : undefined,
   tiers: Array.isArray(p.tiers) ? p.tiers : [],
-  oldPrice: p.compareAtPrice !== null && p.compareAtPrice !== undefined ? Number(p.compareAtPrice) : null,
-  save:
-    p.compareAtPrice
-      ? `${Math.round((1 - Number(p.price) / Number(p.compareAtPrice)) * 100)}%`
-      : '',
   reviews: 0,
   image: (p.images && p.images[0] ? p.images[0] : '').replace(/^\/+/, ''),
   description: p.description || '',

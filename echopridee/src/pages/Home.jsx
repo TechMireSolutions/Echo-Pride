@@ -80,10 +80,195 @@ const promoBanners = [
 
 const serviceFeatures = [
   { icon: 'fa-solid fa-truck-fast', title: 'Ship to Home', text: 'Order online and have products shipped to you.' },
-  { icon: 'fa-solid fa-box-open', title: 'Free In-Store Pickup', text: 'Order online and pick up in store.' },
+  { icon: 'fa-solid fa-box-open', title: 'Bulk Order Discounts', text: 'Save more on volume orders for your whole team.' },
   { icon: 'fa-solid fa-credit-card', title: 'Credit Offered', text: 'Turn big purchases into small payments.' },
   { icon: 'fa-solid fa-headset', title: 'Customer Support', text: "We're here to help you find what you need." },
 ]
+
+const testimonials = [
+  {
+    name: 'Marcus Johnson',
+    role: 'Head Coach, Riverside Hoops',
+    rating: 5,
+    text: 'The quality of the custom basketball jerseys exceeded every expectation. The sublimated design was crisp, the fit was perfect for every player, and the whole team looked incredible on game day.',
+  },
+  {
+    name: 'Sofia Ramirez',
+    role: 'Club Director, Elite FC',
+    rating: 5,
+    text: 'From mockup to delivery, the process was completely seamless. The 3D proof made it easy to visualize our kit, and the door-to-door delivery arrived right on schedule.',
+  },
+  {
+    name: 'David Chen',
+    role: 'Owner, Precision Sports Retail',
+    rating: 5,
+    text: 'We order wholesale in bulk and EchoPride has been our go-to supplier. Consistent sizing, durable materials, and a team that genuinely cares about getting the details right.',
+  },
+  {
+    name: 'Aisha Khan',
+    role: 'PE Department Lead, Northbridge School',
+    rating: 5,
+    text: 'Ordering mixed sizes within the minimum was so simple. The moisture-wicking fabric held up through an entire season of training and matches without fading or shrinking.',
+  },
+  {
+    name: 'Tom O\'Brien',
+    role: 'Rugby Club Manager, Steel City RFC',
+    rating: 5,
+    text: 'The embroidery and heavy-duty stitching on our rugby kits are top-notch. Communication was clear at every step, and the team handled our reorder in record time.',
+  },
+  {
+    name: 'Leah Williams',
+    role: 'Softball Team Manager, Diamond Girls',
+    rating: 5,
+    text: 'The design team brought our vision to life and the color accuracy was spot on. Fast production, great pricing, and every player loves their uniform. Highly recommended!',
+  },
+]
+
+const faqCategories = [
+  {
+    title: 'Ordering & Customization',
+    icon: 'fa-solid fa-cart-shopping',
+    items: [
+      {
+        q: 'Can I get fully custom sportswear for my team?',
+        a: 'Yes, absolutely! At EchoPride, we specialize in fully customized sportswear tailored to your specific team, school, club, or private brand needs. From jerseys and hoodies to jackets and accessories, everything is built around your design.',
+      },
+      {
+        q: 'What is the minimum order quantity (MOQ)?',
+        a: 'Our minimum order size is just 12 pieces per design/style, making bulk customization accessible for teams of every size.',
+      },
+      {
+        q: 'Can I order mixed sizes within the 12-piece minimum?',
+        a: 'Yes! You can mix and match different sizes within the 12-piece minimum so every player gets the perfect fit.',
+      },
+      {
+        q: 'Can I see a visual preview/mockup before production starts?',
+        a: 'Yes, 100%. Our design team will generate a detailed digital 2D/3D proof for your approval before we begin production.',
+      },
+      {
+        q: 'How do I place an order?',
+        a: 'Placing an order is quick and easy: Choose category, Submit design, Review/Approve mockup, Confirm quantity/sizes, Checkout.',
+      },
+    ],
+  },
+  {
+    title: 'Production, Shipping & Delivery',
+    icon: 'fa-solid fa-truck-fast',
+    items: [
+      {
+        q: 'How long does production and shipping take?',
+        a: 'Standard production timeline is 10 to 14 business days, plus 3 to 7 days for shipping.',
+      },
+      {
+        q: 'Do you offer door-step delivery?',
+        a: 'Yes! We provide direct door-to-door delivery on all orders.',
+      },
+      {
+        q: 'Do I need to pay import duties, taxes, or additional fees?',
+        a: 'International orders may be subject to local import taxes/customs duties; these are the buyer\u2019s responsibility.',
+      },
+      {
+        q: 'Can I track my shipment?',
+        a: 'Yes, you will receive an automated email with tracking info upon dispatch.',
+      },
+    ],
+  },
+  {
+    title: 'Printing, Materials & Quality',
+    icon: 'fa-solid fa-shirt',
+    items: [
+      {
+        q: 'What kind of printing/customization techniques do you offer?',
+        a: 'We offer Full Sublimation, Screen Printing, Twill & Embroidery, and Vinyl Heat Transfer.',
+      },
+      {
+        q: 'What fabrics and performance materials do you use?',
+        a: 'We use premium, athletic-grade moisture-wicking polyesters, breathable mesh, and spandex blends.',
+      },
+      {
+        q: 'Do custom orders have slight color or sizing variations?',
+        a: 'Minor variations (5-10% color, \u00b10.5 to 1 inch size) are industry-standard manufacturing tolerances.',
+      },
+    ],
+  },
+  {
+    title: 'Reorders, Returns & Support',
+    icon: 'fa-solid fa-headset',
+    items: [
+      {
+        q: 'Can I reorder the exact same items later?',
+        a: 'Yes! We store all approved design files and order specs in our secure archive, so reordering the same items is fast, accurate, and consistent.',
+      },
+    ],
+  },
+]
+
+function Stars({ rating = 5 }) {
+  return (
+    <div className="flex justify-center gap-1 text-[#baf120]" aria-label={`${rating} out of 5 stars`}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <i key={i} className={`fa-star ${i <= rating ? 'fa-solid' : 'fa-regular'} text-sm`}></i>
+      ))}
+    </div>
+  )
+}
+
+function FaqAccordion() {
+  const [open, setOpen] = useState({})
+
+  const toggle = (catIdx, itemIdx) =>
+    setOpen((prev) => ({ ...prev, [`${catIdx}-${itemIdx}`]: !prev[`${catIdx}-${itemIdx}`] }))
+
+  return (
+    <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+      {faqCategories.map((cat, catIdx) => (
+        <div key={cat.title} className="rounded-2xl border border-gray-200 overflow-hidden">
+          <div className="flex items-center gap-3 bg-gray-50 px-6 py-4 border-b border-gray-200">
+            <span className="w-9 h-9 rounded-full bg-[#baf120] text-black flex items-center justify-center shrink-0">
+              <i className={`${cat.icon} text-sm`}></i>
+            </span>
+            <h3 className="font-serif font-extrabold uppercase tracking-wide text-neutral-900 text-sm md:text-base">
+              {cat.title}
+            </h3>
+          </div>
+          <div className="divide-y divide-gray-100">
+            {cat.items.map((item, itemIdx) => {
+              const key = `${catIdx}-${itemIdx}`
+              const isOpen = Boolean(open[key])
+              return (
+                <div key={key}>
+                  <button
+                    onClick={() => toggle(catIdx, itemIdx)}
+                    aria-expanded={isOpen}
+                    className="w-full flex items-center justify-between gap-4 text-left px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    <span className="text-sm md:text-[15px] font-bold text-gray-900">{item.q}</span>
+                    <span
+                      className={`w-7 h-7 shrink-0 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 transition-transform duration-300 ${
+                        isOpen ? 'rotate-180 border-[#baf120] text-[#baf120]' : ''
+                      }`}
+                    >
+                      <i className="fa-solid fa-chevron-down text-[10px]"></i>
+                    </span>
+                  </button>
+                  <div
+                    className={`grid transition-all duration-300 ease-in-out ${
+                      isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <p className="px-6 pb-5 text-sm leading-relaxed text-gray-600">{item.a}</p>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
 
 function PromoCard({ banner, wide = false }) {
   return (
@@ -299,6 +484,62 @@ export default function Home() {
           {promoBanners.map((banner) => (
             <PromoCard key={banner.tag} banner={banner} />
           ))}
+        </div>
+      </section>
+
+      <section className="py-16 md:py-20 px-6 bg-neutral-900 text-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <span className="text-[#baf120] text-xs font-extrabold uppercase tracking-[0.25em]">Testimonials</span>
+            <h2 className="text-3xl md:text-5xl font-serif font-extrabold uppercase tracking-wide mt-2 text-white">
+              What Our Clients Say
+            </h2>
+            <p className="text-sm text-gray-400 mt-3 max-w-xl mx-auto">
+              Teams, clubs, and coaches trust EchoPride for premium custom sportswear. Here is what they have to say.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {testimonials.map((t) => (
+              <figure
+                key={t.name}
+                className="flex flex-col bg-black/40 border border-white/10 rounded-2xl p-7 hover:border-[#baf120]/40 hover:-translate-y-1 transition-all duration-500"
+              >
+                <div className="mb-4">
+                  <Stars rating={t.rating} />
+                </div>
+                <blockquote className="text-sm md:text-[15px] leading-relaxed text-gray-300 flex-1">
+                  &ldquo;{t.text}&rdquo;
+                </blockquote>
+                <figcaption className="mt-6 pt-5 border-t border-white/10">
+                  <div className="flex items-center gap-3">
+                    <span className="w-11 h-11 rounded-full bg-[#baf120] text-black flex items-center justify-center font-extrabold text-sm shrink-0">
+                      {t.name.split(' ').map((n) => n[0]).join('')}
+                    </span>
+                    <div>
+                      <p className="text-sm font-bold text-white">{t.name}</p>
+                      <p className="text-xs text-gray-400">{t.role}</p>
+                    </div>
+                  </div>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 md:py-20 px-6 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <span className="text-[#baf120] text-xs font-extrabold uppercase tracking-[0.25em]">Need Help?</span>
+            <h2 className="text-3xl md:text-5xl font-serif font-extrabold uppercase tracking-wide mt-2 text-neutral-900">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-sm text-gray-500 mt-3 max-w-xl mx-auto">
+              Everything you need to know about ordering, customization, production, and delivery.
+            </p>
+          </div>
+          <FaqAccordion />
         </div>
       </section>
 

@@ -16,7 +16,7 @@ const CART_KEY = 'echopride_cart'
 const FALLBACK_SETTINGS = {
   storeName: 'Echo Pride',
   tagline: 'Premium sports apparel & custom team uniforms',
-  currency: 'PKR',
+  currency: 'USD',
   taxPercent: 5,
   shippingFee: 0,
   shippingTiers: [{ minQuantity: 50, fee: 0 }],
@@ -152,7 +152,7 @@ export function StoreProvider({ children }) {
       const existingIndex = prev.findIndex(
         (item) =>
           item.id === product.id &&
-          (item.orderType || 'retail') === (product.orderType || 'retail') &&
+          (item.orderType || 'wholesale') === (product.orderType || 'wholesale') &&
           JSON.stringify(item.sizes || null) === JSON.stringify(product.sizes || null),
       )
       if (existingIndex > -1) {

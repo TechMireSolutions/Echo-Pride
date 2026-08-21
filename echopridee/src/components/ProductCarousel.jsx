@@ -1,7 +1,6 @@
 import React, { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { carouselProducts } from '../data/products'
-import { parseUsdPrice } from '../data/currencies'
 import { useCurrency } from '../context/CurrencyContext'
 import { useProducts } from '../api'
 import { productPricing } from '../utils/wholesale'
@@ -20,9 +19,7 @@ export default function ProductCarousel({ category }) {
       slug: p.slug,
       image: p.image,
       title: p.title,
-      price: pr.wholesale !== null && pr.wholesale !== undefined ? pr.wholesale : parseUsdPrice(pr.retail),
-      retailPrice: pr.retail,
-      hasWholesale: pr.hasWholesale,
+      price: pr.wholesale !== null && pr.wholesale !== undefined ? pr.wholesale : pr.price,
     }
   })
   const listKey = list.map((p) => p.slug).join('|')
@@ -62,10 +59,7 @@ export default function ProductCarousel({ category }) {
           >
             <img src={`/${product.image}`} alt={product.title} draggable="false" />
             <h3>{product.title}</h3>
-            <p className="price">
-              {formatPrice(product.price)}
-              {product.hasWholesale && <span className="old-price">{formatPrice(product.retailPrice)}</span>}
-            </p>
+            <p className="price">{formatPrice(product.price)}</p>
           </Link>
         ))}
       </div>
