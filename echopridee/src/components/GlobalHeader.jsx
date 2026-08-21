@@ -11,15 +11,7 @@ export default function GlobalHeader() {
   return (
     <header className="sticky top-0 z-50">
       <AnnouncementBar />
-      <Navbar
-        variant="light"
-        showDropdown
-        dropdownType="full"
-        links={[
-          { label: 'About Us', to: '/about' },
-          { label: 'Contact Us', to: '/contact' },
-        ]}
-      />
+      <Navbar />
     </header>
   )
 }

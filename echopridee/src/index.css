@@ -197,6 +197,35 @@ body {
   transform: translateY(-100%);
 }
 
+/* ---------- Category bar hover ---------- */
+.cat-bar-link {
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.cat-bar-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 60%;
+  height: 2px;
+  background-color: #baf120;
+  transition: transform 0.25s ease;
+  border-radius: 1px;
+}
+
+.cat-bar-link:hover::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* ---------- Feature strip ---------- */
+.feature-strip {
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
 /* ---------- Dropdown & mega menu ---------- */
 .dropdown {
   position: static;
