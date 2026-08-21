@@ -75,11 +75,12 @@ export default function Navbar() {
         {/* ======================== TOP INFO BAR ======================== */}
         <div className="border-b border-gray-100">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
-            <div className="flex items-center gap-4 py-3">
 
+            {/* Mobile Header Bar (< lg) */}
+            <div className="flex lg:hidden items-center justify-between py-3 gap-3">
               <button
                 onClick={() => setMenuOpen(true)}
-                className="lg:hidden inline-flex items-center justify-center text-gray-600 hover:text-black transition-colors cursor-pointer leading-none shrink-0"
+                className="inline-flex items-center justify-center text-gray-600 hover:text-black transition-colors cursor-pointer leading-none shrink-0"
                 aria-label="Menu"
               >
                 <i className="fa-solid fa-bars text-xl"></i>
@@ -89,72 +90,170 @@ export default function Navbar() {
                 <img
                   src="/imgi_1_BLogowithicon.webp"
                   alt="EchoPride Logo"
-                  className="h-9 md:h-11 w-auto object-contain"
+                  className="h-9 w-auto object-contain"
                 />
               </Link>
 
-              <form
-                onSubmit={(e) => { e.preventDefault(); openSearch() }}
-                className="hidden lg:flex flex-1 max-w-md"
-              >
-                <div className="relative w-full">
-                  <input
-                    name="searchQuery"
-                    type="text"
-                    placeholder="What are you looking for?"
-                    readOnly
-                    onClick={openSearch}
-                    className="w-full border border-gray-300 rounded-full pl-4 pr-10 py-2 text-sm text-gray-700 placeholder-gray-400 bg-gray-50 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
+              <div className="flex items-center gap-3 shrink-0">
+                <button
+                  onClick={openSearch}
+                  className="inline-flex items-center justify-center text-gray-600 hover:text-blue-600 transition-colors cursor-pointer leading-none"
+                  aria-label="Search"
+                >
+                  <i className="fa-solid fa-magnifying-glass text-xl"></i>
+                </button>
+
+                <button
+                  onClick={openCart}
+                  className="relative inline-flex items-center justify-center text-gray-600 hover:text-blue-600 transition-colors cursor-pointer leading-none"
+                  aria-label="Cart"
+                >
+                  <i className="fa-solid fa-bag-shopping text-xl"></i>
+                  <span className="absolute -top-1.5 -right-2 bg-[#baf120] text-black text-[9px] font-extrabold rounded-full h-4 w-4 flex items-center justify-center">
+                    {totalCount}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Desktop Structured 2-Column Header (>= lg) */}
+            <div className="hidden lg:flex items-center justify-between gap-8 py-3.5">
+
+              {/* LEFT COLUMN: Brand Logo */}
+              <div className="shrink-0 flex items-center">
+                <Link to="/" className="flex items-center">
+                  <img
+                    src="/imgi_1_BLogowithicon.webp"
+                    alt="EchoPride Logo"
+                    className="h-12 xl:h-14 w-auto object-contain transition-transform hover:scale-[1.02]"
                   />
-                  <button
-                    type="button"
-                    onClick={openSearch}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors cursor-pointer"
-                    aria-label="Search"
+                </Link>
+              </div>
+
+              {/* RIGHT COLUMN: 3-Row Vertical Stacked Structure */}
+              <div className="flex-1 flex flex-col justify-center gap-2">
+
+                {/* ROW 1: Rounded Search Bar + Account & Cart */}
+                <div className="flex items-center justify-between gap-6">
+                  {/* Search Bar */}
+                  <form
+                    onSubmit={(e) => { e.preventDefault(); openSearch() }}
+                    className="flex-1 max-w-xl"
                   >
-                    <i className="fa-solid fa-magnifying-glass text-sm"></i>
-                  </button>
+                    <div className="relative w-full">
+                      <input
+                        name="searchQuery"
+                        type="text"
+                        placeholder="What are you looking for?"
+                        readOnly
+                        onClick={openSearch}
+                        className="w-full border border-gray-300 rounded-full pl-4 pr-11 py-2 text-sm text-gray-700 placeholder-gray-400 bg-gray-50/80 hover:bg-gray-50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer shadow-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={openSearch}
+                        className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors cursor-pointer"
+                        aria-label="Search"
+                      >
+                        <i className="fa-solid fa-magnifying-glass text-xs"></i>
+                      </button>
+                    </div>
+                  </form>
+
+                  {/* Account and Cart positioned cleanly in inline block */}
+                  <div className="flex items-center gap-4 text-sm shrink-0">
+                    {/* Account */}
+                    <div className="relative">
+                      <button
+                        onClick={() => (isLoggedIn ? setUserMenuOpen((v) => !v) : openLogin())}
+                        className="flex items-center gap-2 font-semibold uppercase tracking-wide text-gray-700 hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap py-1 px-2.5 rounded-lg hover:bg-gray-50"
+                      >
+                        <i className="fa-regular fa-user text-base text-blue-600"></i>
+                        <span>{isLoggedIn ? (user?.name?.split(' ')[0] || 'Account') : 'Sign In'}</span>
+                        <i className="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
+                      </button>
+
+                      {isLoggedIn && userMenuOpen && (
+                        <div
+                          className="absolute right-0 top-full mt-2 w-52 bg-white shadow-xl border border-gray-100 rounded-lg py-2 z-50"
+                          onMouseLeave={() => setUserMenuOpen(false)}
+                        >
+                          <div className="px-4 pb-2 border-b border-gray-100">
+                            <p className="text-sm font-bold text-gray-900 truncate">{user?.name || 'Account'}</p>
+                            <p className="text-[11px] text-gray-500 truncate">{user?.email || ''}</p>
+                          </div>
+                          <Link
+                            to="/account"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          >
+                            <i className="fa-solid fa-user-gear text-xs mr-2"></i> My Account
+                          </Link>
+                          <Link
+                            to="/orders"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          >
+                            <i className="fa-solid fa-box text-xs mr-2"></i> Orders
+                          </Link>
+                          <button
+                            onClick={() => { setUserMenuOpen(false); logout() }}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          >
+                            <i className="fa-solid fa-arrow-right-from-bracket text-xs mr-2"></i> Logout
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <span className="w-px h-5 bg-gray-200"></span>
+
+                    {/* Cart with Item Count Badge */}
+                    <button
+                      onClick={openCart}
+                      className="inline-flex items-center gap-2.5 font-semibold uppercase tracking-wide text-gray-700 hover:text-blue-600 transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-gray-50"
+                      aria-label="Cart"
+                    >
+                      <i className="fa-solid fa-bag-shopping text-lg text-blue-600"></i>
+                      <span className="text-xs font-bold uppercase tracking-wider">Cart</span>
+                      <span className="bg-[#baf120] text-black text-[11px] font-black rounded-full min-w-[20px] h-[20px] px-1 flex items-center justify-center leading-none shadow-sm">
+                        {totalCount}
+                      </span>
+                    </button>
+                  </div>
                 </div>
-              </form>
 
-              <button
-                onClick={openSearch}
-                className="lg:hidden ml-auto inline-flex items-center justify-center text-gray-600 hover:text-blue-600 transition-colors cursor-pointer leading-none shrink-0"
-                aria-label="Search"
-              >
-                <i className="fa-solid fa-magnifying-glass text-xl"></i>
-              </button>
+                {/* ROW 2: Phone number & Support Email side-by-side right below search bar */}
+                <div className="flex items-center gap-4 text-[13px] text-gray-600">
+                  <a
+                    href={'tel:' + SUPPORT_PHONE.replace(/\s/g, '')}
+                    className="flex items-center gap-1.5 hover:text-blue-600 transition-colors font-medium whitespace-nowrap"
+                  >
+                    <i className="fa-solid fa-phone text-xs text-blue-600"></i>
+                    <span>{SUPPORT_PHONE}</span>
+                  </a>
 
-              <div className="hidden lg:flex items-center gap-5 text-[13px] shrink-0">
-                <a
-                  href={'tel:' + SUPPORT_PHONE.replace(/\s/g, '')}
-                  className="flex items-center gap-1.5 text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
-                >
-                  <i className="fa-solid fa-phone text-[11px]"></i>
-                  <span className="font-medium">{SUPPORT_PHONE}</span>
-                </a>
+                  <span className="w-px h-3.5 bg-gray-200"></span>
 
-                <span className="w-px h-4 bg-gray-200"></span>
+                  <a
+                    href={'mailto:' + SUPPORT_EMAIL}
+                    className="flex items-center gap-1.5 hover:text-blue-600 transition-colors font-medium whitespace-nowrap"
+                  >
+                    <i className="fa-solid fa-envelope text-xs text-blue-600"></i>
+                    <span>{SUPPORT_EMAIL}</span>
+                  </a>
+                </div>
 
-                <a
-                  href={'mailto:' + SUPPORT_EMAIL}
-                  className="flex items-center gap-1.5 text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
-                >
-                  <i className="fa-solid fa-envelope text-[11px]"></i>
-                  <span className="font-medium">{SUPPORT_EMAIL}</span>
-                </a>
-
-                <span className="w-px h-4 bg-gray-200"></span>
-
-                <nav className="flex items-center gap-4">
+                {/* ROW 3: Navigation links ("Home", "About", "Contact") underneath contact info */}
+                <nav className="flex items-center gap-6 pt-0.5">
                   {QUICK_LINKS.map((link) => (
                     <Link
                       key={link.label}
                       to={link.to}
                       className={
-                        'font-semibold uppercase tracking-wide transition-colors whitespace-nowrap ' +
+                        'font-semibold text-[12px] uppercase tracking-wider transition-colors whitespace-nowrap ' +
                         (location.pathname === link.to
-                          ? 'text-blue-600'
+                          ? 'text-blue-600 font-bold'
                           : 'text-gray-600 hover:text-blue-600')
                       }
                     >
@@ -163,75 +262,10 @@ export default function Navbar() {
                   ))}
                 </nav>
 
-                <span className="w-px h-4 bg-gray-200"></span>
-
-                <div className="relative">
-                  <button
-                    onClick={() => (isLoggedIn ? setUserMenuOpen((v) => !v) : openLogin())}
-                    className="flex items-center gap-1.5 font-semibold uppercase tracking-wide text-gray-600 hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap"
-                  >
-                    <i className="fa-regular fa-user text-sm"></i>
-                    {isLoggedIn ? (user?.name?.split(' ')[0] || 'Account') : 'Sign In'}
-                  </button>
-                  {isLoggedIn && userMenuOpen && (
-                    <div
-                      className="absolute right-0 top-full mt-2 w-52 bg-white shadow-xl border border-gray-100 rounded-lg py-2 z-50"
-                      onMouseLeave={() => setUserMenuOpen(false)}
-                    >
-                      <div className="px-4 pb-2 border-b border-gray-100">
-                        <p className="text-sm font-bold text-gray-900 truncate">{user?.name || 'Account'}</p>
-                        <p className="text-[11px] text-gray-500 truncate">{user?.email || ''}</p>
-                      </div>
-                      <Link
-                        to="/account"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      >
-                        <i className="fa-solid fa-user-gear text-xs mr-2"></i> My Account
-                      </Link>
-                      <Link
-                        to="/orders"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      >
-                        <i className="fa-solid fa-box text-xs mr-2"></i> Orders
-                      </Link>
-                      <button
-                        onClick={() => { setUserMenuOpen(false); logout() }}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      >
-                        <i className="fa-solid fa-arrow-right-from-bracket text-xs mr-2"></i> Logout
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <span className="w-px h-4 bg-gray-200"></span>
-
-                <button
-                  onClick={openCart}
-                  className="relative inline-flex items-center gap-1.5 font-semibold uppercase tracking-wide text-gray-600 hover:text-blue-600 transition-colors cursor-pointer"
-                  aria-label="Cart"
-                >
-                  <i className="fa-solid fa-bag-shopping text-sm"></i>
-                  <span className="hidden xl:inline">Cart</span>
-                  <span className="bg-[#baf120] text-black text-[10px] font-extrabold rounded-full min-w-[18px] h-[18px] flex items-center justify-center leading-none px-1">
-                    {totalCount}
-                  </span>
-                </button>
               </div>
 
-              <button
-                onClick={openCart}
-                className="lg:hidden relative inline-flex items-center justify-center text-gray-600 hover:text-blue-600 transition-colors cursor-pointer leading-none shrink-0"
-                aria-label="Cart"
-              >
-                <i className="fa-solid fa-bag-shopping text-xl"></i>
-                <span className="absolute -top-1.5 -right-2 bg-[#baf120] text-black text-[9px] font-extrabold rounded-full h-4 w-4 flex items-center justify-center">
-                  {totalCount}
-                </span>
-              </button>
             </div>
+
           </div>
         </div>
 
