@@ -80,7 +80,7 @@ function SelectorButtons({ small = false }) {
 
 export function UltimateFooterBottom() {
   return (
-    <div className="bg-black text-white border-t border-neutral-800 py-10 px-6 font-sans">
+    <div className="bg-black text-white border-t border-neutral-800 py-10 px-6 sm:px-8 lg:px-12 font-sans">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-start justify-between gap-8 pb-8 border-b border-neutral-800/80">
         
         {/* Contact Us Section */}
@@ -160,8 +160,8 @@ export function FooterAmazon() {
   return (
     <footer className="bg-black text-white select-none">
       <BackToTop />
-      <div className="max-w-7xl mx-auto px-8 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
           {footerColumns.map((col) => (
             <div key={col.title}>
               <h3 className="font-bold text-white text-base mb-3">{col.title}</h3>
@@ -193,7 +193,7 @@ const cardFeatures = [
 export function FooterCard() {
   return (
     <footer className="w-full font-sans">
-      <div className="bg-[#baf120] text-black py-10 px-6">
+      <div className="bg-[#baf120] text-black py-10 px-6 sm:px-8 lg:px-12">
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {cardFeatures.map((f) => (
             <div key={f.title} className="flex items-start gap-4">
@@ -209,8 +209,8 @@ export function FooterCard() {
         </div>
       </div>
       <BackToTop className="py-3 text-xs" />
-      <div className="bg-black text-white py-12 px-6">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+      <div className="bg-black text-white py-12 px-6 sm:px-8 lg:px-12">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
           {footerColumns.map((col) => (
             <div key={col.title}>
               <h3 className="font-bold text-sm mb-3 text-white">{col.title}</h3>
