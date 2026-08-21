@@ -26,6 +26,27 @@ export default function ProductDetail() {
     return initialBreakdown(Math.max(1, pr.threshold || 12))
   })
 
+  const [printDesign, setPrintDesign] = useState('Dye Sublimation Printing')
+  const [logoFile, setLogoFile] = useState(null)
+  const [logoPreview, setLogoPreview] = useState(null)
+  const [isDragging, setIsDragging] = useState(false)
+
+  const handleFileSelect = (file) => {
+    if (!file) return
+    setLogoFile(file)
+    if (file.type.startsWith('image/')) {
+      const url = URL.createObjectURL(file)
+      setLogoPreview(url)
+    } else {
+      setLogoPreview(null)
+    }
+  }
+
+  const handleRemoveFile = () => {
+    setLogoFile(null)
+    setLogoPreview(null)
+  }
+
   if (!product) {
     return (
       <div className="bg-black text-white font-sans min-h-screen flex flex-col items-center justify-center text-center px-6">
@@ -62,6 +83,9 @@ export default function ProductDetail() {
     image: product.image,
     orderType: 'wholesale',
     minQuantity: minQty,
+    printDesign,
+    logoName: logoFile ? logoFile.name : '',
+    logoPreview: logoPreview || null,
   }
 
   const setSizeQty = (size, value) => {
@@ -245,6 +269,106 @@ export default function ProductDetail() {
                   <i className="fa-solid fa-circle-exclamation"></i> Minimum wholesale order is {minQty} pieces total across selected sizes.
                 </p>
               )}
+
+              {/* Custom Printing & Logo Upload */}
+              <div className="pt-4 border-t border-neutral-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-extrabold uppercase tracking-wider text-white">
+                    Custom Print Technique & Logo Upload (Optional)
+                  </label>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#baf120] bg-[#baf120]/10 px-2 py-0.5 rounded border border-[#baf120]/30">
+                    All Formats Supported
+                  </span>
+                </div>
+
+                <div>
+                  <select
+                    value={printDesign}
+                    onChange={(e) => setPrintDesign(e.target.value)}
+                    className="w-full bg-black/60 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white outline-none focus:border-[#baf120]"
+                  >
+                    <option value="Dye Sublimation Printing">Full Dye Sublimation Printing</option>
+                    <option value="Screen Printing">Screen Printing</option>
+                    <option value="Custom Embroidery">Custom Embroidery</option>
+                    <option value="DTF Heat Transfer">DTF / Heat Transfer</option>
+                    <option value="Tackle Twill Stitching">Tackle Twill Stitching</option>
+                    <option value="No Printing (Blank)">No Printing (Blank Gear)</option>
+                  </select>
+                </div>
+
+                {!logoFile && !logoPreview ? (
+                  <div
+                    onDragOver={(e) => {
+                      e.preventDefault()
+                      setIsDragging(true)
+                    }}
+                    onDragLeave={() => setIsDragging(false)}
+                    onDrop={(e) => {
+                      e.preventDefault()
+                      setIsDragging(false)
+                      const file = e.dataTransfer.files?.[0]
+                      if (file) handleFileSelect(file)
+                    }}
+                    className={`border border-dashed rounded-xl p-4 text-center transition-all ${
+                      isDragging
+                        ? 'border-[#baf120] bg-[#baf120]/10'
+                        : 'border-neutral-800 bg-black/40 hover:border-[#baf120]/50'
+                    }`}
+                  >
+                    <label className="cursor-pointer block">
+                      <i className="fa-solid fa-cloud-arrow-up text-[#baf120] text-lg mb-1 block"></i>
+                      <span className="text-xs font-bold text-gray-200 block">
+                        Upload Logo / Artwork (PNG, WEBP, JPG, JPEG, SVG, GIF, AVIF, HEIC, PDF)
+                      </span>
+                      <span className="text-[10px] text-gray-500 block mt-0.5">
+                        Drag and drop or click to choose file
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*,.png,.jpg,.jpeg,.webp,.svg,.gif,.avif,.heic,.heif,.bmp,.tiff,.pdf"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) handleFileSelect(file)
+                        }}
+                      />
+                    </label>
+                  </div>
+                ) : (
+                  <div className="bg-black/60 border border-[#baf120]/40 rounded-xl p-3 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      {logoPreview ? (
+                        <div className="w-10 h-10 rounded-lg bg-black border border-neutral-800 overflow-hidden shrink-0 flex items-center justify-center">
+                          <img src={logoPreview} alt="Logo Preview" className="w-full h-full object-contain" />
+                        </div>
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-black border border-neutral-800 flex items-center justify-center text-[#baf120] text-sm shrink-0">
+                          <i className="fa-solid fa-file-lines"></i>
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-white truncate max-w-[180px]">
+                          {logoFile ? logoFile.name : 'Uploaded Artwork'}
+                        </p>
+                        <p className="text-[10px] text-gray-400">
+                          {logoFile
+                            ? logoFile.size / (1024 * 1024) >= 1
+                              ? `${(logoFile.size / (1024 * 1024)).toFixed(2)} MB`
+                              : `${Math.round(logoFile.size / 1024)} KB`
+                            : 'Attached'}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveFile}
+                      className="text-xs font-bold text-red-400 hover:text-red-300 px-2 py-1 bg-red-500/10 rounded border border-red-500/20"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+              </div>
 
               <div className="flex items-center justify-between gap-4 rounded-xl bg-black/60 border border-neutral-800 px-4 py-3">
                 <span className="text-xs text-gray-400 font-medium">

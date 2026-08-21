@@ -16,19 +16,39 @@ export default function CheckoutPage() {
   const { formatPrice } = useCurrency()
   const navigate = useNavigate()
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState(() => ({
     name: '',
     phone: '',
     city: '',
     address: '',
     color: '',
-    printDesign: 'Dye Sublimation Printing',
+    printDesign: cart[0]?.printDesign || 'Dye Sublimation Printing',
     instructions: '',
-    logoName: '',
-  })
+    logoName: cart[0]?.logoName || '',
+  }))
   const [logoFile, setLogoFile] = useState(null)
+  const [logoPreview, setLogoPreview] = useState(() => cart[0]?.logoPreview || null)
+  const [isDragging, setIsDragging] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [orderError, setOrderError] = useState(null)
+
+  const handleFileSelect = (file) => {
+    if (!file) return
+    setLogoFile(file)
+    setForm((f) => ({ ...f, logoName: file.name }))
+    if (file.type.startsWith('image/')) {
+      const url = URL.createObjectURL(file)
+      setLogoPreview(url)
+    } else {
+      setLogoPreview(null)
+    }
+  }
+
+  const handleRemoveFile = () => {
+    setLogoFile(null)
+    setLogoPreview(null)
+    setForm((f) => ({ ...f, logoName: '' }))
+  }
 
   const taxPercent = Number(settings?.taxPercent) || 0
   const tax = (subtotal * taxPercent) / 100
@@ -177,23 +197,125 @@ export default function CheckoutPage() {
                     <option value="No Printing (Blank)">No Printing (Blank Gear)</option>
                   </select>
                 </div>
-                <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Upload Your Logo / Design Artwork</label>
-                  <label className="flex items-center gap-3 bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 cursor-pointer hover:border-[#baf120]/60 transition-colors">
-                    <i className="fa-solid fa-cloud-arrow-up text-[#baf120] text-lg"></i>
-                    <span className="text-sm text-gray-300 truncate">{logoFile ? logoFile.name : 'Choose a logo or design file (PNG, JPG, SVG, PDF)'}</span>
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/svg+xml,application/pdf"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        setLogoFile(file || null)
-                        setForm((f) => ({ ...f, logoName: file ? file.name : '' }))
+                <div className="sm:col-span-2 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-300">
+                      Upload Your Logo / Design Artwork
+                    </label>
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#baf120] bg-[#baf120]/10 px-2 py-0.5 rounded border border-[#baf120]/30">
+                      All Image Formats Supported
+                    </span>
+                  </div>
+
+                  {!logoFile && !logoPreview ? (
+                    <div
+                      onDragOver={(e) => {
+                        e.preventDefault()
+                        setIsDragging(true)
                       }}
-                    />
-                  </label>
-                  <p className="text-[11px] text-gray-500 mt-1.5">We'll confirm your artwork and digital mockup before production.</p>
+                      onDragLeave={() => setIsDragging(false)}
+                      onDrop={(e) => {
+                        e.preventDefault()
+                        setIsDragging(false)
+                        const file = e.dataTransfer.files?.[0]
+                        if (file) handleFileSelect(file)
+                      }}
+                      className={`relative border-2 border-dashed rounded-xl p-6 text-center transition-all duration-300 ${
+                        isDragging
+                          ? 'border-[#baf120] bg-[#baf120]/10 scale-[1.01]'
+                          : 'border-neutral-800 bg-neutral-900/60 hover:border-[#baf120]/50 hover:bg-neutral-900'
+                      }`}
+                    >
+                      <label className="cursor-pointer block">
+                        <div className="w-12 h-12 rounded-full bg-[#baf120]/10 border border-[#baf120]/30 text-[#baf120] flex items-center justify-center mx-auto mb-3 text-xl">
+                          <i className="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <p className="text-sm font-bold text-white mb-1">
+                          Click to upload or drag & drop artwork image
+                        </p>
+                        <p className="text-xs text-gray-400 max-w-md mx-auto mb-3">
+                          Supports PNG, WEBP, JPG, JPEG, SVG, GIF, AVIF, HEIC, BMP, TIFF & PDF
+                        </p>
+                        <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
+                          {['PNG', 'WEBP', 'JPG', 'JPEG', 'SVG', 'GIF', 'AVIF', 'HEIC', 'PDF'].map((ext) => (
+                            <span
+                              key={ext}
+                              className="text-[9px] font-black uppercase tracking-wider bg-black/60 text-gray-300 px-2 py-0.5 rounded border border-neutral-700"
+                            >
+                              {ext}
+                            </span>
+                          ))}
+                        </div>
+                        <input
+                          type="file"
+                          accept="image/*,.png,.jpg,.jpeg,.webp,.svg,.gif,.avif,.heic,.heif,.bmp,.tiff,.pdf"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) handleFileSelect(file)
+                          }}
+                        />
+                      </label>
+                    </div>
+                  ) : (
+                    <div className="bg-neutral-900 border border-[#baf120]/40 rounded-xl p-4 flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-4 min-w-0">
+                        {logoPreview ? (
+                          <div className="w-14 h-14 rounded-lg bg-black border border-neutral-800 overflow-hidden shrink-0 flex items-center justify-center">
+                            <img src={logoPreview} alt="Logo Preview" className="w-full h-full object-contain" />
+                          </div>
+                        ) : (
+                          <div className="w-14 h-14 rounded-lg bg-black border border-neutral-800 flex items-center justify-center text-[#baf120] text-xl shrink-0">
+                            <i className="fa-solid fa-file-lines"></i>
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-white truncate max-w-[180px] sm:max-w-[260px]">
+                              {logoFile ? logoFile.name : form.logoName || 'Uploaded Artwork'}
+                            </span>
+                            <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[#baf120]/20 text-[#baf120] border border-[#baf120]/30 shrink-0">
+                              {(logoFile ? logoFile.name : form.logoName || 'IMG').split('.').pop()?.toUpperCase() || 'IMAGE'}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-gray-400 mt-0.5">
+                            {logoFile
+                              ? (logoFile.size / (1024 * 1024) >= 1
+                                  ? `${(logoFile.size / (1024 * 1024)).toFixed(2)} MB`
+                                  : `${Math.round(logoFile.size / 1024)} KB`)
+                              : 'Artwork Attached'}{' '}
+                            · Ready for production mockup
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <label className="cursor-pointer text-xs font-bold text-gray-300 hover:text-white bg-black/60 border border-neutral-800 hover:border-gray-600 px-3 py-2 rounded-lg transition-colors">
+                          Change
+                          <input
+                            type="file"
+                            accept="image/*,.png,.jpg,.jpeg,.webp,.svg,.gif,.avif,.heic,.heif,.bmp,.tiff,.pdf"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0]
+                              if (file) handleFileSelect(file)
+                            }}
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={handleRemoveFile}
+                          className="text-xs font-bold text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 px-3 py-2 rounded-lg transition-colors"
+                          title="Remove uploaded image"
+                        >
+                          <i className="fa-solid fa-trash-can mr-1"></i> Remove
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  <p className="text-[11px] text-gray-500">
+                    <i className="fa-solid fa-shield-halved text-[#baf120] mr-1"></i>
+                    We'll confirm your artwork and digital mockup before production.
+                  </p>
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-2">Any Special Instructions</label>
