@@ -182,10 +182,10 @@ export default function Navbar() {
                   </form>
                 </div>
 
-                {/* ROW 2: Navigation Links (Left) + ACCOUNT & CART (Right, UNDERNEATH Search Widget) */}
-                <div className="flex items-center justify-between gap-6 pt-0.5">
-                  {/* Navigation Links */}
-                  <nav className="flex items-center gap-6">
+                {/* ROW 2: Navigation Links (CENTERED) + ACCOUNT & CART (Right) */}
+                <div className="relative flex items-center justify-between gap-6 pt-1 min-h-[36px]">
+                  {/* Centered Navigation Links */}
+                  <nav className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center gap-6">
                     {QUICK_LINKS.map((link) => (
                       <Link
                         key={link.label}
@@ -202,8 +202,8 @@ export default function Navbar() {
                     ))}
                   </nav>
 
-                  {/* Account & Cart positioned UNDERNEATH Search Widget on the right */}
-                  <div className="flex items-center gap-4 text-sm shrink-0">
+                  {/* Account & Cart positioned on the right */}
+                  <div className="ml-auto flex items-center gap-4 text-sm shrink-0">
                     {/* Account */}
                     <div className="relative">
                       <button
