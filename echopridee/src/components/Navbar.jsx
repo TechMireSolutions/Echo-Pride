@@ -130,14 +130,36 @@ export default function Navbar() {
                 </Link>
               </div>
 
-              {/* RIGHT COLUMN: 3-Row Vertical Stack */}
-              <div className="flex-1 flex flex-col justify-center gap-2">
+              {/* RIGHT COLUMN: 2-Row Vertical Stack (Search Widget on Top, Account & Cart Below) */}
+              <div className="flex-1 flex flex-col justify-center gap-2.5">
 
-                {/* ROW 1 (TOP): Rounded Search Bar */}
-                <div className="flex items-center justify-between gap-6">
+                {/* ROW 1: Contact Info (Left) + Search Widget ABOVE Account & Cart (Right) */}
+                <div className="flex items-center justify-between gap-6 border-b border-gray-100 pb-2">
+                  {/* Phone number & Support Email side-by-side */}
+                  <div className="flex items-center gap-4 text-[13px] text-gray-600">
+                    <a
+                      href={'tel:' + SUPPORT_PHONE.replace(/\s/g, '')}
+                      className="flex items-center gap-1.5 hover:text-blue-600 transition-colors font-medium whitespace-nowrap"
+                    >
+                      <i className="fa-solid fa-phone text-xs text-blue-600"></i>
+                      <span>{SUPPORT_PHONE}</span>
+                    </a>
+
+                    <span className="w-px h-3.5 bg-gray-200"></span>
+
+                    <a
+                      href={'mailto:' + SUPPORT_EMAIL}
+                      className="flex items-center gap-1.5 hover:text-blue-600 transition-colors font-medium whitespace-nowrap"
+                    >
+                      <i className="fa-solid fa-envelope text-xs text-blue-600"></i>
+                      <span>{SUPPORT_EMAIL}</span>
+                    </a>
+                  </div>
+
+                  {/* Search Widget positioned ABOVE Account & Cart (Compact Width) */}
                   <form
                     onSubmit={(e) => { e.preventDefault(); openSearch() }}
-                    className="flex-1 max-w-2xl"
+                    className="w-64 xl:w-72 shrink-0"
                   >
                     <div className="relative w-full">
                       <input
@@ -146,42 +168,21 @@ export default function Navbar() {
                         placeholder="What are you looking for?"
                         readOnly
                         onClick={openSearch}
-                        className="w-full border border-gray-300 rounded-full pl-4 pr-11 py-2 text-sm text-gray-700 placeholder-gray-400 bg-gray-50/80 hover:bg-gray-50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer shadow-sm"
+                        className="w-full border border-gray-300 rounded-full pl-4 pr-10 py-1.5 text-xs text-gray-700 placeholder-gray-400 bg-gray-50/80 hover:bg-gray-50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer shadow-sm"
                       />
                       <button
                         type="button"
                         onClick={openSearch}
-                        className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors cursor-pointer"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors cursor-pointer"
                         aria-label="Search"
                       >
-                        <i className="fa-solid fa-magnifying-glass text-xs"></i>
+                        <i className="fa-solid fa-magnifying-glass text-[11px]"></i>
                       </button>
                     </div>
                   </form>
                 </div>
 
-                {/* ROW 2 (MIDDLE): Phone Number & Support Email (Below Search, Above Account & Cart) */}
-                <div className="flex items-center gap-4 text-[13px] text-gray-600 border-b border-gray-100 pb-1.5">
-                  <a
-                    href={'tel:' + SUPPORT_PHONE.replace(/\s/g, '')}
-                    className="flex items-center gap-1.5 hover:text-blue-600 transition-colors font-medium whitespace-nowrap"
-                  >
-                    <i className="fa-solid fa-phone text-xs text-blue-600"></i>
-                    <span>{SUPPORT_PHONE}</span>
-                  </a>
-
-                  <span className="w-px h-3.5 bg-gray-200"></span>
-
-                  <a
-                    href={'mailto:' + SUPPORT_EMAIL}
-                    className="flex items-center gap-1.5 hover:text-blue-600 transition-colors font-medium whitespace-nowrap"
-                  >
-                    <i className="fa-solid fa-envelope text-xs text-blue-600"></i>
-                    <span>{SUPPORT_EMAIL}</span>
-                  </a>
-                </div>
-
-                {/* ROW 3 (BOTTOM): Navigation Links (Left) + ACCOUNT & CART (Right) */}
+                {/* ROW 2: Navigation Links (Left) + ACCOUNT & CART (Right, UNDERNEATH Search Widget) */}
                 <div className="flex items-center justify-between gap-6 pt-0.5">
                   {/* Navigation Links */}
                   <nav className="flex items-center gap-6">
@@ -201,7 +202,7 @@ export default function Navbar() {
                     ))}
                   </nav>
 
-                  {/* Account & Cart positioned underneath Phone & Email on the right */}
+                  {/* Account & Cart positioned UNDERNEATH Search Widget on the right */}
                   <div className="flex items-center gap-4 text-sm shrink-0">
                     {/* Account */}
                     <div className="relative">
