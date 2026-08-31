@@ -50,7 +50,7 @@ const QUICK_LINKS = [
   { label: 'Contact', to: '/contact' },
 ]
 
-const SUPPORT_PHONE = '+1 (713) 997-5586'
+const SUPPORT_PHONE = '+1-424-470-7920'
 const SUPPORT_EMAIL = 'support@echopride.com'
 
 export default function Navbar() {
@@ -353,15 +353,13 @@ export default function Navbar() {
       {/* ---------- Mobile Menu Drawer & Backdrop ---------- */}
       <div className={`fixed inset-0 z-50 lg:hidden ${menuOpen ? '' : 'pointer-events-none'}`}>
         <div
-          className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${
-            menuOpen ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${menuOpen ? 'opacity-100' : 'opacity-0'
+            }`}
           onClick={() => setMenuOpen(false)}
         ></div>
         <aside
-          className={`absolute inset-y-0 right-0 w-80 max-w-[85vw] bg-white text-gray-900 shadow-2xl flex flex-col transition-transform duration-300 ${
-            menuOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
+          className={`absolute inset-y-0 right-0 w-80 max-w-[85vw] bg-white text-gray-900 shadow-2xl flex flex-col transition-transform duration-300 ${menuOpen ? 'translate-x-0' : 'translate-x-full'
+            }`}
         >
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 shrink-0">
             <Link to="/" onClick={() => setMenuOpen(false)} className="flex items-center">
