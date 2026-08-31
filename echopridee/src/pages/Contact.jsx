@@ -12,9 +12,9 @@ const contactDetails = [
   {
     icon: 'fa-solid fa-phone',
     title: 'Call Us',
-    content: '+1 (909) 555-0148',
+    content: '+1-424-470-7920',
     isLink: true,
-    href: 'tel:+19095550148',
+    href: 'tel:+14244707920',
   },
   {
     icon: 'fa-solid fa-envelope',

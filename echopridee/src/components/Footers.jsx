@@ -87,10 +87,10 @@ export function UltimateFooterBottom() {
         <div className="flex flex-col items-center md:items-start gap-1">
           <h3 className="font-extrabold text-white text-base tracking-wide mb-1">Contact Us</h3>
           <a
-            href="tel:+17139975586"
+            href="tel:+1-424-470-7920"
             className="text-sm md:text-base font-bold text-white hover:text-[#baf120] transition-colors"
           >
-            +1 (713) 997-5586
+            +1-424-470-7920
           </a>
           <a
             href="mailto:support@echopride.com"
