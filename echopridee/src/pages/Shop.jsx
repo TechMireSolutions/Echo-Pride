@@ -140,6 +140,7 @@ const ALL_SPORTS = [
   { label: 'Cycling', slug: 'cycling' },
   { label: 'Running', slug: 'running' },
   { label: 'Hockey', slug: 'hockey' },
+  { label: 'Boxing Gear', slug: 'boxing' },
 ]
 
 function matchesSport(productSport = '', targetCategory = '') {
@@ -325,8 +326,8 @@ function DedicatedCategoryPage({ categoryName, products: source }) {
       </section>
 
       {/* Sports Quick Switcher */}
-      <section className="bg-neutral-900 border-b border-neutral-800 py-4 px-6">
-        <div className="max-w-7xl mx-auto flex items-center gap-3 overflow-x-auto no-scrollbar">
+      <section className="bg-neutral-900 border-b border-neutral-800 py-3 px-6">
+        <div className="max-w-7xl mx-auto flex items-center gap-3 overflow-x-auto pb-2 custom-scrollbar">
           <span className="text-xs font-bold uppercase tracking-wider text-gray-400 shrink-0 mr-2">Sports:</span>
           {ALL_SPORTS.map((sport) => {
             const isSelected = matchesSport(sport.label, categoryName)

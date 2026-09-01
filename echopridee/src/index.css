@@ -679,3 +679,19 @@ body {
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+/* Sleek custom horizontal scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #262626;
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #baf120;
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a6e216;
+}
