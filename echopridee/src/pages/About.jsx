@@ -263,11 +263,11 @@ export default function About() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {processSteps.map((step) => (
               <div
                 key={step.title}
-                className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 sm:p-8 text-center space-y-3 reveal"
+                className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 text-center space-y-3 reveal"
               >
                 <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto text-gray-900 text-2xl">
                   <i className={step.icon}></i>
