@@ -242,17 +242,17 @@ export function FooterAbout() {
             Join the ECHOPRIDE Movement. This isn't just gear. This is your story in motion.
           </p>
           <div className="flex items-center gap-4">
-            <Link to="/contact" className="text-gray-400 hover:text-[#baf120] transition-colors">
-              <i className="fa-brands fa-facebook text-base"></i>
+            <Link to="/contact" aria-label="Follow EchoPride on Facebook" className="text-gray-400 hover:text-[#baf120] transition-colors">
+              <i className="fa-brands fa-facebook text-base" aria-hidden="true"></i>
             </Link>
-            <Link to="/contact" className="text-gray-400 hover:text-[#baf120] transition-colors">
-              <i className="fa-brands fa-instagram text-base"></i>
+            <Link to="/contact" aria-label="Follow EchoPride on Instagram" className="text-gray-400 hover:text-[#baf120] transition-colors">
+              <i className="fa-brands fa-instagram text-base" aria-hidden="true"></i>
             </Link>
-            <Link to="/contact" className="text-gray-400 hover:text-[#baf120] transition-colors">
-              <i className="fa-brands fa-twitter text-base"></i>
+            <Link to="/contact" aria-label="Follow EchoPride on Twitter" className="text-gray-400 hover:text-[#baf120] transition-colors">
+              <i className="fa-brands fa-twitter text-base" aria-hidden="true"></i>
             </Link>
-            <Link to="/contact" className="text-gray-400 hover:text-[#baf120] transition-colors">
-              <i className="fa-brands fa-pinterest text-base"></i>
+            <Link to="/contact" aria-label="Follow EchoPride on Pinterest" className="text-gray-400 hover:text-[#baf120] transition-colors">
+              <i className="fa-brands fa-pinterest text-base" aria-hidden="true"></i>
             </Link>
           </div>
         </div>
@@ -334,14 +334,16 @@ export function FooterAbout() {
             <input
               type="email"
               placeholder="Enter your email address..."
+              aria-label="Email address for newsletter"
               required
               className="w-full bg-[#131e36] border border-slate-700 rounded-lg px-4 py-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#baf120] transition-colors"
             />
             <button
               type="submit"
+              aria-label="Subscribe to newsletter"
               className="w-full bg-[#baf120] hover:bg-[#a6e216] text-black font-bold text-xs uppercase tracking-widest py-3 rounded-lg transition-colors duration-300 flex items-center justify-center"
             >
-              <i className="fa-solid fa-arrow-right"></i>
+              <i className="fa-solid fa-arrow-right" aria-hidden="true"></i>
             </button>
           </form>
         </div>

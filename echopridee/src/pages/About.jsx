@@ -83,7 +83,7 @@ const processSteps = [
   { icon: 'fa-solid fa-pen-ruler', title: 'Design & Digitizing', text: 'Our designers work with you to finalize team colors, logos, and artwork before anything is produced.' },
   { icon: 'fa-solid fa-print', title: 'Dye-Sublimation Printing', text: 'Vibrant, fade-proof graphics are printed directly into premium performance fabric.' },
   { icon: 'fa-solid fa-shirt', title: 'Cut, Sew & Finish', text: 'Garments are precision-cut, stitched, and quality-checked by skilled craftspeople.' },
-  { icon: 'fa-solid fa-box-open', title: 'Pack & Ship', text: 'Finished gear is inspected, packed, and shipped to your doorstep — usually within 21 days.' },
+  { icon: 'fa-solid fa-truck-fast', title: 'Shipping & Tracking', text: 'Finished gear is inspected, packed, and shipped with real-time tracking straight to your doorstep.' },
 ]
 
 export default function About() {
@@ -263,8 +263,8 @@ export default function About() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 sm:gap-6">
-            {processSteps.slice(0, 3).map((step) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            {processSteps.map((step) => (
               <div
                 key={step.title}
                 className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 sm:p-8 text-center space-y-3 reveal"

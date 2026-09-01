@@ -106,55 +106,57 @@ export default function App() {
           <ScrollToTop />
           <RevealObserver />
           <GlobalHeader />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/shop/:category" element={<Shop />} />
-            <Route path="/product/:slug" element={<ProductDetail />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/about-us" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/careers" element={<Careers />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/investor-relations" element={<InvestorRelations />} />
-            <Route path="/devices" element={<Devices />} />
-            <Route path="/science" element={<Science />} />
-            <Route path="/sell-products" element={<SellProducts />} />
-            <Route path="/business-sell" element={<BusinessSell />} />
-            <Route path="/sell-apps" element={<SellApps />} />
-            <Route path="/affiliate" element={<Affiliate />} />
-            <Route path="/advertise" element={<Advertise />} />
-            <Route path="/self-publish" element={<SellProducts />} />
-            <Route path="/self-publishing" element={<SelfPublish />} />
-            <Route path="/host-hub" element={<HostHub />} />
-            <Route path="/business-card" element={<BusinessCard />} />
-            <Route path="/shop-with-points" element={<ShopWithPoints />} />
-            <Route path="/reload-balance" element={<ReloadBalance />} />
-            <Route path="/currency-converter" element={<CurrencyConverter />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/order-confirmation" element={<OrderConfirmation />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/shipping-policies" element={<ShippingPolicies />} />
-            <Route path="/returns" element={<Returns />} />
-            <Route path="/manage-devices" element={<ManageDevices />} />
-            <Route path="/help" element={<Help />} />
-            <Route path="/store-locations" element={<StoreLocations />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-of-service" element={<TermsOfService />} />
-            <Route path="/terms" element={<TermsOfService />} />
-            <Route path="/admin" element={<AdminGate />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route
-              path="/admin/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Admin />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<Home />} />
-          </Routes>
+          <main id="main-content" tabIndex="-1">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/shop/:category" element={<Shop />} />
+              <Route path="/product/:slug" element={<ProductDetail />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/about-us" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/careers" element={<Careers />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/investor-relations" element={<InvestorRelations />} />
+              <Route path="/devices" element={<Devices />} />
+              <Route path="/science" element={<Science />} />
+              <Route path="/sell-products" element={<SellProducts />} />
+              <Route path="/business-sell" element={<BusinessSell />} />
+              <Route path="/sell-apps" element={<SellApps />} />
+              <Route path="/affiliate" element={<Affiliate />} />
+              <Route path="/advertise" element={<Advertise />} />
+              <Route path="/self-publish" element={<SellProducts />} />
+              <Route path="/self-publishing" element={<SelfPublish />} />
+              <Route path="/host-hub" element={<HostHub />} />
+              <Route path="/business-card" element={<BusinessCard />} />
+              <Route path="/shop-with-points" element={<ShopWithPoints />} />
+              <Route path="/reload-balance" element={<ReloadBalance />} />
+              <Route path="/currency-converter" element={<CurrencyConverter />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/order-confirmation" element={<OrderConfirmation />} />
+              <Route path="/account" element={<Account />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/shipping-policies" element={<ShippingPolicies />} />
+              <Route path="/returns" element={<Returns />} />
+              <Route path="/manage-devices" element={<ManageDevices />} />
+              <Route path="/help" element={<Help />} />
+              <Route path="/store-locations" element={<StoreLocations />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/admin" element={<AdminGate />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Admin />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<Home />} />
+            </Routes>
+          </main>
           <OverlayLayout />
         </HashRouter>
         </CurrencyProvider>

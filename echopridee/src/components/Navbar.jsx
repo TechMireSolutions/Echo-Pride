@@ -121,10 +121,12 @@ export default function Navbar() {
 
               {/* LEFT COLUMN: Brand Logo (Vertically Centered across full header height) */}
               <div className="shrink-0 flex items-center self-center">
-                <Link to="/" className="flex items-center">
+                <Link to="/" className="flex items-center" aria-label="EchoPride Home">
                   <img
                     src="/imgi_1_BLogowithicon.webp"
                     alt="EchoPride Logo"
+                    width="180"
+                    height="80"
                     className="h-16 xl:h-20 w-auto object-contain transition-transform hover:scale-[1.02]"
                   />
                 </Link>
@@ -148,15 +150,16 @@ export default function Navbar() {
                           placeholder="What are you looking for?"
                           readOnly
                           onClick={openSearch}
-                          className="w-full border border-gray-300 rounded-full pl-4 pr-10 py-1.5 text-xs text-gray-700 placeholder-gray-400 bg-gray-50/80 hover:bg-gray-50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer shadow-sm"
+                          aria-label="Search site products"
+                          className="w-full border border-gray-300 rounded-full pl-4 pr-10 py-1.5 text-xs text-gray-700 placeholder-gray-500 bg-gray-50/80 hover:bg-gray-50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer shadow-sm"
                         />
                         <button
                           type="button"
                           onClick={openSearch}
                           className="absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors cursor-pointer"
-                          aria-label="Search"
+                          aria-label="Submit search"
                         >
-                          <i className="fa-solid fa-magnifying-glass text-[11px]"></i>
+                          <i className="fa-solid fa-magnifying-glass text-[11px]" aria-hidden="true"></i>
                         </button>
                       </div>
                     </form>
