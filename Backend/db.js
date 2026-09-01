@@ -315,12 +315,86 @@ function migrateOrderItemSizes() {
 
 migrateOrderItemSizes()
 
+function migrateBoxingCategory() {
+  const existing = db.prepare('SELECT * FROM categories WHERE slug = ?').get('boxing')
+  let catId = existing ? existing.id : null
+  if (!existing) {
+    const res = db.prepare(
+      'INSERT INTO categories (slug, name, image) VALUES (?, ?, ?)'
+    ).run('boxing', 'Boxing Gear', 'imgi_5_m3_cat_01.jpg')
+    catId = Number(res.lastInsertRowid)
+  }
+  if (catId) {
+    const boxingProducts = [
+      {
+        slug: 'custom-boxing-gloves-pro-series',
+        name: 'Custom Pro Series Boxing Gloves',
+        price: 75,
+        compareAtPrice: 95,
+        stock: 50,
+        featured: 1,
+        image: 'imgi_26_m3_banner_01.jpg',
+        description: 'Engineered for maximum hand protection and wrist stability. Multi-layer foam padding, genuine leather construction, and customizable colors and logos for gym and fight night.',
+      },
+      {
+        slug: 'boxing-corner-team-zip-hoodie',
+        name: 'Boxing Corner Team Zip-Up Hoodie',
+        price: 60,
+        compareAtPrice: 80,
+        stock: 65,
+        featured: 1,
+        image: 'imgi_18_a-sleek-modern-basketball-coach-s-hoodie-featuri-700x700.webp',
+        description: 'Keep your fighters warm between rounds and training sessions. Soft fleece interior, reinforced full-zip, and athletic fit built for the ring entrance.',
+      },
+      {
+        slug: 'custom-sublimated-boxing-shorts',
+        name: 'Custom Sublimated Boxing Shorts',
+        price: 45,
+        compareAtPrice: 60,
+        stock: 80,
+        featured: 0,
+        image: 'imgi_7_m3_cat_03.jpg',
+        description: 'Ultra-lightweight satin-finish sublimated boxing trunks with wide elastic waistband and high side slits for full freedom of footwork and movement.',
+      }
+    ]
+    const insertProd = db.prepare(`
+      INSERT INTO products (slug, name, description, price, compare_at_price, stock_quantity, is_featured, category_id, retail_price, wholesale_min_quantity)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `)
+    const insertImg = db.prepare(
+      'INSERT INTO product_images (product_id, url, position) VALUES (?, ?, ?)'
+    )
+
+    for (const p of boxingProducts) {
+      const existingP = db.prepare('SELECT id FROM products WHERE slug = ?').get(p.slug)
+      if (!existingP) {
+        const { lastInsertRowid: prodId } = insertProd.run(
+          p.slug,
+          p.name,
+          p.description,
+          p.price,
+          p.compareAtPrice,
+          p.stock,
+          p.featured,
+          catId,
+          p.compareAtPrice,
+          12
+        )
+        insertImg.run(Number(prodId), p.image, 0)
+      }
+    }
+  }
+}
+
+migrateBoxingCategory()
+
 const CATEGORY_SEEDS = [
   { slug: 'basketball', name: 'Basketball', image: 'imgi_5_m3_cat_01.jpg' },
   { slug: 'football', name: 'Football', image: 'imgi_6_m3_cat_02.jpg' },
   { slug: 'soccers', name: 'Soccers', image: 'imgi_7_m3_cat_03.jpg' },
   { slug: 'softballs', name: 'SoftBalls', image: 'imgi_8_m3_cat_04.jpg' },
   { slug: 'rugby', name: 'Rugby', image: 'imgi_9_m3_cat_05.jpg' },
+  { slug: 'boxing', name: 'Boxing Gear', image: 'imgi_5_m3_cat_01.jpg' },
 ]
 
 // slug, name, category, price, compareAtPrice, stock, featured, image, description
@@ -588,6 +662,42 @@ const PRODUCT_SEEDS = [
     image: 'imgi_25_a-moisture-wicking-basketball-coach-s-hoodie-with--700x700.webp',
     description:
       'Make a statement at training. This bold-design moisture-wicking hoodie combines eye-catching graphics with advanced performance fabric — pulling sweat away instantly while delivering maximum comfort throughout the longest sessions.',
+  },
+  {
+    slug: 'custom-boxing-gloves-pro-series',
+    name: 'Custom Pro Series Boxing Gloves',
+    category: 'Boxing',
+    price: 75,
+    compareAtPrice: 95,
+    stock: 50,
+    featured: true,
+    image: 'imgi_26_m3_banner_01.jpg',
+    description:
+      'Engineered for maximum hand protection and wrist stability. Multi-layer foam padding, genuine leather construction, and customizable colors and logos for gym and fight night.',
+  },
+  {
+    slug: 'boxing-corner-team-zip-hoodie',
+    name: 'Boxing Corner Team Zip-Up Hoodie',
+    category: 'Boxing',
+    price: 60,
+    compareAtPrice: 80,
+    stock: 65,
+    featured: true,
+    image: 'imgi_18_a-sleek-modern-basketball-coach-s-hoodie-featuri-700x700.webp',
+    description:
+      'Keep your fighters warm between rounds and training sessions. Soft fleece interior, reinforced full-zip, and athletic fit built for the ring entrance.',
+  },
+  {
+    slug: 'custom-sublimated-boxing-shorts',
+    name: 'Custom Sublimated Boxing Shorts',
+    category: 'Boxing',
+    price: 45,
+    compareAtPrice: 60,
+    stock: 80,
+    featured: false,
+    image: 'imgi_7_m3_cat_03.jpg',
+    description:
+      'Ultra-lightweight satin-finish sublimated boxing trunks with wide elastic waistband and high side slits for full freedom of footwork and movement.',
   },
 ]
 

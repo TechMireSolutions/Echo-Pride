@@ -13,12 +13,13 @@ const shopTabs = [
   { id: 'football-tab', label: 'Football Uniform', sport: 'Football', active: false },
   { id: 'soccer-tab', label: 'Soccer Uniform', sport: 'Soccers', active: false },
   { id: 'rugby-tab', label: 'Rugby Uniform', sport: 'Rugby', active: false },
+  { id: 'boxing-tab', label: 'Boxing Gear', sport: 'Boxing', active: false },
 ]
 
 const promoBanners = [
-  { image: 'imgi_26_m3_banner_01.jpg', tag: 'Up to 50%', title: ['Score Big', 'Savings on', 'Sports Shoes'], to: '/shop' },
-  { image: 'imgi_27_m3_banner_022.jpg', tag: 'Up to 40%', title: ['Huge Discounts on', 'Sportswear'], to: '/shop' },
-  { image: 'imgi_28_m3_banner_03.jpg', tag: 'Up to 30%', title: ['Accessories', 'Markdown Madness'], to: '/shop' },
+  { image: 'imgi_26_m3_banner_01.jpg', tag: 'Up to 50%', title: 'Score Big Savings on Sports Shoes', to: '/shop' },
+  { image: 'imgi_27_m3_banner_022.jpg', tag: 'Up to 40%', title: 'Huge Discounts on Sportswear', to: '/shop' },
+  { image: 'imgi_28_m3_banner_03.jpg', tag: 'Up to 30%', title: 'Accessories Markdown Madness', to: '/shop' },
 ]
 
 const serviceFeatures = [
@@ -70,6 +71,18 @@ const categoryDetails = {
     title: 'Rugby Uniforms & Contact Gear',
     text: 'Heavy-duty sublimated rugby jerseys, coaching waterproof jackets, and contact-tested teamwear.',
     banner: 'imgi_9_m3_cat_05.jpg',
+  },
+  Boxing: {
+    tag: 'BOXING TEAM GEAR',
+    title: 'Boxing Gear & Training Apparel',
+    text: 'Custom boxing gloves, corner hoodies, fight robes, and high-performance training gear for fighters and coaches.',
+    banner: 'imgi_5_m3_cat_01.jpg',
+  },
+  'Boxing Gear': {
+    tag: 'BOXING TEAM GEAR',
+    title: 'Boxing Gear & Training Apparel',
+    text: 'Custom boxing gloves, corner hoodies, fight robes, and high-performance training gear for fighters and coaches.',
+    banner: 'imgi_5_m3_cat_01.jpg',
   },
   Baseball: {
     tag: 'BASEBALL TEAM GEAR',
@@ -145,72 +158,65 @@ function ProductCard({ product }) {
   return (
     <Link
       to={`/product/${product.slug}`}
-      className="group block bg-white border border-gray-200 rounded-2xl p-4 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between"
+      className="group block bg-white border border-gray-200 rounded-2xl p-2.5 sm:p-4 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between"
     >
       <div>
-        <div className="relative h-48 sm:h-56 md:h-64 bg-gray-50 rounded-xl mb-4 overflow-hidden flex items-center justify-center">
+        <div className="relative h-36 sm:h-56 md:h-64 bg-gray-50 rounded-xl mb-2 sm:mb-4 overflow-hidden flex items-center justify-center">
           <img
             src={`/${product.image}`}
             alt={product.title}
-            className="object-contain h-full w-full p-3 transition-transform duration-500 group-hover:scale-105"
+            className="object-contain h-full w-full p-2 sm:p-3 transition-transform duration-500 group-hover:scale-105"
           />
-          <span className="absolute top-3 left-3 bg-[#baf120] text-black text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded shadow-xs">
+          <span className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-[#baf120] text-black text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2 sm:px-2.5 py-0.5 rounded shadow-xs">
             Wholesale
           </span>
         </div>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600 block mb-1">
+        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-blue-600 block mb-1">
           {product.sport || product.category}
         </span>
-        <h3 className="text-xs sm:text-sm font-extrabold text-gray-900 uppercase tracking-wide leading-snug line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors">
+        <h3 className="text-[11px] sm:text-sm font-extrabold text-gray-900 uppercase tracking-wide leading-snug line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors">
           {product.title}
         </h3>
       </div>
-      <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+      <div className="pt-2 sm:pt-3 border-t border-gray-100 flex items-center justify-between gap-1">
         <div>
-          <span className="text-[10px] font-bold text-gray-400 block uppercase">Wholesale Price</span>
-          <span className="text-sm sm:text-base font-extrabold text-gray-900">{formatPrice(pr.wholesale ?? pr.price)}</span>
+          <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 block uppercase leading-none">Wholesale Price</span>
+          <span className="text-xs sm:text-base font-extrabold text-gray-900">{formatPrice(pr.wholesale ?? pr.price)}</span>
         </div>
-        <span className="bg-gray-100 group-hover:bg-[#baf120] group-hover:text-black text-gray-700 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
-          View <i className="fa-solid fa-arrow-right text-[10px]"></i>
+        <span className="bg-gray-100 group-hover:bg-[#baf120] group-hover:text-black text-gray-700 text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg transition-colors flex items-center gap-1 shrink-0">
+          View <i className="fa-solid fa-arrow-right text-[8px] sm:text-[10px]"></i>
         </span>
       </div>
     </Link>
   )
 }
 
-function PromoCard({ banner, wide = false }) {
+function PromoCard({ banner }) {
+  const titleText = typeof banner.title === 'string' ? banner.title : banner.title.join(' ')
+
   return (
     <Link
       to={banner.to}
-      className={`promo-banner relative block overflow-hidden rounded-lg group ${
-        wide ? 'h-[320px] md:h-[420px]' : 'h-[300px] sm:h-[320px] md:h-[340px]'
-      }`}
+      className="promo-banner relative block overflow-hidden rounded-2xl group h-[340px] sm:h-[360px] md:h-[380px] shadow-lg border border-gray-200/80"
     >
       <img
         src={`/${banner.image}`}
-        alt={banner.title.join(' ')}
+        alt={titleText}
         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/20"></div>
-      <div
-        className={`absolute inset-0 z-10 flex flex-col justify-center space-y-2.5 px-6 md:px-8 ${
-          wide ? 'items-center text-center' : 'items-start'
-        }`}
-      >
-        <span className="text-sm font-semibold text-[#baf120] tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/20"></div>
+
+      <div className="absolute inset-0 z-10 flex flex-col justify-end p-6 sm:p-8 space-y-3">
+        <span className="inline-block self-start text-xs font-black uppercase tracking-wider bg-[#baf120] text-black px-3.5 py-1 rounded-md shadow-sm">
           {banner.tag}
         </span>
-        <h3 className="text-2xl md:text-[1.65rem] font-extrabold text-white leading-snug max-w-[90%] drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
-          {banner.title.map((line) => (
-            <span key={line} className="block">
-              {line}
-            </span>
-          ))}
+        <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-white leading-snug drop-shadow-md">
+          {titleText}
         </h3>
-        <div className="pt-2">
-          <span className="inline-flex items-center gap-2 bg-[#baf120] text-black text-xs font-bold uppercase tracking-widest px-6 py-2.5 rounded shadow-md transition-all duration-500 group-hover:bg-white group-hover:shadow-lg">
+        <div className="pt-1">
+          <span className="inline-flex items-center gap-2 bg-[#baf120] group-hover:bg-[#a6e216] text-black font-extrabold text-xs uppercase tracking-widest px-6 py-3 rounded-lg shadow-md transition-colors duration-300">
             Shop Now
-            <i className="fa-solid fa-arrow-right transition-transform duration-500 group-hover:translate-x-1"></i>
+            <i className="fa-solid fa-arrow-right text-xs transition-transform duration-300 group-hover:translate-x-1"></i>
           </span>
         </div>
       </div>
@@ -385,7 +391,7 @@ function DedicatedCategoryPage({ categoryName, products: source }) {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
             {categoryProducts.map((product) => (
               <ProductCard key={product.slug} product={product} />
             ))}
@@ -533,8 +539,8 @@ export default function Shop() {
         </div>
       </section>
 
-      <section className="py-10 px-6 bg-white">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
+      <section className="py-12 md:py-16 px-6 bg-white">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
           {promoBanners.map((banner) => (
             <PromoCard key={banner.tag} banner={banner} />
           ))}

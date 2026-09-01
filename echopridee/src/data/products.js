@@ -307,6 +307,48 @@ const productsRaw = [
     description:
       'Make a statement at training. This bold-design moisture-wicking hoodie combines eye-catching graphics with advanced performance fabric — pulling sweat away instantly while delivering maximum comfort throughout the longest sessions.',
   },
+  {
+    id: 'card23',
+    slug: 'custom-boxing-gloves-pro-series',
+    title: 'Custom Pro Series Boxing Gloves',
+    subtitle: 'Maximum Protection, Custom Team Branding',
+    category: 'BOXING TEAM GEAR',
+    sport: 'Boxing',
+    price: 75,
+    save: '25%',
+    reviews: 38,
+    image: 'imgi_26_m3_banner_01.jpg',
+    description:
+      'Engineered for maximum hand protection and wrist stability. Multi-layer foam padding, genuine leather construction, and customizable colors and logos for gym and fight night.',
+  },
+  {
+    id: 'card24',
+    slug: 'boxing-corner-team-zip-hoodie',
+    title: 'Boxing Corner Team Zip-Up Hoodie',
+    subtitle: 'Warmth and Style for Fighter & Corner Crew',
+    category: 'BOXING TEAM GEAR',
+    sport: 'Boxing',
+    price: 60,
+    save: '20%',
+    reviews: 42,
+    image: 'imgi_18_a-sleek-modern-basketball-coach-s-hoodie-featuri-700x700.webp',
+    description:
+      'Keep your fighters warm between rounds and training sessions. Soft fleece interior, reinforced full-zip, and athletic fit built for the ring entrance.',
+  },
+  {
+    id: 'card25',
+    slug: 'custom-sublimated-boxing-shorts',
+    title: 'Custom Sublimated Boxing Shorts',
+    subtitle: 'Lightweight, Breathable, High-Split Cut',
+    category: 'BOXING TEAM GEAR',
+    sport: 'Boxing',
+    price: 45,
+    save: '22%',
+    reviews: 29,
+    image: 'imgi_7_m3_cat_03.jpg',
+    description:
+      'Ultra-lightweight satin-finish sublimated boxing trunks with wide elastic waistband and high side slits for full freedom of footwork and movement.',
+  },
 ]
 
 export const carouselProducts = [
@@ -384,6 +426,8 @@ export const categorySlugs = {
   SoftBalls: 'softballs',
   Softball: 'softball',
   Rugby: 'rugby',
+  Boxing: 'boxing',
+  'Boxing Gear': 'boxing',
   Baseball: 'baseball',
   Volleyball: 'volleyball',
   Lacrosse: 'lacrosse',
@@ -425,6 +469,11 @@ export const categorySlides = [
     image: 'imgi_9_m3_cat_05.jpg',
     label: 'Rugby',
     sport: 'Rugby',
+  },
+  {
+    image: 'imgi_5_m3_cat_01.jpg',
+    label: 'Boxing Gear',
+    sport: 'Boxing',
   },
 ]
 

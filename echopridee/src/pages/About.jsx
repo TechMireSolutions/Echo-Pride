@@ -227,7 +227,7 @@ export default function About() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             {storyImages.map((img, i) => (
               <div
                 key={img.tag}
@@ -359,7 +359,7 @@ export default function About() {
       </section>
 
       <section className="bg-white py-16 px-6 border-t border-gray-100">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {serviceRow.map((s, i) => (
             <div key={s.title} className={`text-center space-y-3 reveal reveal-delay-${i + 1}`}>
               <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto text-gray-800 text-2xl">

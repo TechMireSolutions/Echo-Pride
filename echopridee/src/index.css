@@ -661,3 +661,21 @@ body {
 #scroll-top:hover {
   transform: scale(1.1);
 }
+
+/* ---------- Infinite Marquee Testimonials Loop ---------- */
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marqueeScroll 25s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}

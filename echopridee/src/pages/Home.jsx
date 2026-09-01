@@ -1,5 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Navigation, Autoplay, Pagination } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
 import CategoryCarousel from '../components/CategoryCarousel'
 import ProductCarousel from '../components/ProductCarousel'
 import { FooterAmazon } from '../components/Footers'
@@ -73,9 +78,9 @@ const newArrivalTabs = [
 ]
 
 const promoBanners = [
-  { image: 'imgi_26_m3_banner_01.jpg', tag: 'Up to 50%', title: ['Score Big', 'Savings on', 'Sports Shoes'], to: '/shop' },
-  { image: 'imgi_27_m3_banner_022.jpg', tag: 'Up to 40%', title: ['Huge Discounts on', 'Sportswear'], to: '/shop' },
-  { image: 'imgi_28_m3_banner_03.jpg', tag: 'Up to 30%', title: ['Accessories', 'Markdown Madness'], to: '/shop' },
+  { image: 'imgi_26_m3_banner_01.jpg', tag: 'Up to 50%', title: 'Score Big Savings on Sports Shoes', to: '/shop' },
+  { image: 'imgi_27_m3_banner_022.jpg', tag: 'Up to 40%', title: 'Huge Discounts on Sportswear', to: '/shop' },
+  { image: 'imgi_28_m3_banner_03.jpg', tag: 'Up to 30%', title: 'Accessories Markdown Madness', to: '/shop' },
 ]
 
 const serviceFeatures = [
@@ -270,39 +275,32 @@ function FaqAccordion() {
   )
 }
 
-function PromoCard({ banner, wide = false }) {
+function PromoCard({ banner }) {
+  const titleText = typeof banner.title === 'string' ? banner.title : banner.title.join(' ')
+
   return (
     <Link
       to={banner.to}
-      className={`promo-banner relative block overflow-hidden rounded-lg group ${
-        wide ? 'h-[320px] md:h-[420px]' : 'h-[300px] sm:h-[320px] md:h-[340px]'
-      }`}
+      className="promo-banner relative block overflow-hidden rounded-2xl group h-[340px] sm:h-[360px] md:h-[380px] shadow-lg border border-gray-200/80"
     >
       <img
         src={`/${banner.image}`}
-        alt={banner.title.join(' ')}
+        alt={titleText}
         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/20"></div>
-      <div
-        className={`absolute inset-0 z-10 flex flex-col justify-center space-y-2.5 px-6 md:px-8 ${
-          wide ? 'items-center text-center' : 'items-start'
-        }`}
-      >
-        <span className="text-sm font-semibold text-[#baf120] tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/20"></div>
+
+      <div className="absolute inset-0 z-10 flex flex-col justify-end p-6 sm:p-8 space-y-3">
+        <span className="inline-block self-start text-xs font-black uppercase tracking-wider bg-[#baf120] text-black px-3.5 py-1 rounded-md shadow-sm">
           {banner.tag}
         </span>
-        <h3 className="text-2xl md:text-[1.65rem] font-extrabold text-white leading-snug max-w-[90%] drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
-          {banner.title.map((line) => (
-            <span key={line} className="block">
-              {line}
-            </span>
-          ))}
+        <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-white leading-snug drop-shadow-md">
+          {titleText}
         </h3>
-        <div className="pt-2">
-          <span className="inline-flex items-center gap-2 bg-[#baf120] text-black text-xs font-bold uppercase tracking-widest px-6 py-2.5 rounded shadow-md transition-all duration-500 group-hover:bg-white group-hover:shadow-lg">
+        <div className="pt-1">
+          <span className="inline-flex items-center gap-2 bg-[#baf120] group-hover:bg-[#a6e216] text-black font-extrabold text-xs uppercase tracking-widest px-6 py-3 rounded-lg shadow-md transition-colors duration-300">
             Shop Now
-            <i className="fa-solid fa-arrow-right transition-transform duration-500 group-hover:translate-x-1"></i>
+            <i className="fa-solid fa-arrow-right text-xs transition-transform duration-300 group-hover:translate-x-1"></i>
           </span>
         </div>
       </div>
@@ -315,6 +313,45 @@ function CountdownBadge({ value, label }) {
     <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#baf120] text-black flex flex-col items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-300">
       <span className="text-lg sm:text-2xl font-extrabold leading-none">{value}</span>
       <span className="text-[10px] sm:text-xs font-semibold uppercase mt-0.5">{label}</span>
+    </div>
+  )
+}
+
+function TestimonialsLoop() {
+  const doubled = [...testimonials, ...testimonials]
+
+  return (
+    <div className="relative overflow-hidden w-full py-4">
+      {/* Side Fade Gradient Edges */}
+      <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 sm:w-28 bg-gradient-to-r from-neutral-900 to-transparent z-10"></div>
+      <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 sm:w-28 bg-gradient-to-l from-neutral-900 to-transparent z-10"></div>
+
+      <div className="flex w-max animate-marquee space-x-6">
+        {doubled.map((t, idx) => (
+          <figure
+            key={`${t.name}-${idx}`}
+            className="w-[300px] sm:w-[380px] shrink-0 flex flex-col bg-black/40 border border-white/10 rounded-2xl p-7 hover:border-[#baf120]/40 transition-all duration-500"
+          >
+            <div className="mb-4">
+              <Stars rating={t.rating} />
+            </div>
+            <blockquote className="text-sm md:text-[15px] leading-relaxed text-gray-300 flex-1">
+              &ldquo;{t.text}&rdquo;
+            </blockquote>
+            <figcaption className="mt-6 pt-5 border-t border-white/10">
+              <div className="flex items-center gap-3">
+                <span className="w-11 h-11 rounded-full bg-[#baf120] text-black flex items-center justify-center font-extrabold text-sm shrink-0">
+                  {t.name.split(' ').map((n) => n[0]).join('')}
+                </span>
+                <div>
+                  <p className="text-sm font-bold text-white">{t.name}</p>
+                  <p className="text-xs text-gray-400">{t.role}</p>
+                </div>
+              </div>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
     </div>
   )
 }
@@ -352,8 +389,8 @@ export default function Home() {
               BASKETBALL UNIFORM
             </p>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-extrabold uppercase leading-[1.1] tracking-normal text-white opacity-0 animate-fade-in-up delay-2">
-              SHOP THE BEST <br />
-              BASKETBALL <br />
+              SHOP THE BEST<br />
+              BASKETBALL<br />
               ACCESSORIES
             </h1>
             <div className="opacity-0 animate-fade-in-up delay-3 pt-3">
@@ -405,18 +442,18 @@ export default function Home() {
           <div className="min-h-[400px]">
             {newArrivalTabs.map((tab) => (
               <div key={tab.id} className={activeTab === tab.id ? 'tab-pane block' : 'hidden'}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 text-left">
                   {tab.products.map((product) => (
                     <Link
                       key={product.title}
                       to={`/product/${product.slug}`}
-                      className="block bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="block bg-white border border-gray-200 rounded-2xl p-2.5 sm:p-4 shadow-sm hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     >
-                      <div className="h-64 bg-gray-50 rounded mb-4 overflow-hidden flex items-center justify-center">
-                        <img src={`/${product.image}`} alt={product.title} className="object-contain h-full w-full" />
+                      <div className="h-36 sm:h-64 bg-gray-50 rounded-xl mb-3 overflow-hidden flex items-center justify-center">
+                        <img src={`/${product.image}`} alt={product.title} className="object-contain h-full w-full p-2" />
                       </div>
-                      <h3 className="text-xs font-extrabold text-black uppercase tracking-wider mb-2">{product.title}</h3>
-                      <p className="text-sm font-bold text-gray-500">{formatPrice(parseUsdPrice(product.price))}</p>
+                      <h3 className="text-[11px] sm:text-xs font-extrabold text-black uppercase tracking-wider mb-1 leading-snug line-clamp-2">{product.title}</h3>
+                      <p className="text-xs sm:text-sm font-bold text-gray-500">{formatPrice(parseUsdPrice(product.price))}</p>
                     </Link>
                   ))}
                 </div>
@@ -479,53 +516,26 @@ export default function Home() {
         </section>
       )}
 
-      <section className="py-10 px-6 bg-white">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
+      <section className="py-12 md:py-16 px-6 bg-white">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
           {promoBanners.map((banner) => (
             <PromoCard key={banner.tag} banner={banner} />
           ))}
         </div>
       </section>
 
-      <section className="py-16 md:py-20 px-6 bg-neutral-900 text-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="text-[#baf120] text-xs font-extrabold uppercase tracking-[0.25em]">Testimonials</span>
-            <h2 className="text-3xl md:text-5xl font-serif font-extrabold uppercase tracking-wide mt-2 text-white">
-              What Our Clients Say
-            </h2>
-            <p className="text-sm text-gray-400 mt-3 max-w-xl mx-auto">
-              Teams, clubs, and coaches trust EchoPride for premium custom sportswear. Here is what they have to say.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {testimonials.map((t) => (
-              <figure
-                key={t.name}
-                className="flex flex-col bg-black/40 border border-white/10 rounded-2xl p-7 hover:border-[#baf120]/40 hover:-translate-y-1 transition-all duration-500"
-              >
-                <div className="mb-4">
-                  <Stars rating={t.rating} />
-                </div>
-                <blockquote className="text-sm md:text-[15px] leading-relaxed text-gray-300 flex-1">
-                  &ldquo;{t.text}&rdquo;
-                </blockquote>
-                <figcaption className="mt-6 pt-5 border-t border-white/10">
-                  <div className="flex items-center gap-3">
-                    <span className="w-11 h-11 rounded-full bg-[#baf120] text-black flex items-center justify-center font-extrabold text-sm shrink-0">
-                      {t.name.split(' ').map((n) => n[0]).join('')}
-                    </span>
-                    <div>
-                      <p className="text-sm font-bold text-white">{t.name}</p>
-                      <p className="text-xs text-gray-400">{t.role}</p>
-                    </div>
-                  </div>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
+      <section className="py-16 md:py-20 bg-neutral-900 text-white w-full overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 text-center mb-12">
+          <span className="text-[#baf120] text-xs font-extrabold uppercase tracking-[0.25em]">Testimonials</span>
+          <h2 className="text-3xl md:text-5xl font-serif font-extrabold uppercase tracking-wide mt-2 text-white">
+            What Our Clients Say
+          </h2>
+          <p className="text-sm text-gray-400 mt-3 max-w-xl mx-auto">
+            Teams, clubs, and coaches trust EchoPride for premium custom sportswear. Here is what they have to say.
+          </p>
         </div>
+
+        <TestimonialsLoop />
       </section>
 
       <section className="py-16 md:py-20 px-6 bg-white">

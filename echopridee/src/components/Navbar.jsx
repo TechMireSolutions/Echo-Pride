@@ -10,6 +10,7 @@ const CATEGORIES = [
   { label: 'Soccer', slug: 'soccers' },
   { label: 'Lacrosse', slug: 'lacrosse' },
   { label: 'Rugby', slug: 'rugby' },
+  { label: 'Boxing Gear', slug: 'boxing' },
   { label: 'Cycling', slug: 'cycling' },
   { label: 'Running', slug: 'running' },
   { label: 'Football', slug: 'football' },
@@ -288,37 +289,18 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Desktop Category Megamenu Bar (>= lg) */}
+        {/* Desktop Category Bar (>= lg) */}
         <div className="bg-[#1e3a5f] hidden lg:block">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
             <div className="flex items-center overflow-x-auto no-scrollbar">
               {CATEGORIES.map((cat) => (
-                <div key={cat.slug} className="dropdown">
-                  <Link
-                    to={'/shop/' + cat.slug}
-                    className="cat-bar-link inline-flex items-center gap-1 text-white text-[13px] font-semibold uppercase tracking-wide px-3 xl:px-4 py-2.5 whitespace-nowrap hover:bg-white/10 transition-colors"
-                  >
-                    {cat.label}
-                    <i className="fa-solid fa-chevron-down text-[9px] opacity-60"></i>
-                  </Link>
-                  <div className="dropdown-menu">
-                    <div className="mega-inner max-w-7xl mx-auto px-6 sm:px-10 py-6">
-                      <div className="mega-column">
-                        <Link to={'/shop/' + cat.slug} className="mega-heading">
-                          {cat.label}
-                        </Link>
-                        <div className="mega-links">
-                          <Link to={'/shop/' + cat.slug} className="mega-link">
-                            View All {cat.label}
-                          </Link>
-                          <Link to={'/shop/' + cat.slug + '?featured=true'} className="mega-link">
-                            Featured {cat.label}
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <Link
+                  key={cat.slug}
+                  to={'/shop/' + cat.slug}
+                  className="cat-bar-link inline-flex items-center text-white text-[13px] font-semibold uppercase tracking-wide px-3 xl:px-4 py-2.5 whitespace-nowrap hover:bg-white/10 transition-colors"
+                >
+                  {cat.label}
+                </Link>
               ))}
             </div>
           </div>

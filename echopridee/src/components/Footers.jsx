@@ -235,8 +235,8 @@ export function FooterCard() {
 export function FooterAbout() {
   return (
     <footer className="bg-[#0a0e14] text-gray-300">
-      <div className="max-w-7xl mx-auto px-8 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-        <div className="space-y-4">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 py-14 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
+        <div className="col-span-2 sm:col-span-1 space-y-4">
           <img src="/imgi_2_WLogowithicon.webp" alt="EchoPride" className="h-10 w-auto object-contain" />
           <p className="text-xs text-gray-400 leading-relaxed">
             Join the ECHOPRIDE Movement. This isn't just gear. This is your story in motion.
@@ -321,10 +321,15 @@ export function FooterAbout() {
                 Softball
               </Link>
             </li>
+            <li>
+              <Link to="/shop/boxing" className="hover:text-[#baf120] transition-colors">
+                Boxing Gear
+              </Link>
+            </li>
           </ul>
         </div>
 
-        <div>
+        <div className="col-span-2 sm:col-span-1">
           <h3 className="font-bold text-white text-sm mb-4 uppercase tracking-wider">Let's Get in Touch</h3>
           <p className="text-xs text-gray-400 mb-4">Sign up for our newsletter and receive 10% off your first order!</p>
           <form
