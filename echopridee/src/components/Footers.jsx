@@ -237,7 +237,7 @@ export function FooterAbout() {
     <footer className="bg-[#0a0e14] text-gray-300">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 py-14 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
         <div className="col-span-2 sm:col-span-1 space-y-4">
-          <img src="/imgi_2_WLogowithicon.webp" alt="EchoPride" className="h-10 w-auto object-contain" />
+          <img src="/imgi_2_WLogowithicon.webp" alt="EchoPride" width="160" height="40" loading="lazy" decoding="async" className="h-10 w-auto object-contain" />
           <p className="text-xs text-gray-400 leading-relaxed">
             Join the ECHOPRIDE Movement. This isn't just gear. This is your story in motion.
           </p>

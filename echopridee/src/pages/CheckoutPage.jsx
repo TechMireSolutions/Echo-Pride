@@ -350,7 +350,7 @@ export default function CheckoutPage() {
               <div className="mt-5 space-y-4 bg-black/30 border border-neutral-800 rounded-xl p-5">
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-bold text-gray-300 uppercase tracking-wider">Enter Card Information</span>
-                  <img src="/imgi_30_payment_icon.svg" alt="Payments" className="h-4 w-auto object-contain" />
+                  <img src="/imgi_30_payment_icon.svg" alt="Payments" width="240" height="32" loading="lazy" decoding="async" className="h-4 w-auto object-contain" />
                 </div>
                 <input type="text" placeholder="Card Number (e.g. 4111 2222 3333 4444)" maxLength="19" autoComplete="cc-number" required className={`${inputCls} font-mono`} />
                 <div className="grid grid-cols-2 gap-4">
@@ -373,7 +373,7 @@ export default function CheckoutPage() {
                   return (
                     <div key={`${item.id}-${index}-${JSON.stringify(item.sizes || item.size || 'L')}`} className="flex items-center gap-4 pb-4 border-b border-neutral-800 last:border-0">
                       <div className="relative shrink-0">
-                        <img src={`/${item.image}`} alt={item.title} className="w-16 h-16 object-cover rounded-lg border border-neutral-800" />
+                        <img src={`/${item.image}`} alt={item.title} width="64" height="64" loading="lazy" decoding="async" className="w-16 h-16 object-cover rounded-lg border border-neutral-800" />
                         <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#baf120] text-black text-[10px] font-black flex items-center justify-center">
                           {item.qty}
                         </span>

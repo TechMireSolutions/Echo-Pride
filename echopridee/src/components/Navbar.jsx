@@ -91,6 +91,10 @@ export default function Navbar() {
                 <img
                   src="/imgi_1_BLogowithicon.webp"
                   alt="EchoPride Logo"
+                  width="160"
+                  height="48"
+                  decoding="async"
+                  fetchpriority="high"
                   className="h-11 md:h-12 w-auto object-contain"
                 />
               </Link>
@@ -348,7 +352,7 @@ export default function Navbar() {
         >
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 shrink-0">
             <Link to="/" onClick={() => setMenuOpen(false)} className="flex items-center">
-              <img src="/imgi_1_BLogowithicon.webp" alt="EchoPride Logo" className="h-10 w-auto object-contain" />
+              <img src="/imgi_1_BLogowithicon.webp" alt="EchoPride Logo" width="160" height="40" decoding="async" loading="lazy" className="h-10 w-auto object-contain" />
             </Link>
             <button
               onClick={() => setMenuOpen(false)}

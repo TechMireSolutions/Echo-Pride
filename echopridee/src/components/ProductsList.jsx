@@ -34,6 +34,10 @@ const ProductsList = () => {
             <img 
               src={product.images && product.images[0] ? `/${product.images[0]}` : 'placeholder.jpg'} 
               alt={product.name} 
+              width="400"
+              height="300"
+              loading="lazy"
+              decoding="async"
               className="w-full h-48 object-cover"
             />
             
