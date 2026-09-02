@@ -210,11 +210,11 @@ const faqCategories = [
 
 function Stars({ rating = 5 }) {
   return (
-    <div className="flex justify-center gap-1 text-[#baf120]" aria-label={`${rating} out of 5 stars`}>
+    <span role="img" aria-label={`${rating} out of 5 stars`} className="flex justify-center gap-1 text-[#baf120]">
       {[1, 2, 3, 4, 5].map((i) => (
-        <i key={i} className={`fa-star ${i <= rating ? 'fa-solid' : 'fa-regular'} text-sm`}></i>
+        <i key={i} className={`fa-star ${i <= rating ? 'fa-solid' : 'fa-regular'} text-sm`} aria-hidden="true"></i>
       ))}
-    </div>
+    </span>
   )
 }
 

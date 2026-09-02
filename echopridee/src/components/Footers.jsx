@@ -88,13 +88,13 @@ export function UltimateFooterBottom() {
           <h3 className="font-extrabold text-white text-base tracking-wide mb-1">Contact Us</h3>
           <a
             href="tel:+1-424-470-7920"
-            className="text-sm md:text-base font-bold text-white hover:text-[#baf120] transition-colors"
+            className="inline-flex items-center py-2 min-h-[44px] text-sm md:text-base font-bold text-white hover:text-[#baf120] transition-colors"
           >
             +1-424-470-7920
           </a>
           <a
             href="mailto:support@echopride.com"
-            className="text-xs md:text-sm text-gray-300 hover:text-[#baf120] transition-colors"
+            className="inline-flex items-center py-2 min-h-[44px] text-xs md:text-sm text-gray-300 hover:text-[#baf120] transition-colors"
           >
             support@echopride.com
           </a>

@@ -98,7 +98,7 @@ export default function Contact() {
                     {detail.isLink ? (
                       <a
                         href={detail.href}
-                        className="text-xs text-gray-700 font-semibold hover:text-[#b5f500] transition-colors"
+                        className="inline-flex items-center min-h-[44px] py-1.5 text-xs text-gray-700 font-semibold hover:text-[#b5f500] transition-colors"
                       >
                         {detail.content}
                       </a>
