@@ -3,7 +3,7 @@ name: Echo Pride Live Deployment
 on:
   push:
     branches:
-      - main  # Agar branch ka naam master hai to yahan master kar dein
+      - main  # Agar branch master hai to master likhein
 
 jobs:
   deploy:
@@ -22,67 +22,73 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 11092
           timeout: 120s
-          script: |
-            set -e
-            echo "🚀 Deployment started on VPS..."
+          envs: GITHUB_TOKEN
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          set -e
+          echo "🚀 Deployment started on VPS..."
 
-            # ----------------------------------------------------
-            # 1. DIRECTORY & GIT FIXES
-            # ----------------------------------------------------
-            cd /www/wwwroot/echopride.store
+          # ----------------------------------------------------
+          # 1. DIRECTORY & AUTHENTICATED GIT FIXES
+          # ----------------------------------------------------
+          cd /www/wwwroot/echopride.store
 
-            # Git safe directory permissions
-            git config --global --add safe.directory /www/wwwroot/echopride.store
+          # Git safe directory permissions
+          git config --global --add safe.directory /www/wwwroot/echopride.store
 
-            # Remote URL ensure karein taake 'origin does not exist' ka error na aye
-            git remote set-url origin https://github.com/TechMireSolutions/Echo-Pride.git 2>/dev/null || git remote add origin https://github.com/TechMireSolutions/Echo-Pride.git
+          # Authenticate using GitHub Actions short-lived token (Works for private repos)
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/TechMireSolutions/Echo-Pride.git"
 
-            # Pull latest changes
-            git fetch origin main
-            git reset --hard origin/main
+          # Fetch & Reset cleanly
+          git fetch origin main
+          git reset --hard origin/main
 
-            # ----------------------------------------------------
-            # 2. BACKEND SETUP (Node.js - Port 5005)
-            # ----------------------------------------------------
-            echo "⚙️ Setting up Node.js Backend..."
-            cd /www/wwwroot/echopride.store/Backend
-            npm install --production=false
+          # Security: Strip token from remote url after fetch
+          git remote set-url origin https://github.com/TechMireSolutions/Echo-Pride.git
 
-            # Ensure Backend Port 5005
-            if [ -f .env ]; then
-              sed -i 's/PORT=.*/PORT=5005/g' .env
-            else
-              echo "PORT=5005" > .env
-            fi
+          # ----------------------------------------------------
+          # 2. BACKEND SETUP (Node.js - Port 5005)
+          # ----------------------------------------------------
+          echo "⚙️ Setting up Node.js Backend..."
+          cd /www/wwwroot/echopride.store/Backend
+          npm install --production=false
 
-            # PM2 process reload/start
-            if pm2 list | grep -q "echopride-backend"; then
-              echo "🔄 Restarting echopride-backend..."
-              pm2 restart echopride-backend --update-env
-            else
-              echo "▶️ Starting echopride-backend..."
-              pm2 start server.js --name "echopride-backend"
-            fi
-            pm2 save
+          # Ensure Backend Port 5005
+          if [ -f .env ]; then
+            sed -i 's/PORT=.*/PORT=5005/g' .env
+          else
+            echo "PORT=5005" > .env
+          fi
 
-            # ----------------------------------------------------
-            # 3. FRONTEND SETUP (echopridee - Vite React)
-            # ----------------------------------------------------
-            echo "📦 Building echopridee Frontend..."
-            cd /www/wwwroot/echopride.store/echopridee
-            npm install
+          # PM2 process reload/start
+          if pm2 list | grep -q "echopride-backend"; then
+            echo "🔄 Restarting echopride-backend..."
+            pm2 restart echopride-backend --update-env
+          else
+            echo "▶️ Starting echopride-backend..."
+            pm2 start server.js --name "echopride-backend"
+          fi
+          pm2 save
 
-            # Relative /api replace karein taake proxy se connect ho
-            find src/ -type f \( -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" \) -exec sed -i 's|http://localhost:5005/api|/api|g' {} + 2>/dev/null || true
-            find src/ -type f \( -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" \) -exec sed -i 's|http://localhost:5000/api|/api|g' {} + 2>/dev/null || true
+          # ----------------------------------------------------
+          # 3. FRONTEND SETUP (echopridee - Vite React)
+          # ----------------------------------------------------
+          echo "📦 Building echopridee Frontend..."
+          cd /www/wwwroot/echopride.store/echopridee
+          npm install
 
-            # Build Vite dist
-            npm run build
+          # Relative /api replace karein taake proxy se connect ho
+          find src/ -type f \( -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" \) -exec sed -i 's|http://localhost:5005/api|/api|g' {} + 2>/dev/null || true
+          find src/ -type f \( -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" \) -exec sed -i 's|http://localhost:5000/api|/api|g' {} + 2>/dev/null || true
 
-            # ----------------------------------------------------
-            # 4. NGINX RELOAD
-            # ----------------------------------------------------
-            echo "🔄 Reloading Nginx..."
-            nginx -t && nginx -s reload
+          # Build Vite dist
+          npm run build
 
-            echo "✅ Deployment successful! echopride.store is fully updated and live."
+          # ----------------------------------------------------
+          # 4. NGINX RELOAD
+          # ----------------------------------------------------
+          echo "🔄 Reloading Nginx..."
+          nginx -t && nginx -s reload
+
+          echo "✅ Deployment successful! echopride.store is fully updated and live."
