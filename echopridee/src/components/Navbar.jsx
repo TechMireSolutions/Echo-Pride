@@ -374,10 +374,11 @@ export default function Navbar() {
               />
               <button
                 type="button"
+                aria-label="Search site"
                 onClick={() => { setMenuOpen(false); openSearch() }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
               >
-                <i className="fa-solid fa-magnifying-glass text-sm"></i>
+                <i className="fa-solid fa-magnifying-glass text-sm" aria-hidden="true"></i>
               </button>
             </form>
 
