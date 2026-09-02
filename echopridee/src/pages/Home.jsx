@@ -582,7 +582,7 @@ export default function Home() {
       <section className="py-14 px-6 bg-[#baf120]">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-serif font-extrabold uppercase tracking-wide text-black text-center mb-12">
-            WE'RE HERE FOR YOU
+            WE'RE HERE FOR YOU.
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
