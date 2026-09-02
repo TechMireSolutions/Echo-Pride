@@ -378,6 +378,9 @@ export default function Home() {
           <img
             src="/imgi_132_m3_slide_01.jpg"
             alt="Basketball Player"
+            fetchPriority="high"
+            loading="eager"
+            decoding="async"
             className="h-full w-full md:w-3/4 object-cover object-right opacity-100"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-transparent"></div>

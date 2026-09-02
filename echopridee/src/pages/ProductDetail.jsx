@@ -259,6 +259,10 @@ export default function ProductDetail() {
               <img
                 src="/imgi_30_payment_icon.svg"
                 alt="Payment Icons"
+                width="240"
+                height="32"
+                loading="lazy"
+                decoding="async"
                 className="h-6 w-auto object-contain bg-white/5 p-2 rounded border border-white/10"
               />
             </div>

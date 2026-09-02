@@ -105,6 +105,10 @@ export default function CartDrawer() {
           <img
             src="/imgi_30_payment_icon.svg"
             alt="Accepted Payment Methods"
+            width="240"
+            height="32"
+            loading="lazy"
+            decoding="async"
             className="h-4 w-auto object-contain opacity-80"
           />
         </div>

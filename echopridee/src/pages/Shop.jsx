@@ -166,6 +166,10 @@ function ProductCard({ product }) {
           <img
             src={`/${product.image}`}
             alt={product.title}
+            width="700"
+            height="700"
+            loading="lazy"
+            decoding="async"
             className="object-contain h-full w-full p-2 sm:p-3 transition-transform duration-500 group-hover:scale-105"
           />
           <span className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-[#baf120] text-black text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2 sm:px-2.5 py-0.5 rounded shadow-xs">
