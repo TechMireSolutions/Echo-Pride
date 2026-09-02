@@ -1,0 +1,79 @@
+name: Echo Pride Live Deployment
+
+on:
+  push:
+    branches:
+      - main  # Agar aapki default branch 'master' hai to yahan master likhein
+
+jobs:
+  deploy:
+    name: Build and Deploy to aaPanel VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            echo "🚀 Deployment started on server..."
+
+            # 1. Project Directory me move karein aur latest changes pull karein
+            cd /www/wwwroot/echopride.store
+            git pull origin main
+
+            # ----------------------------------------------------
+            # 2. BACKEND DEPLOYMENT (Node.js / Express / PM2)
+            # ----------------------------------------------------
+            echo "⚙️ Setting up Node.js Backend..."
+            cd /www/wwwroot/echopride.store/Backend
+
+            # Dependencies install karein
+            npm install --production=false
+
+            # Ensure backend port is 5005
+            if [ -f .env ]; then
+              sed -i 's/PORT=.*/PORT=5005/g' .env
+            else
+              echo "PORT=5005" > .env
+            fi
+
+            # PM2 process check aur reload/start
+            if pm2 list | grep -q "echopride-backend"; then
+              echo "🔄 Restarting existing PM2 process..."
+              pm2 restart echopride-backend --update-env
+            else
+              echo "▶️ Starting new PM2 process..."
+              pm2 start server.js --name "echopride-backend"
+            fi
+            pm2 save
+
+            # ----------------------------------------------------
+            # 3. FRONTEND DEPLOYMENT (React / Vite)
+            # ----------------------------------------------------
+            echo "📦 Building React (Vite) Frontend..."
+            cd /www/wwwroot/echopride.store/echopridee
+
+            # Dependencies install karein
+            npm install
+
+            # Hardcoded URLs ko relative /api route me replace karein taake proxy work kare
+            find src/ -type f \( -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" \) -exec sed -i 's|http://localhost:5005/api|/api|g' {} + 2>/dev/null || true
+            find src/ -type f \( -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" \) -exec sed -i 's|http://localhost:5000/api|/api|g' {} + 2>/dev/null || true
+
+            # Production build generate karein (creates dist/ folder)
+            npm run build
+
+            # ----------------------------------------------------
+            # 4. RESTART NGINX
+            # ----------------------------------------------------
+            echo "🔄 Reloading Nginx..."
+            nginx -t && nginx -s reload
+
+            echo "✅ Deployment completed successfully! React & Node.js are live."
