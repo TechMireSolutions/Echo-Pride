@@ -1,0 +1,18 @@
+# EchoPride Store
+
+> High-performance custom sportswear, team uniforms, basketball jerseys, and athletic apparel manufacturer.
+
+EchoPride Store provides premium custom-designed sportswear for teams, athletes, and organizations globally.
+
+## Products & Catalog
+
+- [Custom Basketball Jerseys](https://echopride.store/shop)
+- [Team Sportswear & Uniforms](https://echopride.store/shop)
+- [Coaching & Athletic Apparel](https://echopride.store/shop)
+
+## Information & Support
+
+- [About EchoPride](https://echopride.store/about)
+- [Contact Support](https://echopride.store/contact)
+- [Shipping Policies](https://echopride.store/shipping)
+- [Privacy Policy](https://echopride.store/privacy)
