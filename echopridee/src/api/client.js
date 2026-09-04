@@ -1,4 +1,12 @@
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')
+export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')
+
+export function getImageUrl(url) {
+  if (!url) return ''
+  if (url.startsWith('http') || url.startsWith('data:')) return url
+  const host = API_BASE_URL.replace(/\/api$/, '')
+  const cleanUrl = url.replace(/^\/+/, '')
+  return `${host}/${cleanUrl}`
+}
 
 const TOKEN_KEY = 'ep_access_token'
 

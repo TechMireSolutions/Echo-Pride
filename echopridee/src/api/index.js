@@ -1,4 +1,4 @@
-export { default as api, apiFetch, ApiError, getToken, setToken } from './client.js'
+export { default as api, apiFetch, ApiError, getToken, setToken, getImageUrl } from './client.js'
 export { authService } from './services/auth.js'
 export { productService } from './services/products.js'
 export { cartService } from './services/cart.js'

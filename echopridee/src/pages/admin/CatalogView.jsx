@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { productService, adminService, useCategories, ApiError } from '../../api'
+import { productService, adminService, useCategories, ApiError, getImageUrl } from '../../api'
 import {
   Card, Modal, Loading, EmptyState, Toast, useToast, StatusBadge, Toggle,
   inputCls, labelCls, thCls, tdCls, fmtMoney,
@@ -354,7 +354,7 @@ export default function CatalogView() {
                     <td className={tdCls}>
                       <div className="flex items-center gap-3">
                         <span className="w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-sm text-gray-400 shrink-0 overflow-hidden">
-                          {p.images?.[0] ? <img src={p.images[0]} alt="" className="w-full h-full object-cover" /> : <i className="fa-solid fa-box"></i>}
+                          {p.images?.[0] ? <img src={getImageUrl(p.images[0])} alt="" className="w-full h-full object-cover" /> : <i className="fa-solid fa-box"></i>}
                         </span>
                         <div className="min-w-0">
                           <p className="font-bold text-white truncate max-w-[220px]">{p.name}</p>
@@ -487,7 +487,7 @@ export default function CatalogView() {
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
               {form.images.map((url) => (
                 <div key={url} className="relative group aspect-square rounded-xl overflow-hidden border border-white/10 bg-white/5">
-                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <img src={getImageUrl(url)} alt="" className="w-full h-full object-cover" />
                   <button onClick={() => removeImage(url)} className="absolute top-1.5 right-1.5 w-6 h-6 rounded-lg bg-black/70 border border-white/20 text-rose-400 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity" aria-label="Remove image">
                     <i className="fa-solid fa-trash text-[10px]"></i>
                   </button>

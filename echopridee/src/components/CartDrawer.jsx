@@ -51,7 +51,7 @@ export default function CartDrawer() {
                 className="flex items-center gap-4 pb-4 border-b border-gray-100"
               >
                 <img
-                  src={`/${item.image}`}
+                  src={item.image}
                   alt={item.title}
                   className="w-16 h-16 object-cover rounded border border-gray-200"
                 />
