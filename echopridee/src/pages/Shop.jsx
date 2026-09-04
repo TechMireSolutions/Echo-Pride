@@ -164,7 +164,7 @@ function ProductCard({ product }) {
       <div>
         <div className="relative h-36 sm:h-56 md:h-64 bg-gray-50 rounded-xl mb-2 sm:mb-4 overflow-hidden flex items-center justify-center">
           <img
-            src={`/${product.image}`}
+            src={product.image ? (product.image.startsWith('http') || product.image.startsWith('/') ? product.image : `/${product.image}`) : '/placeholder.jpg'}
             alt={product.title}
             width="700"
             height="700"
@@ -205,7 +205,7 @@ function PromoCard({ banner }) {
       className="promo-banner relative block overflow-hidden rounded-2xl group h-[340px] sm:h-[360px] md:h-[380px] shadow-lg border border-gray-200/80"
     >
       <img
-        src={`/${banner.image}`}
+        src={banner.image ? (banner.image.startsWith('http') || banner.image.startsWith('/') ? banner.image : `/${banner.image}`) : '/placeholder.jpg'}
         alt={titleText}
         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
       />
