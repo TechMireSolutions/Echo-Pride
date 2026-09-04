@@ -115,7 +115,7 @@ export default function ProductDetail() {
           <div className="space-y-4">
             <div className="relative bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden group shadow-2xl">
               <img
-                src={`/${product.image}`}
+                src={product.image ? (product.image.startsWith('http') || product.image.startsWith('/') ? product.image : `/${product.image}`) : '/placeholder.jpg'}
                 alt={product.title}
                 className="w-full h-[320px] sm:h-[420px] lg:h-[520px] object-cover transition-transform duration-700 group-hover:scale-105"
               />
