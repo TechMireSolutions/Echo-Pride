@@ -236,7 +236,7 @@ export default function About() {
                 }`}
               >
                 <img
-                  src={`/${img.src}`}
+                  src={img.src ? (img.src.startsWith('/') ? img.src : `/${img.src}`) : ''}
                   alt={img.alt}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />

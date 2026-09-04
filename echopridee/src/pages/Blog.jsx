@@ -151,7 +151,7 @@ export default function Blog() {
               >
                 <div className="relative h-56 overflow-hidden">
                   <img
-                    src={`/${post.image}`}
+                    src={post.image ? (post.image.startsWith('/') ? post.image : `/${post.image}`) : ''}
                     alt={post.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />

@@ -307,7 +307,7 @@ export default function ProductDetail() {
                     className="block bg-neutral-900 border border-neutral-800 rounded-lg p-4 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1"
                   >
                     <div className="h-56 bg-neutral-800 rounded mb-4 overflow-hidden flex items-center justify-center">
-                      <img src={`/${other.image}`} alt={other.title} className="object-contain h-full w-full" />
+                      <img src={other.image ? (other.image.startsWith('/') ? other.image : `/${other.image}`) : ''} alt={other.title} className="object-contain h-full w-full" />
                     </div>
                     <h3 className="text-xs font-extrabold text-white uppercase tracking-wider mb-2">
                       {other.title.toUpperCase()}

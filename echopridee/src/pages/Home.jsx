@@ -284,7 +284,7 @@ function PromoCard({ banner }) {
       className="promo-banner relative block overflow-hidden rounded-2xl group h-[340px] sm:h-[360px] md:h-[380px] shadow-lg border border-gray-200/80"
     >
       <img
-        src={`/${banner.image}`}
+        src={banner.image ? (banner.image.startsWith('/') ? banner.image : `/${banner.image}`) : ''}
         alt={titleText}
         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
       />
@@ -453,7 +453,7 @@ export default function Home() {
                       className="block bg-white border border-gray-200 rounded-2xl p-2.5 sm:p-4 shadow-sm hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     >
                       <div className="h-36 sm:h-64 bg-gray-50 rounded-xl mb-3 overflow-hidden flex items-center justify-center">
-                        <img src={`/${product.image}`} alt={product.title} className="object-contain h-full w-full p-2" />
+                        <img src={product.image ? (product.image.startsWith('/') ? product.image : `/${product.image}`) : ''} alt={product.title} className="object-contain h-full w-full p-2" />
                       </div>
                       <h3 className="text-[11px] sm:text-xs font-extrabold text-black uppercase tracking-wider mb-1 leading-snug line-clamp-2">{product.title}</h3>
                       <p className="text-xs sm:text-sm font-bold text-gray-500">{formatPrice(parseUsdPrice(product.price))}</p>

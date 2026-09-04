@@ -81,7 +81,7 @@ export default function CategoryCarousel() {
               className="block h-[340px] md:h-[480px] relative overflow-hidden group/card rounded-md shadow-2xl border border-white/10"
             >
               <img
-                src={`/${slide.image}`}
+                src={slide.image ? (slide.image.startsWith('/') ? slide.image : `/${slide.image}`) : ''}
                 alt={slide.label}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-105"
               />

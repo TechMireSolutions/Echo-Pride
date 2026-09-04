@@ -373,7 +373,7 @@ export default function CheckoutPage() {
                   return (
                     <div key={`${item.id}-${index}-${JSON.stringify(item.sizes || item.size || 'L')}`} className="flex items-center gap-4 pb-4 border-b border-neutral-800 last:border-0">
                       <div className="relative shrink-0">
-                        <img src={`/${item.image}`} alt={item.title} width="64" height="64" loading="lazy" decoding="async" className="w-16 h-16 object-cover rounded-lg border border-neutral-800" />
+                        <img src={item.image ? (item.image.startsWith('/') ? item.image : `/${item.image}`) : ''} alt={item.title} width="64" height="64" loading="lazy" decoding="async" className="w-16 h-16 object-cover rounded-lg border border-neutral-800" />
                         <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#baf120] text-black text-[10px] font-black flex items-center justify-center">
                           {item.qty}
                         </span>

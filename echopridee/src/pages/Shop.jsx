@@ -296,7 +296,7 @@ function DedicatedCategoryPage({ categoryName, products: source }) {
       <section className="relative bg-black text-white overflow-hidden py-16 md:py-24 px-6">
         <div className="absolute inset-0 z-0 opacity-40">
           <img
-            src={`/${meta.banner}`}
+            src={meta.banner ? (meta.banner.startsWith('/') ? meta.banner : `/${meta.banner}`) : ''}
             alt={categoryName}
             className="w-full h-full object-cover object-center"
           />
