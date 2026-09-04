@@ -139,10 +139,10 @@ export default function CategoriesView() {
                     <td className={`${tdCls} text-gray-500 font-mono text-xs`}>{c.slug}</td>
                     <td className={`${tdCls} text-gray-300`}>{c.productCount ?? 0}</td>
                     <td className={`${tdCls} text-right whitespace-nowrap`}>
-                      <button onClick={() => openEdit(c)} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-[#baf120] hover:border-[#baf120] transition-colors mr-1.5" aria-label="Edit">
+                      <button onClick={() => openEdit(c)} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-white hover:text-[#baf120] hover:border-[#baf120] transition-colors mr-1.5" aria-label="Edit">
                         <i className="fa-solid fa-pen text-[11px]"></i>
                       </button>
-                      <button onClick={() => remove(c)} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-rose-400 hover:border-rose-500 transition-colors" aria-label="Delete">
+                      <button onClick={() => remove(c)} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-white hover:text-rose-400 hover:border-rose-500 transition-colors" aria-label="Delete">
                         <i className="fa-solid fa-trash text-[11px]"></i>
                       </button>
                     </td>
