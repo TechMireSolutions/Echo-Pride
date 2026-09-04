@@ -4,10 +4,6 @@ export function getImageUrl(url) {
   if (!url) return ''
   if (url.startsWith('http') || url.startsWith('data:')) return url
   const cleanUrl = url.replace(/^\/+/, '')
-  if (cleanUrl.startsWith('uploads/')) {
-    const host = API_BASE_URL.replace(/\/api$/, '')
-    return `${host}/${cleanUrl}`
-  }
   return `/${cleanUrl}`
 }
 
