@@ -12,7 +12,7 @@ export default function CategoryCarousel() {
   const nextRef = useRef(null)
   const swiperRef = useRef(null)
 
-  const { categories } = useCategories(categorySlides)
+  const { categories } = useCategories()
 
   const slides = categories.map((c) => ({
     image:

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { FooterCard } from '../components/Footers'
-import { getProduct, products } from '../data/products'
+
 import { useStore } from '../context/StoreContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { useProduct } from '../api'
@@ -16,14 +16,19 @@ function initialBreakdown(minQty) {
 
 export default function ProductDetail() {
   const { slug } = useParams()
-  const { product, related } = useProduct(slug, getProduct(slug))
+  const { product, related } = useProduct(slug)
   const { addToCart } = useStore()
   const { formatPrice } = useCurrency()
   const navigate = useNavigate()
 
+  const productSizes = product?.sizes?.length ? product.sizes : SIZES
+
   const [breakdown, setBreakdown] = useState(() => {
-    const pr = productPricing(getProduct(slug))
-    return initialBreakdown(Math.max(1, pr.threshold || 12))
+    const pr = productPricing(product || {})
+    const minQty = Math.max(1, pr.threshold || 12)
+    const base = Math.floor(minQty / productSizes.length)
+    const remainder = minQty % productSizes.length
+    return Object.fromEntries(productSizes.map((size, i) => [size, base + (i < remainder ? 1 : 0)]))
   })
 
   if (!product) {
@@ -41,16 +46,16 @@ export default function ProductDetail() {
     )
   }
 
-  const others = related.length > 0 ? related : products.filter((p) => p.slug !== product.slug).slice(0, 4)
+  const others = related.length > 0 ? related : []
 
   const pricing = productPricing(product)
   const minQty = Math.max(1, pricing.threshold || 12)
   const unitPrice = pricing.wholesale !== null && pricing.wholesale !== undefined ? pricing.wholesale : pricing.price
-  const totalPieces = SIZES.reduce((sum, size) => sum + (breakdown[size] || 0), 0)
+  const totalPieces = productSizes.reduce((sum, size) => sum + (breakdown[size] || 0), 0)
   const totalPrice = Math.round(unitPrice * totalPieces * 100) / 100
   const meetMin = totalPieces >= minQty
   const orderedSizes = Object.fromEntries(
-    SIZES.filter((size) => (breakdown[size] || 0) > 0).map((size) => [size, breakdown[size]]),
+    productSizes.filter((size) => (breakdown[size] || 0) > 0).map((size) => [size, breakdown[size]]),
   )
 
   const payload = {
@@ -172,7 +177,11 @@ export default function ProductDetail() {
                     <button
                       key={presetQty}
                       type="button"
-                      onClick={() => setBreakdown(initialBreakdown(presetQty))}
+                    onClick={() => {
+                      const base = Math.floor(presetQty / productSizes.length)
+                      const remainder = presetQty % productSizes.length
+                      setBreakdown(Object.fromEntries(productSizes.map((size, i) => [size, base + (i < remainder ? 1 : 0)])))
+                    }}
                       className={`px-3 py-1.5 rounded-lg text-xs font-extrabold border transition-all cursor-pointer ${
                         totalPieces === presetQty
                           ? 'bg-[#baf120] text-black border-[#baf120] shadow-md scale-105'
@@ -186,7 +195,7 @@ export default function ProductDetail() {
               </div>
 
               <div className="rounded-xl bg-black/40 border border-neutral-800 divide-y divide-neutral-800/80">
-                {SIZES.map((size) => {
+                {productSizes.map((size) => {
                   const value = breakdown[size] || 0
                   return (
                     <div key={size} className="flex items-center justify-between px-4 py-3">

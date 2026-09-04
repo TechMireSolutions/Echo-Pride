@@ -31,6 +31,7 @@ db.exec(`
     stock_quantity INTEGER NOT NULL DEFAULT 0,
     is_featured INTEGER NOT NULL DEFAULT 0,
     category_id INTEGER,
+    sizes TEXT NOT NULL DEFAULT '[]',
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now')),
     FOREIGN KEY (category_id) REFERENCES categories(id)
@@ -314,6 +315,14 @@ function migrateOrderItemSizes() {
 }
 
 migrateOrderItemSizes()
+
+function migrateProductSizes() {
+  const cols = db.prepare('PRAGMA table_info(products)').all()
+  if (cols.some((c) => c.name === 'sizes')) return
+  db.prepare("ALTER TABLE products ADD COLUMN sizes TEXT NOT NULL DEFAULT '[]'").run()
+}
+
+migrateProductSizes()
 
 function migrateBoxingCategory() {
   const existing = db.prepare('SELECT * FROM categories WHERE slug = ?').get('boxing')

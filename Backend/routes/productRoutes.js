@@ -83,6 +83,13 @@ function serializeProduct(row) {
     stockQuantity: Number(row.stock_quantity),
     inventoryStatus: inventoryStatusOf(row.stock_quantity),
     isFeatured: Boolean(row.is_featured),
+    sizes: (() => {
+      try {
+        return JSON.parse(row.sizes || '[]')
+      } catch {
+        return []
+      }
+    })(),
     images: (row.images ? String(row.images) : '')
       .split(',')
       .map((s) => s.trim())
@@ -320,8 +327,8 @@ router.post(
     const result = db
       .prepare(
         `INSERT INTO products
-           (slug, name, description, sku, price, stock_quantity, is_featured, category_id, wholesale_min_quantity)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+           (slug, name, description, sku, price, stock_quantity, is_featured, category_id, wholesale_min_quantity, sizes)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .run(
         slug,
@@ -333,6 +340,7 @@ router.post(
         body.isFeatured ? 1 : 0,
         categoryId,
         Math.max(0, Math.floor(Number(body.wholesaleMinQuantity) || 0)),
+        JSON.stringify(Array.isArray(body.sizes) ? body.sizes : [])
       )
 
     const productId = Number(result.lastInsertRowid)
@@ -374,7 +382,7 @@ router.put(
     db.prepare(
       `UPDATE products SET
          slug = ?, name = ?, description = ?, sku = ?, price = ?,
-         wholesale_min_quantity = ?, stock_quantity = ?, is_featured = ?, category_id = ?, updated_at = datetime('now')
+         wholesale_min_quantity = ?, stock_quantity = ?, is_featured = ?, category_id = ?, sizes = ?, updated_at = datetime('now')
        WHERE id = ?`,
     ).run(
       slug,
@@ -388,6 +396,7 @@ router.put(
       body.stockQuantity !== undefined ? Number(body.stockQuantity) : current.stock_quantity,
       body.isFeatured !== undefined ? (body.isFeatured ? 1 : 0) : current.is_featured,
       categoryId,
+      body.sizes !== undefined ? JSON.stringify(Array.isArray(body.sizes) ? body.sizes : []) : current.sizes,
       id,
     )
 

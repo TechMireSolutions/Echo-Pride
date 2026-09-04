@@ -1,6 +1,5 @@
 import React, { useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { carouselProducts } from '../data/products'
 import { useCurrency } from '../context/CurrencyContext'
 import { useProducts } from '../api'
 import { productPricing } from '../utils/wholesale'
@@ -11,7 +10,7 @@ export default function ProductCarousel({ category }) {
   const { formatPrice } = useCurrency()
 
   const params = category ? { limit: 10, category } : { limit: 10, featured: 'true' }
-  const { items } = useProducts(params, carouselProducts)
+  const { items } = useProducts(params)
 
   const list = items.map((p) => {
     const pr = productPricing(p)

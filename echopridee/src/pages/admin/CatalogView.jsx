@@ -17,6 +17,7 @@ const EMPTY_FORM = {
   wholesaleMinQuantity: '',
   stockQuantity: '',
   isFeatured: false,
+  sizes: '',
   images: [],
   tiers: [],
   videos: [],
@@ -159,6 +160,7 @@ export default function CatalogView() {
       wholesaleMinQuantity: p.wholesaleMinQuantity !== undefined && p.wholesaleMinQuantity !== null ? String(p.wholesaleMinQuantity) : '',
       stockQuantity: String(p.stockQuantity ?? ''),
       isFeatured: Boolean(p.isFeatured),
+      sizes: (p.sizes || []).join(', '),
       images: p.images || [],
       tiers: (p.tiers || []).filter((t) => t.type !== 'retail'),
       videos: p.videos || [],
@@ -222,6 +224,7 @@ export default function CatalogView() {
       wholesaleMinQuantity: Math.max(0, Math.floor(Number(form.wholesaleMinQuantity) || 0)),
       stockQuantity: Number(form.stockQuantity) || 0,
       isFeatured: form.isFeatured,
+      sizes: form.sizes.split(',').map((s) => s.trim()).filter(Boolean),
       images: form.images,
       tiers: form.tiers
         .filter((t) => Number(t.minQuantity) > 0 && Number(t.price) > 0)
@@ -377,10 +380,10 @@ export default function CatalogView() {
                       <Toggle on={p.isFeatured} onClick={() => toggleFeatured(p)} label={`Featured: ${p.name}`} />
                     </td>
                     <td className={`${tdCls} text-right whitespace-nowrap`}>
-                      <button onClick={() => openEdit(p)} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-[#baf120] hover:border-[#baf120] transition-colors mr-1.5" aria-label="Edit">
+                      <button onClick={() => openEdit(p)} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-white hover:text-[#baf120] hover:border-[#baf120] transition-colors mr-1.5" aria-label="Edit">
                         <i className="fa-solid fa-pen text-[11px]"></i>
                       </button>
-                      <button onClick={() => setDeleteTarget(p)} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-rose-400 hover:border-rose-500 transition-colors" aria-label="Delete">
+                      <button onClick={() => setDeleteTarget(p)} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-white hover:text-rose-400 hover:border-rose-500 transition-colors" aria-label="Delete">
                         <i className="fa-solid fa-trash text-[11px]"></i>
                       </button>
                     </td>
@@ -430,6 +433,11 @@ export default function CatalogView() {
                 <option key={c.id} value={c.id} className="bg-[#0d1117]">{c.name}</option>
               ))}
             </select>
+          </div>
+          <div>
+            <label className={labelCls}>Sizes</label>
+            <input value={form.sizes} onChange={set('sizes')} placeholder="e.g. S, M, L, XL" className={inputCls} />
+            <p className="text-[11px] text-gray-600 mt-1">Comma-separated list of sizes.</p>
           </div>
           <div>
             <label className={labelCls}>Description</label>
