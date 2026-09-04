@@ -32,7 +32,7 @@ const ProductsList = () => {
           <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
             {/* Product Image */}
             <img 
-              src={product.images && product.images[0] ? `/${product.images[0]}` : 'placeholder.jpg'} 
+              src={product.images && product.images[0] ? (product.images[0].startsWith('/') ? product.images[0] : `/${product.images[0]}`) : '/placeholder.jpg'} 
               alt={product.name} 
               width="400"
               height="300"
