@@ -57,7 +57,7 @@ export default function ProductCarousel({ category }) {
             className="card carousel-card"
             draggable="false"
           >
-            <img src={`/${product.image}`} alt={product.title} draggable="false" />
+            <img src={product.image} alt={product.title} draggable="false" />
             <h3>{product.title}</h3>
             <p className="price">{formatPrice(product.price)}</p>
           </Link>

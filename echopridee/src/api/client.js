@@ -3,9 +3,12 @@ export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replac
 export function getImageUrl(url) {
   if (!url) return ''
   if (url.startsWith('http') || url.startsWith('data:')) return url
-  const host = API_BASE_URL.replace(/\/api$/, '')
   const cleanUrl = url.replace(/^\/+/, '')
-  return `${host}/${cleanUrl}`
+  if (cleanUrl.startsWith('uploads/')) {
+    const host = API_BASE_URL.replace(/\/api$/, '')
+    return `${host}/${cleanUrl}`
+  }
+  return `/${cleanUrl}`
 }
 
 const TOKEN_KEY = 'ep_access_token'
