@@ -32,7 +32,7 @@ jobs:
             # 1. DIRECTORY & AUTHENTICATED GIT FIXES
             cd /www/wwwroot/echopride.store
 
-            git config --global --add safe.directory /www/wwwroot/echopride.store
+            git config --local --add safe.directory /www/wwwroot/echopride.store
 
             # Authenticate via GitHub Actions short-lived token
             git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/TechMireSolutions/Echo-Pride.git"
