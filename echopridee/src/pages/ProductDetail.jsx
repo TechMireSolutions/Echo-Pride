@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { FooterCard } from '../components/Footers'
-
+import { getProduct, products } from '../data/products'
 import { useStore } from '../context/StoreContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { useProduct } from '../api'
@@ -16,7 +16,7 @@ function initialBreakdown(minQty) {
 
 export default function ProductDetail() {
   const { slug } = useParams()
-  const { product, related } = useProduct(slug)
+  const { product, related } = useProduct(slug, getProduct(slug))
   const { addToCart } = useStore()
   const { formatPrice } = useCurrency()
   const navigate = useNavigate()
@@ -24,11 +24,8 @@ export default function ProductDetail() {
   const productSizes = product?.sizes?.length ? product.sizes : SIZES
 
   const [breakdown, setBreakdown] = useState(() => {
-    const pr = productPricing(product || {})
-    const minQty = Math.max(1, pr.threshold || 12)
-    const base = Math.floor(minQty / productSizes.length)
-    const remainder = minQty % productSizes.length
-    return Object.fromEntries(productSizes.map((size, i) => [size, base + (i < remainder ? 1 : 0)]))
+    const pr = productPricing(getProduct(slug))
+    return initialBreakdown(Math.max(1, pr.threshold || 12))
   })
 
   if (!product) {
@@ -46,7 +43,7 @@ export default function ProductDetail() {
     )
   }
 
-  const others = related.length > 0 ? related : []
+  const others = related.length > 0 ? related : products.filter((p) => p.slug !== product.slug).slice(0, 4)
 
   const pricing = productPricing(product)
   const minQty = Math.max(1, pricing.threshold || 12)

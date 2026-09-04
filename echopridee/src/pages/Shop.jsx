@@ -3,6 +3,7 @@ import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom'
 import CategoryCarousel from '../components/CategoryCarousel'
 import ProductCarousel from '../components/ProductCarousel'
 import { FooterAmazon } from '../components/Footers'
+import { getCategoryBySlug, products } from '../data/products'
 import { useCurrency } from '../context/CurrencyContext'
 import { useCategories, useProducts } from '../api'
 import { productPricing } from '../utils/wholesale'
@@ -435,11 +436,13 @@ export default function Shop() {
   const { category: categorySlug } = useParams()
   const query = searchParams.get('q') || ''
   const { categories: apiCategories, loading: categoriesLoading } = useCategories([])
-  const { items: catalogProducts } = useProducts({ limit: 100 })
+  const { items: catalogProducts } = useProducts({ limit: 100 }, products)
 
   const category = useMemo(() => {
     if (!categorySlug) return ''
     const slug = categorySlug.toLowerCase()
+    const staticCategory = getCategoryBySlug(slug)
+    if (staticCategory) return staticCategory
     const apiCategory = apiCategories.find((c) => (c.slug || '').toLowerCase() === slug)
     return apiCategory?.name || apiCategory?.label || ''
   }, [categorySlug, apiCategories])
