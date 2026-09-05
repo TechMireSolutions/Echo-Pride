@@ -4,7 +4,10 @@ export function getImageUrl(url) {
   if (!url) return ''
   if (url.startsWith('http') || url.startsWith('data:')) return url
   const cleanUrl = url.replace(/^\/+/, '')
-  return `/${cleanUrl}`
+  const base = import.meta.env.VITE_API_BASE_URL 
+    ? import.meta.env.VITE_API_BASE_URL.replace(/\/api\/?$/, '') 
+    : ''
+  return `${base}/${cleanUrl}`
 }
 
 const TOKEN_KEY = 'ep_access_token'
