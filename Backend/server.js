@@ -123,6 +123,7 @@ app.use(
 )
 app.use(express.json({ limit: '2mb' }))
 app.use('/uploads', express.static(UPLOAD_DIR))
+app.use('/api/uploads', express.static(UPLOAD_DIR))
 
 /* --------------------------- Auth helpers --------------------------- */
 
