@@ -96,6 +96,20 @@ export default function ProductDetail() {
     navigate('/checkout')
   }
 
+  const [activeImageIndex, setActiveImageIndex] = useState(0)
+
+  const rawImages = Array.isArray(product?.images) && product.images.length > 0
+    ? product.images
+    : product?.image
+      ? [product.image]
+      : []
+
+  const allImages = rawImages.map((img) =>
+    img && (img.startsWith('http') || img.startsWith('/') ? img : `/${img}`)
+  ).filter(Boolean)
+
+  const activeImage = allImages[activeImageIndex] || allImages[0] || '/placeholder.jpg'
+
   return (
     <div className="bg-black text-white font-sans antialiased select-none overflow-x-hidden">
       <main className="pt-12 pb-20 px-6 max-w-7xl mx-auto">
@@ -115,14 +129,81 @@ export default function ProductDetail() {
           <div className="space-y-4">
             <div className="relative bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden group shadow-2xl">
               <img
-                src={product.image ? (product.image.startsWith('http') || product.image.startsWith('/') ? product.image : `/${product.image}`) : '/placeholder.jpg'}
+                src={activeImage}
                 alt={product.title}
-                className="w-full h-[320px] sm:h-[420px] lg:h-[520px] object-cover transition-transform duration-700 group-hover:scale-105"
+                className="w-full h-[320px] sm:h-[420px] lg:h-[520px] object-cover transition-all duration-500 group-hover:scale-105"
               />
-              <span className="absolute top-4 left-4 bg-[#baf120] text-black text-xs font-bold px-3 py-1 rounded uppercase tracking-wider">
+              <span className="absolute top-4 left-4 bg-[#baf120] text-black text-xs font-bold px-3 py-1 rounded uppercase tracking-wider shadow">
                 In Stock
               </span>
+
+              {allImages.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setActiveImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1))
+                    }}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/70 hover:bg-[#baf120] text-white hover:text-black border border-white/20 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 backdrop-blur shadow-lg cursor-pointer"
+                    aria-label="Previous image"
+                  >
+                    <i className="fa-solid fa-chevron-left text-xs"></i>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setActiveImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1))
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/70 hover:bg-[#baf120] text-white hover:text-black border border-white/20 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 backdrop-blur shadow-lg cursor-pointer"
+                    aria-label="Next image"
+                  >
+                    <i className="fa-solid fa-chevron-right text-xs"></i>
+                  </button>
+                  <div className="absolute bottom-3 right-3 bg-black/75 backdrop-blur px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-300 border border-white/10">
+                    {activeImageIndex + 1} / {allImages.length}
+                  </div>
+                </>
+              )}
             </div>
+
+            {/* Gallery Images Strip */}
+            {allImages.length > 1 && (
+              <div className="space-y-2">
+                <p className="text-[11px] font-black uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                  <i className="fa-solid fa-images text-[#baf120]"></i>
+                  Product Gallery ({allImages.length} photos)
+                </p>
+                <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-neutral-800">
+                  {allImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setActiveImageIndex(idx)}
+                      onMouseEnter={() => setActiveImageIndex(idx)}
+                      className={`relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border-2 transition-all duration-200 bg-neutral-900 group/thumb cursor-pointer ${
+                        activeImageIndex === idx
+                          ? 'border-[#baf120] ring-2 ring-[#baf120]/30 shadow-lg scale-[1.02]'
+                          : 'border-neutral-800 hover:border-neutral-500 opacity-60 hover:opacity-100'
+                      }`}
+                    >
+                      <img
+                        src={img}
+                        alt={`${product.title} gallery thumbnail ${idx + 1}`}
+                        className="w-full h-full object-cover transition-transform group-hover/thumb:scale-110"
+                      />
+                      {activeImageIndex === idx && (
+                        <div className="absolute inset-0 bg-[#baf120]/10 pointer-events-none border border-[#baf120]/50 rounded-xl" />
+                      )}
+                      <span className="absolute bottom-1 right-1 text-[9px] font-black px-1.5 py-0.5 rounded bg-black/80 text-white">
+                        {idx === 0 ? 'Main' : `#${idx + 1}`}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-6">

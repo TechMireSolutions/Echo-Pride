@@ -177,31 +177,61 @@ export default function CatalogView() {
   const addTier = () =>
     setForm((f) => ({ ...f, tiers: [...f.tiers, { minQuantity: '', price: '', label: '' }] }))
 
-  const removeTier = (i) =>
-    setForm((f) => ({ ...f, tiers: f.tiers.filter((_, idx) => idx !== i) }))
-
-  const uploadImage = (file) => {
-    if (!file) return
+  const uploadImages = async (files) => {
+    if (!files || files.length === 0) return
     const validMimes = ['image/webp', 'image/avif']
     const validExts = ['.webp', '.avif']
-    const fileName = (file.name || '').toLowerCase()
-    const isValid = validMimes.includes(file.type) || validExts.some((ext) => fileName.endsWith(ext))
 
-    if (!isValid) {
-      push('err', 'Only WebP (.webp) and AVIF (.avif) images are allowed.')
-      return
+    const fileList = Array.from(files)
+    const validFiles = []
+    for (const file of fileList) {
+      const fileName = (file.name || '').toLowerCase()
+      const isValid = validMimes.includes(file.type) || validExts.some((ext) => fileName.endsWith(ext))
+      if (isValid) {
+        validFiles.push(file)
+      } else {
+        push('err', `"${file.name}" skipped: Only WebP (.webp) and AVIF (.avif) formats allowed.`)
+      }
     }
 
-    productService
-      .uploadSingle(file)
-      .then((res) => {
-        const url = res?.url
-        if (url) {
-          setForm((f) => ({ ...f, images: [...f.images, url] }))
-          push('ok', 'Image uploaded.')
+    if (validFiles.length === 0) return
+
+    let successCount = 0
+    for (const file of validFiles) {
+      try {
+        const res = await productService.uploadSingle(file)
+        if (res?.url) {
+          setForm((f) => ({ ...f, images: [...f.images, res.url] }))
+          successCount++
         }
-      })
-      .catch((err) => push('err', err instanceof ApiError ? err.message : 'Upload failed.'))
+      } catch (err) {
+        push('err', err instanceof ApiError ? err.message : `Failed to upload ${file.name}`)
+      }
+    }
+    if (successCount > 0) {
+      push('ok', `${successCount} image${successCount > 1 ? 's' : ''} added.`)
+    }
+  }
+
+  const makeMainImage = (index) => {
+    if (index === 0) return
+    setForm((f) => {
+      const copy = [...f.images]
+      const [item] = copy.splice(index, 1)
+      copy.unshift(item)
+      return { ...f, images: copy }
+    })
+    push('ok', 'Set as main product image.')
+  }
+
+  const moveImage = (fromIndex, toIndex) => {
+    setForm((f) => {
+      const copy = [...f.images]
+      if (toIndex < 0 || toIndex >= copy.length) return f
+      const [item] = copy.splice(fromIndex, 1)
+      copy.splice(toIndex, 0, item)
+      return { ...f, images: copy }
+    })
   }
 
   const removeImage = (url) => setForm((f) => ({ ...f, images: f.images.filter((x) => x !== url) }))
@@ -471,35 +501,103 @@ export default function CatalogView() {
           <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Product images</p>
-                <p className="text-[10px] text-gray-400">Supported formats: .webp, .avif only</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-[#baf120] flex items-center gap-1.5">
+                  <i className="fa-solid fa-images"></i>
+                  Product & Gallery Images
+                </p>
+                <p className="text-[10px] text-gray-400">First image is the Main Cover. Additional images appear in the Product Gallery.</p>
               </div>
-              <label className="cursor-pointer inline-flex items-center gap-1.5 text-xs font-bold text-[#baf120] hover:underline">
-                <i className="fa-solid fa-upload text-[10px]"></i>
-                Upload
+              <label className="cursor-pointer inline-flex items-center gap-1.5 text-xs font-bold bg-[#baf120] text-black px-3 py-1.5 rounded-lg hover:bg-[#a6e216] transition-colors shadow">
+                <i className="fa-solid fa-cloud-arrow-up text-[11px]"></i>
+                Add Images
                 <input
                   type="file"
+                  multiple
                   accept=".webp,.avif,image/webp,image/avif"
                   className="hidden"
                   onChange={(e) => {
-                    const f = e.target.files?.[0]
-                    if (f) uploadImage(f)
+                    const files = e.target.files
+                    if (files && files.length > 0) uploadImages(files)
                     e.target.value = ''
                   }}
                 />
               </label>
             </div>
-            {form.images.length === 0 && <p className="text-xs text-gray-600">No images yet.</p>}
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-              {form.images.map((url) => (
-                <div key={url} className="relative group aspect-square rounded-xl overflow-hidden border border-white/10 bg-white/5">
-                  <img src={getImageUrl(url)} alt="" className="w-full h-full object-cover" />
-                  <button onClick={() => removeImage(url)} className="absolute top-1.5 right-1.5 w-6 h-6 rounded-lg bg-black/70 border border-white/20 text-rose-400 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity" aria-label="Remove image">
-                    <i className="fa-solid fa-trash text-[10px]"></i>
-                  </button>
-                </div>
-              ))}
-            </div>
+
+            {form.images.length === 0 ? (
+              <div className="border border-dashed border-white/15 rounded-xl p-6 text-center text-xs text-gray-500">
+                <i className="fa-solid fa-images text-2xl text-gray-600 mb-2 block"></i>
+                No images added yet. Click <strong>Add Images</strong> to upload .webp or .avif images for this product.
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {form.images.map((url, idx) => (
+                  <div key={url + idx} className={`relative group rounded-xl overflow-hidden border transition-all bg-white/5 ${idx === 0 ? 'border-[#baf120] ring-2 ring-[#baf120]/30' : 'border-white/10 hover:border-white/30'}`}>
+                    <div className="aspect-square overflow-hidden bg-black/40">
+                      <img src={getImageUrl(url)} alt={`Product ${idx + 1}`} className="w-full h-full object-cover" />
+                    </div>
+
+                    <div className="absolute top-1.5 left-1.5 flex items-center gap-1">
+                      {idx === 0 ? (
+                        <span className="text-[9px] font-black uppercase tracking-wider bg-[#baf120] text-black px-2 py-0.5 rounded shadow">
+                          Main Cover
+                        </span>
+                      ) : (
+                        <span className="text-[9px] font-bold uppercase tracking-wider bg-black/75 backdrop-blur text-gray-300 px-1.5 py-0.5 rounded border border-white/10">
+                          Gallery #{idx}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1.5">
+                      <div className="flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => removeImage(url)}
+                          className="w-6 h-6 rounded bg-rose-500/80 hover:bg-rose-500 text-white flex items-center justify-center transition-colors"
+                          title="Remove image"
+                        >
+                          <i className="fa-solid fa-trash text-[10px]"></i>
+                        </button>
+                      </div>
+                      <div className="flex items-center justify-between gap-1 bg-black/80 p-1 rounded-lg">
+                        {idx !== 0 ? (
+                          <button
+                            type="button"
+                            onClick={() => makeMainImage(idx)}
+                            className="text-[9px] font-bold text-[#baf120] hover:underline flex-1 text-left px-1"
+                          >
+                            Set Main
+                          </button>
+                        ) : (
+                          <span className="text-[9px] text-[#baf120] font-bold px-1">Main</span>
+                        )}
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            disabled={idx === 0}
+                            onClick={() => moveImage(idx, idx - 1)}
+                            className="w-5 h-5 rounded bg-white/10 hover:bg-white/20 text-white disabled:opacity-30 flex items-center justify-center text-[9px]"
+                            title="Move left"
+                          >
+                            <i className="fa-solid fa-chevron-left"></i>
+                          </button>
+                          <button
+                            type="button"
+                            disabled={idx === form.images.length - 1}
+                            onClick={() => moveImage(idx, idx + 1)}
+                            className="w-5 h-5 rounded bg-white/10 hover:bg-white/20 text-white disabled:opacity-30 flex items-center justify-center text-[9px]"
+                            title="Move right"
+                          >
+                            <i className="fa-solid fa-chevron-right"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
