@@ -20,7 +20,6 @@ const EMPTY_FORM = {
   sizes: '',
   images: [],
   tiers: [],
-  videos: [],
 }
 
 function slugify(text) {
@@ -163,7 +162,6 @@ export default function CatalogView() {
       sizes: (p.sizes || []).join(', '),
       images: p.images || [],
       tiers: (p.tiers || []).filter((t) => t.type !== 'retail'),
-      videos: p.videos || [],
     })
     setModalOpen(true)
   }
@@ -208,18 +206,6 @@ export default function CatalogView() {
 
   const removeImage = (url) => setForm((f) => ({ ...f, images: f.images.filter((x) => x !== url) }))
 
-  const addVideo = () =>
-    setForm((f) => ({ ...f, videos: [...f.videos, { url: '', poster: '', title: '', kind: 'link' }] }))
-
-  const updateVideo = (i, k) => (e) =>
-    setForm((f) => ({
-      ...f,
-      videos: f.videos.map((v, idx) => (idx === i ? { ...v, [k]: e.target.value } : v)),
-    }))
-
-  const removeVideo = (i) =>
-    setForm((f) => ({ ...f, videos: f.videos.filter((_, idx) => idx !== i) }))
-
   const save = () => {
     if (!form.name.trim()) {
       push('err', 'Product name is required.')
@@ -240,9 +226,6 @@ export default function CatalogView() {
       tiers: form.tiers
         .filter((t) => Number(t.minQuantity) > 0 && Number(t.price) > 0)
         .map((t) => ({ type: 'wholesale', minQuantity: Number(t.minQuantity), price: Number(t.price), label: t.label || `Wholesale ${t.minQuantity}+` })),
-      videos: form.videos
-        .filter((v) => String(v.url || '').trim())
-        .map((v) => ({ url: v.url.trim(), poster: v.poster, title: v.title, kind: v.kind === 'upload' ? 'upload' : 'link' })),
     }
 
     setSaving(true)
@@ -542,32 +525,7 @@ export default function CatalogView() {
             <WholesalePreview form={form} />
           </div>
 
-          <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Product videos</p>
-              <button onClick={addVideo} className="text-xs font-bold text-[#baf120] hover:underline">
-                <i className="fa-solid fa-plus text-[10px]"></i> Add video
-              </button>
-            </div>
-            {form.videos.length === 0 && <p className="text-xs text-gray-600">No videos — add an external stream URL or uploaded file.</p>}
-            <div className="space-y-3">
-              {form.videos.map((v, i) => (
-                <div key={i} className="rounded-xl bg-white/5 border border-white/10 p-3 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs font-bold text-gray-400">Video {i + 1}</p>
-                    <button onClick={() => removeVideo(i)} className="text-[11px] font-bold text-gray-500 hover:text-rose-400 transition-colors">
-                      <i className="fa-solid fa-trash text-[10px] mr-1"></i>Remove
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <input value={v.url} onChange={updateVideo(i, 'url')} placeholder="Video URL (http(s)://…)" className={inputCls} />
-                    <input value={v.title} onChange={updateVideo(i, 'title')} placeholder="Video title" className={inputCls} />
-                  </div>
-                  <input value={v.poster} onChange={updateVideo(i, 'poster')} placeholder="Poster image URL (optional)" className={inputCls} />
-                </div>
-              ))}
-            </div>
-          </div>
+
 
           <div className="flex items-center justify-end gap-2 pt-2">
             <button onClick={() => setModalOpen(false)} className="px-4 py-2.5 rounded-xl text-sm font-bold text-gray-400 border border-white/10 hover:text-white hover:border-white/20 transition-colors">
