@@ -79,7 +79,7 @@ export default function Navbar() {
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
 
             {/* Mobile Header Bar (< lg) */}
-            <div className="flex lg:hidden items-center justify-between py-3 gap-3">
+            <div className="flex lg:hidden items-center justify-between py-2.5 gap-2">
               <button
                 onClick={() => setMenuOpen(true)}
                 className="inline-flex items-center justify-center text-gray-600 hover:text-black transition-colors cursor-pointer leading-none shrink-0"
@@ -96,17 +96,19 @@ export default function Navbar() {
                   height="48"
                   decoding="async"
                   fetchpriority="high"
-                  className="h-11 md:h-12 w-auto object-contain"
+                  className="h-9 sm:h-11 md:h-12 w-auto object-contain"
                 />
               </Link>
 
-              <div className="flex items-center gap-3 shrink-0">
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                <CurrencySelector variant="navbar" align="right" />
+
                 <button
                   onClick={openSearch}
                   className="inline-flex items-center justify-center text-gray-600 hover:text-blue-600 transition-colors cursor-pointer leading-none"
                   aria-label="Search"
                 >
-                  <i className="fa-solid fa-magnifying-glass text-xl"></i>
+                  <i className="fa-solid fa-magnifying-glass text-lg sm:text-xl"></i>
                 </button>
 
                 <button
@@ -114,7 +116,7 @@ export default function Navbar() {
                   className="relative inline-flex items-center justify-center text-gray-600 hover:text-blue-600 transition-colors cursor-pointer leading-none"
                   aria-label="Cart"
                 >
-                  <i className="fa-solid fa-bag-shopping text-xl"></i>
+                  <i className="fa-solid fa-bag-shopping text-lg sm:text-xl"></i>
                   <span className="absolute -top-1.5 -right-2 bg-[#baf120] text-black text-[9px] font-extrabold rounded-full h-4 w-4 flex items-center justify-center">
                     {totalCount}
                   </span>
