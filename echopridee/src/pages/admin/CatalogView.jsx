@@ -183,6 +183,17 @@ export default function CatalogView() {
     setForm((f) => ({ ...f, tiers: f.tiers.filter((_, idx) => idx !== i) }))
 
   const uploadImage = (file) => {
+    if (!file) return
+    const validMimes = ['image/webp', 'image/avif']
+    const validExts = ['.webp', '.avif']
+    const fileName = (file.name || '').toLowerCase()
+    const isValid = validMimes.includes(file.type) || validExts.some((ext) => fileName.endsWith(ext))
+
+    if (!isValid) {
+      push('err', 'Only WebP (.webp) and AVIF (.avif) images are allowed.')
+      return
+    }
+
     productService
       .uploadSingle(file)
       .then((res) => {
@@ -476,11 +487,23 @@ export default function CatalogView() {
 
           <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Product images</p>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Product images</p>
+                <p className="text-[10px] text-gray-400">Supported formats: .webp, .avif only</p>
+              </div>
               <label className="cursor-pointer inline-flex items-center gap-1.5 text-xs font-bold text-[#baf120] hover:underline">
                 <i className="fa-solid fa-upload text-[10px]"></i>
                 Upload
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f); e.target.value = '' }} />
+                <input
+                  type="file"
+                  accept=".webp,.avif,image/webp,image/avif"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0]
+                    if (f) uploadImage(f)
+                    e.target.value = ''
+                  }}
+                />
               </label>
             </div>
             {form.images.length === 0 && <p className="text-xs text-gray-600">No images yet.</p>}

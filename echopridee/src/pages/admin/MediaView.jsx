@@ -110,6 +110,16 @@ export default function MediaView() {
       push('err', 'Only image or video files are allowed.')
       return
     }
+    if (kind === 'image') {
+      const validMimes = ['image/webp', 'image/avif']
+      const validExts = ['.webp', '.avif']
+      const fileName = (file.name || '').toLowerCase()
+      const isValid = validMimes.includes(file.type) || validExts.some((ext) => fileName.endsWith(ext))
+      if (!isValid) {
+        push('err', 'Only WebP (.webp) and AVIF (.avif) images are allowed.')
+        return
+      }
+    }
     setUploading(true)
     adminService
       .uploadMedia(file, { title: file.name })
@@ -202,7 +212,7 @@ export default function MediaView() {
             <i className={`fa-solid ${uploading ? 'fa-spinner fa-spin' : 'fa-upload'} text-[11px]`}></i>
             {uploading ? 'Uploading…' : 'Upload'}
           </button>
-          <input ref={fileRef} type="file" accept="image/*,video/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) doUpload(f); e.target.value = '' }} />
+          <input ref={fileRef} type="file" accept=".webp,.avif,image/webp,image/avif,video/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) doUpload(f); e.target.value = '' }} />
         </div>
       </div>
 

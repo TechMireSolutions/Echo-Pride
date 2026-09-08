@@ -24,10 +24,21 @@ const upload = multer({
   storage,
   limits: { fileSize: 300 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    const isImage = /^image\//.test(file.mimetype)
+    const ext = path.extname(file.originalname).toLowerCase()
+    const isWebpOrAvif =
+      file.mimetype === 'image/webp' ||
+      file.mimetype === 'image/avif' ||
+      ext === '.webp' ||
+      ext === '.avif'
     const isVideo = /^video\//.test(file.mimetype)
-    if (isImage || isVideo) cb(null, true)
-    else cb(new Error('Only image or video uploads are allowed.'))
+
+    if (isWebpOrAvif || isVideo) {
+      cb(null, true)
+    } else if (/^image\//.test(file.mimetype)) {
+      cb(new Error('Only WebP (.webp) and AVIF (.avif) image formats are allowed.'))
+    } else {
+      cb(new Error('Only WebP/AVIF images or video uploads are allowed.'))
+    }
   },
 })
 
@@ -61,28 +72,34 @@ router.post(
   '/upload',
   requireAuth,
   requireAdmin,
-  upload.single('file'),
   (req, res) => {
-    if (!req.file) {
-      res.status(400).json({ success: false, message: 'No file was uploaded.' })
-      return
-    }
-    const isVideo = /^video\//.test(req.file.mimetype)
-    const title = String(req.body?.title || '').trim() || req.file.originalname
-    const productId = req.body?.productId ? Number(req.body.productId) : null
-    const url = `/uploads/${req.file.filename}`
+    upload.single('file')(req, res, (err) => {
+      if (err) {
+        return res.status(400).json({
+          success: false,
+          message: err.message || 'Upload failed. Only WebP and AVIF formats are allowed for images.',
+        })
+      }
+      if (!req.file) {
+        return res.status(400).json({ success: false, message: 'No file was uploaded.' })
+      }
+      const isVideo = /^video\//.test(req.file.mimetype)
+      const title = String(req.body?.title || '').trim() || req.file.originalname
+      const productId = req.body?.productId ? Number(req.body.productId) : null
+      const url = `/uploads/${req.file.filename}`
 
-    const { lastInsertRowid } = db
-      .prepare(
-        `INSERT INTO media_assets (type, title, url, mime, size, kind, product_id)
-         VALUES (?, ?, ?, ?, ?, 'upload', ?)`,
-      )
-      .run(isVideo ? 'video' : 'image', title, url, req.file.mimetype, req.file.size, productId)
+      const { lastInsertRowid } = db
+        .prepare(
+          `INSERT INTO media_assets (type, title, url, mime, size, kind, product_id)
+           VALUES (?, ?, ?, ?, ?, 'upload', ?)`,
+        )
+        .run(isVideo ? 'video' : 'image', title, url, req.file.mimetype, req.file.size, productId)
 
-    const row = db
-      .prepare(`${ASSET_SELECT} WHERE a.id = ?`)
-      .get(Number(lastInsertRowid))
-    res.status(201).json({ success: true, data: { asset: serializeAsset(row) } })
+      const row = db
+        .prepare(`${ASSET_SELECT} WHERE a.id = ?`)
+        .get(Number(lastInsertRowid))
+      res.status(201).json({ success: true, data: { asset: serializeAsset(row) } })
+    })
   },
 )
 

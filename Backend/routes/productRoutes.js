@@ -20,10 +20,20 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 15 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    if (/^image\//.test(file.mimetype)) cb(null, true)
-    else cb(new Error('Only image uploads are allowed.'))
+    const ext = path.extname(file.originalname).toLowerCase()
+    const isWebpOrAvif =
+      file.mimetype === 'image/webp' ||
+      file.mimetype === 'image/avif' ||
+      ext === '.webp' ||
+      ext === '.avif'
+
+    if (isWebpOrAvif) {
+      cb(null, true)
+    } else {
+      cb(new Error('Only WebP (.webp) and AVIF (.avif) image formats are allowed.'))
+    }
   },
 })
 
@@ -183,15 +193,21 @@ function replaceProductVideos(productId, videos) {
 
 router.post(
   '/products/upload/single',
-  upload.single('image'),
   (req, res) => {
-    if (!req.file) {
-      res.status(400).json({ success: false, message: 'No file was uploaded.' })
-      return
-    }
-    res.json({
-      success: true,
-      data: { url: `/uploads/${req.file.filename}` },
+    upload.single('image')(req, res, (err) => {
+      if (err) {
+        return res.status(400).json({
+          success: false,
+          message: err.message || 'File upload failed. Only WebP and AVIF formats are allowed.',
+        })
+      }
+      if (!req.file) {
+        return res.status(400).json({ success: false, message: 'No file was uploaded.' })
+      }
+      res.json({
+        success: true,
+        data: { url: `/uploads/${req.file.filename}` },
+      })
     })
   },
 )
