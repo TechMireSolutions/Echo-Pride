@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useStore } from '../context/StoreContext'
+import CurrencySelector from './CurrencySelector'
 
 const CATEGORIES = [
   { label: 'Baseball', slug: 'baseball' },
@@ -207,8 +208,8 @@ export default function Navbar() {
                     ))}
                   </nav>
 
-                  {/* Account & Cart positioned on the Far Right */}
-                  <div className="ml-auto flex items-center gap-4 text-sm shrink-0">
+                  {/* Account, Currency & Cart positioned on the Far Right */}
+                  <div className="ml-auto flex items-center gap-3 xl:gap-4 text-sm shrink-0">
                     {/* Account */}
                     <div className="relative">
                       <button
@@ -252,6 +253,11 @@ export default function Navbar() {
                         </div>
                       )}
                     </div>
+
+                    <span className="w-px h-5 bg-gray-200"></span>
+
+                    {/* Currency Option */}
+                    <CurrencySelector variant="navbar" align="right" />
 
                     <span className="w-px h-5 bg-gray-200"></span>
 
@@ -434,35 +440,41 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* Mobile Account */}
-            <div className="pt-4 border-t border-gray-200">
-              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Account</p>
-              {isLoggedIn ? (
-                <div className="space-y-1">
-                  <p className="text-sm font-bold text-gray-900 truncate">{user?.name || 'Account'}</p>
-                  <p className="text-xs text-gray-500 truncate">{user?.email || ''}</p>
-                  <Link
-                    to="/account"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-2 py-2 text-sm font-bold text-gray-700 hover:text-black transition-colors"
-                  >
-                    <i className="fa-solid fa-user text-xs"></i> My Account
-                  </Link>
+            {/* Mobile Account & Currency */}
+            <div className="pt-4 border-t border-gray-200 space-y-4">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Currency</p>
+                <CurrencySelector variant="navbar" align="left" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Account</p>
+                {isLoggedIn ? (
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold text-gray-900 truncate">{user?.name || 'Account'}</p>
+                    <p className="text-xs text-gray-500 truncate">{user?.email || ''}</p>
+                    <Link
+                      to="/account"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-2 py-2 text-sm font-bold text-gray-700 hover:text-black transition-colors"
+                    >
+                      <i className="fa-solid fa-user text-xs"></i> My Account
+                    </Link>
+                    <button
+                      onClick={() => { setMenuOpen(false); logout() }}
+                      className="flex items-center gap-2 py-2 text-sm font-bold text-gray-700 hover:text-black transition-colors"
+                    >
+                      <i className="fa-solid fa-arrow-right-from-bracket text-xs"></i> Logout
+                    </button>
+                  </div>
+                ) : (
                   <button
-                    onClick={() => { setMenuOpen(false); logout() }}
+                    onClick={() => { setMenuOpen(false); openLogin() }}
                     className="flex items-center gap-2 py-2 text-sm font-bold text-gray-700 hover:text-black transition-colors"
                   >
-                    <i className="fa-solid fa-arrow-right-from-bracket text-xs"></i> Logout
+                    <i className="fa-solid fa-arrow-right-to-bracket text-xs"></i> Sign In / Create Account
                   </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => { setMenuOpen(false); openLogin() }}
-                  className="flex items-center gap-2 py-2 text-sm font-bold text-gray-700 hover:text-black transition-colors"
-                >
-                  <i className="fa-solid fa-arrow-right-to-bracket text-xs"></i> Sign In / Create Account
-                </button>
-              )}
+                )}
+              </div>
             </div>
           </nav>
         </aside>

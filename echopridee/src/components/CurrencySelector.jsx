@@ -19,30 +19,31 @@ export default function CurrencySelector({ align = 'right', variant = 'dark', in
   const list = (
     <div
       className={`bg-white text-gray-900 shadow-2xl border border-gray-100 rounded-lg py-2 z-50 max-h-[420px] overflow-y-auto ${
-        inline ? 'w-full' : `absolute ${align === 'right' ? 'right-0' : 'left-0'} top-full mt-3 w-64`
+        inline ? 'w-full' : `absolute ${align === 'right' ? 'right-0' : 'left-0'} top-full mt-2 w-64`
       }`}
     >
       <div className="px-4 py-2 border-b border-gray-100">
-        <p className="text-xs font-bold text-gray-900 uppercase tracking-widest">Select Country</p>
+        <p className="text-xs font-bold text-gray-900 uppercase tracking-widest">Select Currency</p>
         <p className="text-[11px] text-gray-400 mt-0.5">Prices update across the store</p>
       </div>
       {currencies.map((c) => (
         <button
           key={c.code}
+          type="button"
           onClick={() => {
             setCurrency(c.code)
             setOpen(false)
           }}
-          className={`w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors ${
-            c.code === currency.code ? 'bg-[#baf120]/10 text-black' : 'text-gray-700 hover:bg-gray-50 hover:text-black'
+          className={`w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors cursor-pointer ${
+            c.code === currency.code ? 'bg-blue-50/80 font-semibold text-blue-600' : 'text-gray-700 hover:bg-gray-50 hover:text-black'
           }`}
         >
           <span className="text-base leading-none">{c.flag}</span>
           <span className="flex-1 font-medium truncate">{c.name}</span>
-          <span className={`text-xs font-bold ${c.code === currency.code ? 'text-black' : 'text-gray-500'}`}>
-            {c.code}
+          <span className={`text-xs font-bold ${c.code === currency.code ? 'text-blue-600' : 'text-gray-500'}`}>
+            {c.code} ({c.symbol})
           </span>
-          {c.code === currency.code && <i className="fa-solid fa-check text-[#baf120]"></i>}
+          {c.code === currency.code && <i className="fa-solid fa-check text-blue-600 text-xs ml-1"></i>}
         </button>
       ))}
     </div>
@@ -52,24 +53,49 @@ export default function CurrencySelector({ align = 'right', variant = 'dark', in
     <div className={inline ? 'w-full' : 'relative'} ref={ref}>
       {!inline && (
         <button
+          type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-label="Select country and currency"
-          className="inline-flex items-center gap-2 hover:opacity-75 cursor-pointer leading-none"
+          className={
+            variant === 'navbar'
+              ? 'flex items-center gap-2 font-semibold uppercase tracking-wide text-gray-700 hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap py-1 px-2.5 rounded-lg hover:bg-gray-50'
+              : 'inline-flex items-center gap-2 hover:opacity-75 cursor-pointer leading-none'
+          }
         >
-          {variant === 'light' ? (
-            <i className="fa-solid fa-globe text-xl"></i>
-          ) : (
-            <span className="w-7 h-7 flex items-center justify-center">
+          {variant === 'navbar' ? (
+            <>
+              <span className="text-base leading-none">{currency.flag}</span>
+              <span className="text-xs font-bold text-gray-800">{currency.code} ({currency.symbol})</span>
+              <i
+                className={`fa-solid fa-chevron-down text-[10px] text-gray-400 transition-transform duration-200 ${
+                  open ? 'rotate-180' : ''
+                }`}
+              ></i>
+            </>
+          ) : variant === 'light' ? (
+            <>
               <i className="fa-solid fa-globe text-xl"></i>
-            </span>
+              <span className="text-sm font-semibold tracking-wider hidden lg:inline">{currency.country}</span>
+              <i
+                className={`fa-solid fa-chevron-down text-[10px] hidden sm:inline transition-transform duration-300 ${
+                  open ? 'rotate-180' : ''
+                }`}
+              ></i>
+            </>
+          ) : (
+            <>
+              <span className="w-7 h-7 flex items-center justify-center">
+                <i className="fa-solid fa-globe text-xl"></i>
+              </span>
+              <span className="text-sm font-semibold tracking-wider hidden lg:inline">{currency.country}</span>
+              <i
+                className={`fa-solid fa-chevron-down text-[10px] hidden sm:inline transition-transform duration-300 ${
+                  open ? 'rotate-180' : ''
+                }`}
+              ></i>
+            </>
           )}
-          <span className="text-sm font-semibold tracking-wider hidden lg:inline">{currency.country}</span>
-          <i
-            className={`fa-solid fa-chevron-down text-[10px] hidden sm:inline transition-transform duration-300 ${
-              open ? 'rotate-180' : ''
-            }`}
-          ></i>
         </button>
       )}
       {(inline || open) && list}
