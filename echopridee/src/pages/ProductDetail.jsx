@@ -131,7 +131,7 @@ export default function ProductDetail() {
               <img
                 src={activeImage}
                 alt={product.title}
-                className="w-full h-auto max-h-[600px] object-contain transition-all duration-500 group-hover:scale-105"
+                className="w-full h-auto object-cover block transition-all duration-500 group-hover:scale-105"
               />
               <span className="absolute top-4 left-4 bg-[#baf120] text-black text-xs font-bold px-3 py-1 rounded uppercase tracking-wider shadow">
                 In Stock
@@ -182,7 +182,7 @@ export default function ProductDetail() {
                       type="button"
                       onClick={() => setActiveImageIndex(idx)}
                       onMouseEnter={() => setActiveImageIndex(idx)}
-                      className={`relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border-2 transition-all duration-200 bg-neutral-900 group/thumb cursor-pointer ${
+                      className={`relative flex-shrink-0 h-16 sm:h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 bg-neutral-900 group/thumb cursor-pointer ${
                         activeImageIndex === idx
                           ? 'border-[#baf120] ring-2 ring-[#baf120]/30 shadow-lg scale-[1.02]'
                           : 'border-neutral-800 hover:border-neutral-500 opacity-60 hover:opacity-100'
@@ -191,7 +191,7 @@ export default function ProductDetail() {
                       <img
                         src={img}
                         alt={`${product.title} gallery thumbnail ${idx + 1}`}
-                        className="w-full h-full object-cover transition-transform group-hover/thumb:scale-110"
+                        className="h-16 sm:h-20 w-auto object-cover transition-transform group-hover/thumb:scale-110 block"
                       />
                       {activeImageIndex === idx && (
                         <div className="absolute inset-0 bg-[#baf120]/10 pointer-events-none border border-[#baf120]/50 rounded-xl" />
