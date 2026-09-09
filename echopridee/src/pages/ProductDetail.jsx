@@ -6,7 +6,8 @@ import { useStore } from '../context/StoreContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { useProduct } from '../api'
 import { productPricing } from '../utils/wholesale'
-import { SIZES } from '../utils/sizes'
+import { SIZES, getProductSizes } from '../utils/sizes'
+import SizeGuideModal from '../components/SizeGuideModal'
 
 function initialBreakdown(minQty) {
   const base = Math.floor(minQty / SIZES.length)
@@ -21,12 +22,29 @@ export default function ProductDetail() {
   const { formatPrice } = useCurrency()
   const navigate = useNavigate()
 
-  const productSizes = product?.sizes?.length ? product.sizes : SIZES
+  const productSizes = getProductSizes(product)
+  const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false)
 
   const [breakdown, setBreakdown] = useState(() => {
-    const pr = productPricing(getProduct(slug))
-    return initialBreakdown(Math.max(1, pr.threshold || 12))
+    const p = getProduct(slug)
+    const sizes = getProductSizes(p)
+    const pr = productPricing(p)
+    const minQty = Math.max(1, pr.threshold || 12)
+    const base = Math.floor(minQty / sizes.length)
+    const remainder = minQty % sizes.length
+    return Object.fromEntries(sizes.map((size, i) => [size, base + (i < remainder ? 1 : 0)]))
   })
+
+  useEffect(() => {
+    if (product) {
+      const sizes = getProductSizes(product)
+      const pr = productPricing(product)
+      const minQty = Math.max(1, pr.threshold || 12)
+      const base = Math.floor(minQty / sizes.length)
+      const remainder = minQty % sizes.length
+      setBreakdown(Object.fromEntries(sizes.map((size, i) => [size, base + (i < remainder ? 1 : 0)])))
+    }
+  }, [product?.id, slug])
 
   if (!product) {
     return (
@@ -242,13 +260,23 @@ export default function ProductDetail() {
             <p className="text-sm text-gray-300 leading-relaxed">{product.description}</p>
 
             <div className="space-y-4 bg-neutral-900/60 p-5 rounded-2xl border border-neutral-800">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
                 <label className="block text-xs font-extrabold uppercase tracking-wider text-white">
                   Bulk Size Selection (Enter Quantity Per Size)
                 </label>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#baf120] bg-[#baf120]/10 px-2 py-0.5 rounded">
-                  Bulk Wholesale Only
-                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsSizeGuideOpen(true)}
+                    className="text-[11px] font-extrabold text-[#baf120] hover:text-white flex items-center gap-1.5 cursor-pointer bg-[#baf120]/15 hover:bg-[#baf120]/30 px-3 py-1 rounded-lg border border-[#baf120]/40 transition-all shadow-sm"
+                  >
+                    <i className="fa-solid fa-ruler-combined text-xs"></i>
+                    Size Guide
+                  </button>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#baf120] bg-[#baf120]/10 px-2 py-0.5 rounded">
+                    Bulk Wholesale Only
+                  </span>
+                </div>
               </div>
 
               {/* Quick Bulk Presets */}
@@ -409,6 +437,12 @@ export default function ProductDetail() {
       </main>
 
       <FooterCard />
+
+      <SizeGuideModal
+        isOpen={isSizeGuideOpen}
+        onClose={() => setIsSizeGuideOpen(false)}
+        product={product}
+      />
     </div>
   )
 }
