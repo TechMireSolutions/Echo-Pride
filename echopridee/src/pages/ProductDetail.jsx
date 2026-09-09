@@ -131,7 +131,7 @@ export default function ProductDetail() {
               <img
                 src={activeImage}
                 alt={product.title}
-                className="w-full h-[320px] sm:h-[420px] lg:h-[520px] object-cover transition-all duration-500 group-hover:scale-105"
+                className="w-full h-auto max-h-[600px] object-contain transition-all duration-500 group-hover:scale-105"
               />
               <span className="absolute top-4 left-4 bg-[#baf120] text-black text-xs font-bold px-3 py-1 rounded uppercase tracking-wider shadow">
                 In Stock
