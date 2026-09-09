@@ -317,7 +317,7 @@ const productsRaw = [
     price: 75,
     save: '25%',
     reviews: 38,
-    image: 'imgi_26_m3_banner_01.jpg',
+    image: 'uploads/1788937157334-ep-bg-001.webp',
     description:
       'Engineered for maximum hand protection and wrist stability. Multi-layer foam padding, genuine leather construction, and customizable colors and logos for gym and fight night.',
   },

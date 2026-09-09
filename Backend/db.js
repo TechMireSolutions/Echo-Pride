@@ -342,7 +342,7 @@ function migrateBoxingCategory() {
         compareAtPrice: 95,
         stock: 50,
         featured: 1,
-        image: 'imgi_26_m3_banner_01.jpg',
+        image: 'uploads/1788937157334-ep-bg-001.webp',
         description: 'Engineered for maximum hand protection and wrist stability. Multi-layer foam padding, genuine leather construction, and customizable colors and logos for gym and fight night.',
       },
       {
@@ -680,7 +680,7 @@ const PRODUCT_SEEDS = [
     compareAtPrice: 95,
     stock: 50,
     featured: true,
-    image: 'imgi_26_m3_banner_01.jpg',
+    image: 'uploads/1788937157334-ep-bg-001.webp',
     description:
       'Engineered for maximum hand protection and wrist stability. Multi-layer foam padding, genuine leather construction, and customizable colors and logos for gym and fight night.',
   },

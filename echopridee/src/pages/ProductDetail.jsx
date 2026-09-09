@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { FooterCard } from '../components/Footers'
 import { getProduct, products } from '../data/products'
@@ -97,6 +97,10 @@ export default function ProductDetail() {
   }
 
   const [activeImageIndex, setActiveImageIndex] = useState(0)
+
+  useEffect(() => {
+    setActiveImageIndex(0)
+  }, [slug, product?.id])
 
   const rawImages = Array.isArray(product?.images) && product.images.length > 0
     ? product.images
