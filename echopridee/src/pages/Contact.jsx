@@ -19,9 +19,9 @@ const contactDetails = [
   {
     icon: 'fa-solid fa-envelope',
     title: 'Email',
-    content: 'support@echopride.com',
+    content: 'support@echopride.store',
     isLink: true,
-    href: 'mailto:support@echopride.com',
+    href: 'mailto:support@echopride.store',
   },
   {
     icon: 'fa-solid fa-headset',
