@@ -53,7 +53,7 @@ const QUICK_LINKS = [
 ]
 
 const SUPPORT_PHONE = '+1-424-470-7920'
-const SUPPORT_EMAIL = 'support@echopride.com'
+const SUPPORT_EMAIL = 'support@echopride.store'
 
 export default function Navbar() {
   const { totalCount, openSearch, openLogin, openCart, isLoggedIn, user, logout } = useStore()
