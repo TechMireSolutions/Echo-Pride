@@ -82,7 +82,7 @@ export function UltimateFooterBottom() {
   return (
     <div className="bg-black text-white border-t border-neutral-800 py-10 px-6 sm:px-8 font-sans">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-start justify-between gap-8 pb-8 border-b border-neutral-800/80">
-        
+
         {/* Contact Us Section */}
         <div className="flex flex-col items-center md:items-start gap-1">
           <h3 className="font-extrabold text-white text-base tracking-wide mb-1">Contact Us</h3>
@@ -93,10 +93,10 @@ export function UltimateFooterBottom() {
             +1-424-470-7920
           </a>
           <a
-            href="mailto:support@echopride.com"
+            href="mailto:support@echopride.store"
             className="inline-flex items-center py-2 min-h-[44px] text-xs md:text-sm text-gray-300 hover:text-[#baf120] transition-colors"
           >
-            support@echopride.com
+            support@echopride.store
           </a>
         </div>
 
