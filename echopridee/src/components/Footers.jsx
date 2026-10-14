@@ -93,10 +93,10 @@ export function UltimateFooterBottom() {
             +1-424-470-7920
           </a>
           <a
-            href="mailto:support@echopride.store"
+            href="mailto:support@echopride.site"
             className="inline-flex items-center py-2 min-h-[44px] text-xs md:text-sm text-gray-300 hover:text-[#baf120] transition-colors"
           >
-            support@echopride.store
+            support@echopride.site
           </a>
         </div>
 
