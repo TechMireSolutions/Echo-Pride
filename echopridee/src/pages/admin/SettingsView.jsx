@@ -83,7 +83,7 @@ export default function SettingsView() {
             </div>
             <div>
               <label className={labelCls}>Support email</label>
-              <input value={form.supportEmail} onChange={setField('supportEmail')} placeholder="support@echopride.com" className={inputCls} />
+              <input value={form.supportEmail} onChange={setField('supportEmail')} placeholder="echopridesports@gmail.com" className={inputCls} />
             </div>
             <div>
               <label className={labelCls}>Support phone</label>

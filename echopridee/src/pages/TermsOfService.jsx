@@ -107,7 +107,7 @@ const termsSections = [
           For questions regarding these Terms of Service, please reach out to our Customer Service team:
         </p>
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs text-gray-700 space-y-1">
-          <p><strong>Email:</strong> support@echopride.com</p>
+          <p><strong>Email:</strong> echopridesports@gmail.com</p>
           <p><strong>Phone:</strong> +1 (713) 997-5586</p>
           <p><strong>Address:</strong> EchoPride Custom Sportswear, Corona, CA, USA</p>
         </div>

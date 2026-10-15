@@ -20,7 +20,7 @@ const FALLBACK_SETTINGS = {
   taxPercent: 5,
   shippingFee: 0,
   shippingTiers: [{ minQuantity: 50, fee: 0 }],
-  contact: { email: 'support@echopride.site', phone: '', address: '' },
+  contact: { email: 'echopridesports@gmail.com', phone: '', address: '' },
   heroBanners: [],
   currencyRates: {},
 }

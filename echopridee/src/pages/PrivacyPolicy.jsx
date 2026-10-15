@@ -90,7 +90,7 @@ const policySections = [
           If you have questions or concerns regarding this Privacy Policy or your personal data, please contact our Legal & Privacy team:
         </p>
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs text-gray-700 space-y-1">
-          <p><strong>Email:</strong> support@echopride.com</p>
+          <p><strong>Email:</strong> echopridesports@gmail.com</p>
           <p><strong>Phone:</strong> +1 (713) 997-5586</p>
           <p><strong>Address:</strong> EchoPride Custom Sportswear, Corona, CA, USA</p>
         </div>

@@ -49,14 +49,14 @@ const faqs = [
   },
   {
     q: 'How do I contact support?',
-    a: 'Use live chat below, email support@echopride.com, or call +1 (909) 555-0148 during business hours.',
+    a: 'Use live chat below, email echopridesports@gmail.com, or call +1 (909) 555-0148 during business hours.',
     cat: 'Account',
   },
 ]
 
 const contactChannels = [
   { icon: 'fa-solid fa-comment-dots', title: 'Live Chat', text: 'Fastest — average reply under 2 minutes during support hours.', action: 'Start Chat' },
-  { icon: 'fa-solid fa-envelope', title: 'Email Support', text: 'support@echopride.com · replies within 24 hours.', action: 'Send Email' },
+  { icon: 'fa-solid fa-envelope', title: 'Email Support', text: 'echopridesports@gmail.com · replies within 24 hours.', action: 'Send Email' },
   { icon: 'fa-solid fa-phone', title: 'Call Us', text: '+1 (909) 555-0148 · Mon–Fri, 9am–6pm PST.', action: 'Call Now' },
 ]
 
